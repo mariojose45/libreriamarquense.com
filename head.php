@@ -1,0 +1,513 @@
+<?php
+function getApi($url)
+{
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, []);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+    $response = curl_exec($ch);
+
+    if ($response === false) {
+        echo "Error CURL: " . curl_error($ch);
+    }
+
+    curl_close($ch);
+    return $response;
+}
+
+if (!headers_sent()) {
+    $content_security_policy = "default-src 'self'; "
+        . "script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; "
+        . "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com; "
+        . "img-src 'self' data: blob: https://ssl.sol.sistemasolgt.com; "
+        . "font-src 'self' data: https://fonts.gstatic.com;"
+        . "connect-src 'self' https://ssl.sol.sistemasolgt.com https://cdn.jsdelivr.net; "
+        . "media-src 'self' data: blob:; "
+        . "object-src 'none'; "
+        . "base-uri 'self'; "
+        . "frame-ancestors 'self'; "
+        . "form-action 'self';";
+
+    header('X-Content-Type-Options: nosniff');
+    header('X-Frame-Options: SAMEORIGIN');
+    header('Referrer-Policy: strict-origin-when-cross-origin');
+    header('Permissions-Policy: accelerometer=(), autoplay=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()');
+    header('Content-Security-Policy: ' . $content_security_policy);
+}
+
+// Definir variables para evitar errores
+if (!isset($current_page)) {
+    $current_page = basename($_SERVER['PHP_SELF']);
+}
+
+if (!isset($paginas_servicios)) {
+    $paginas_servicios = [
+        'servicios.php'
+    ];
+}
+
+include "assets/php/rutas.php";
+
+$response = getApi($url_listar_categorias);
+$data = json_decode($response, true);
+
+$categorias = $data["data"] ?? [];
+
+?>
+
+<!doctype html>
+<html lang="es-GT">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+    <!-- Animate CSS -->
+    <link rel="stylesheet" href="assets/css/animate.min.css">
+    <!-- Meanmenu CSS -->
+    <link rel="stylesheet" href="assets/css/meanmenu.css">
+    <!-- Boxicons CSS -->
+    <link rel="stylesheet" href="assets/css/boxicons.min.css">
+    <!-- Flaticon CSS -->
+    <link rel="stylesheet" href="assets/css/flaticon.css">
+    <!-- Owl Carousel CSS -->
+    <link rel="stylesheet" href="assets/css/owl.carousel.min.css">
+    <!-- Owl Carousel Default CSS -->
+    <link rel="stylesheet" href="assets/css/owl.theme.default.min.css">
+    <!-- Magnific Popup CSS -->
+    <link rel="stylesheet" href="assets/css/magnific-popup.min.css">
+    <!-- Nice Select CSS -->
+    <link rel="stylesheet" href="assets/css/nice-select.min.css">
+    <!-- Slick CSS -->
+    <link rel="stylesheet" href="assets/css/slick.min.css">
+
+    <!-- Odometer CSS -->
+    <link rel="stylesheet" href="assets/css/odometer.min.css">
+    <!-- Style CSS -->
+    <link rel="stylesheet" href="assets/css/style.css?v=<?php echo filemtime('assets/css/style.css'); ?>">
+    <!-- Dark CSS -->
+    <link rel="stylesheet" href="assets/css/dark.css?v=<?php echo filemtime('assets/css/dark.css'); ?>">
+    <!-- Responsive CSS -->
+    <link rel="stylesheet" href="assets/css/responsive.css?v=<?php echo filemtime('assets/css/responsive.css'); ?>">
+
+    <?php
+    // Configuracion SEO por defecto
+    $site_url = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://" . $_SERVER['HTTP_HOST'];
+    $current_url = $site_url . $_SERVER['REQUEST_URI'];
+
+    // SEO por defecto (puedes personalizar por pagina)
+    $seo_title = isset($seo_title) ? $seo_title : "TI-CELL | Celulares, accesorios y reparacion en Guatemala";
+    $seo_description = isset($seo_description) ? $seo_description : "TI-CELL ofrece venta de celulares, accesorios, repuestos y servicio tecnico de reparacion con atencion confiable en Guatemala.";
+    $seo_keywords = isset($seo_keywords) ? $seo_keywords : "TI-CELL, celulares Guatemala, accesorios para celulares, reparacion de celulares, repuestos para telefonos, tienda de celulares Guatemala";
+    $seo_image = isset($seo_image) ? $seo_image : $site_url . "/assets/img/Ti-Cell-01.jpeg";
+    $browser_title = "TI-CELL - Venta y Reparación de Celulares";
+    $site_name = isset($site_name) ? $site_name : "TI-CELL";
+    $site_phone_number = isset($site_phone_number) ? $site_phone_number : "+502 23790625";
+    $site_whatsapp_number = isset($site_whatsapp_number) ? $site_whatsapp_number : "+502 46442321";
+    $site_whatsapp_url = isset($site_whatsapp_url) ? $site_whatsapp_url : "https://wa.me/50246442321";
+    $site_email = isset($site_email) ? $site_email : "ticell852@gmail.com";
+    $site_business_description = isset($site_business_description) ? $site_business_description : "Venta de celulares, accesorios, repuestos y servicio tecnico de reparacion en Guatemala.";
+    $site_social_links = isset($site_social_links) ? $site_social_links : [
+        'facebook' => 'https://www.facebook.com/share/19tcLytYiM/',
+        'instagram' => 'https://www.instagram.com/ti_cell_sm?igsh=MXF0dTR0cG13aTNk',
+        'tiktok' => 'https://tiktok.com/@ti_cell_gt',
+    ];
+    $site_social_same_as = array_values(array_filter($site_social_links));
+
+    // Limpiar URL para canonical
+    $canonical_url = strtok($current_url, '?');
+    ?>
+
+    <!-- SEO Meta Tags -->
+    <title><?php echo htmlspecialchars($browser_title); ?></title>
+    <meta name="description" content="<?php echo htmlspecialchars($seo_description); ?>">
+    <meta name="keywords" content="<?php echo htmlspecialchars($seo_keywords); ?>">
+    <meta name="author" content="<?php echo htmlspecialchars($site_name); ?>">
+    <meta name="robots" content="index, follow">
+    <meta name="language" content="Spanish">
+    <meta name="revisit-after" content="7 days">
+    <link rel="canonical" href="<?php echo htmlspecialchars($canonical_url); ?>">
+
+    <!-- Google Search Console Verification -->
+    <meta name="google-site-verification" content="yX3GJ3Ju-PIJeHR1dsRWzP_g1CPGgeKGrgi7-zCywvc" />
+    <!-- google-site-verification=yX3GJ3Ju-PIJeHR1dsRWzP_g1CPGgeKGrgi7-zCywvc -->
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="<?php echo htmlspecialchars($current_url); ?>">
+    <meta property="og:title" content="<?php echo htmlspecialchars($seo_title); ?>">
+    <meta property="og:description" content="<?php echo htmlspecialchars($seo_description); ?>">
+    <meta property="og:image" content="<?php echo htmlspecialchars($seo_image); ?>">
+    <meta property="og:locale" content="es_GT">
+    <meta property="og:site_name" content="<?php echo htmlspecialchars($site_name); ?>">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="<?php echo htmlspecialchars($current_url); ?>">
+    <meta name="twitter:title" content="<?php echo htmlspecialchars($seo_title); ?>">
+    <meta name="twitter:description" content="<?php echo htmlspecialchars($seo_description); ?>">
+    <meta name="twitter:image" content="<?php echo htmlspecialchars($seo_image); ?>">
+
+        <!-- Schema.org structured data -->
+    <script type="application/ld+json">
+                {
+                "@context": "https://schema.org",
+                "@type": "Store",
+                "name": <?php echo json_encode($site_name); ?>,
+                "url": <?php echo json_encode($site_url); ?>,
+                "logo": <?php echo json_encode($site_url . "/assets/img/LogoTi-Cell.jpeg"); ?>,
+                "description": <?php echo json_encode($site_business_description); ?>,
+                "address": {
+                    "@type": "PostalAddress",
+                    "addressCountry": "GT"
+                },
+                "contactPoint": {
+                    "@type": "ContactPoint",
+                    "telephone": <?php echo json_encode($site_phone_number); ?>,
+                    "contactType": "servicio al cliente",
+                    "email": <?php echo json_encode($site_email); ?>
+                },
+                "sameAs": <?php echo json_encode($site_social_same_as, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE); ?>
+                }
+                </script>
+
+
+    
+    <script type="application/ld+json">
+                    {
+                    "@context": "https://schema.org",
+                    "@type": "WebSite",
+                    "name": <?php echo json_encode($site_name); ?>,
+                    "url": <?php echo json_encode($site_url); ?>,
+                    "potentialAction": {
+                        "@type": "SearchAction",
+                        "target": <?php echo json_encode($site_url . "/?search={search_term_string}"); ?>,
+                        "query-input": "required name=search_term_string"
+                    }
+                    }
+                </script>
+
+
+    <link rel="icon" type="image/jpeg" href="assets/img/Ti-Cell-01.jpeg?v=2">
+    <link rel="shortcut icon" type="image/jpeg" href="assets/img/Ti-Cell-01.jpeg?v=2">
+</head>
+
+<body>
+
+    <!-- Start Preloader Area -->
+    <div class="preloader">
+        <div class="loader">
+            <img src="assets/img/LogoTi-Cell.jpeg" alt="Cargando..." style="max-width: 300px; border-radius: 10px;">
+        </div>
+    </div>
+    <!-- End Preloader Area -->
+
+
+    <!-- End Top Header Area -->
+
+    <!-- Start Middle Header Area -->
+    <div class="middle-header-area">
+        <div class="container">
+            <div class="row align-items-center">
+
+
+                <div class="col-lg-10">
+                    <div class="middle-header-search">
+                        <form>
+                            <div class="row align-items-center">
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <select id="select-categoria-header" class="form-control">
+                                            <option value="">Todas las categorías</option>
+
+                                            <?php foreach ($categorias as $cat): ?>
+                                                <option value="<?= $cat['idcategoria'] ?>">
+                                                    <?= htmlspecialchars($cat['nombre']) ?>
+                                                </option>
+                                            <?php endforeach; ?>
+                                        </select>
+
+                                    </div>
+                                </div>
+
+                                <div class="col-md-8">
+                                    <div class="search-box">
+                                        <input type="text" id="search" name="search" class="form-control"
+                                            placeholder="Busqueda de productos...">
+                                        <button type="button" onclick="buscarProductos()"><i
+                                                class='bx bx-search'></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="col-lg-2">
+                    <ul class="middle-header-optional">
+                        <li>
+                            <a href="cart.php" class="cart-icon">
+                                <i class="flaticon-shopping-cart"></i>
+                                <span class="cart-count"></span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- End Middle Header Area -->
+    <style>
+        .logo-grande {
+            width: 95px !important;
+            height: auto !important;
+            max-width: 100% !important;
+            display: block;
+            margin: 0 auto;
+        }
+
+        @media (max-width: 768px) {
+            .logo-grande {
+                width: 80px !important;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .logo-grande {
+                width: 68px !important;
+            }
+        }
+
+        /* Estilos para el icono del carrito */
+        .cart-icon {
+            position: relative;
+            display: inline-block;
+            font-size: 24px;
+            color: #333;
+            text-decoration: none;
+        }
+
+        .cart-icon:hover {
+            color: #004090;
+        }
+
+        .cart-icon .flaticon-shopping-cart {
+            font-size: 24px;
+        }
+
+        .cart-count {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background-color: #004090;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+            min-width: 20px;
+        }
+
+        .cart-count:empty {
+            display: none;
+        }
+
+        .middle-header-optional li {
+            list-style: none;
+        }
+
+        /* Logo en el header superior */
+        .logo-header {
+            max-width: 180px;
+            height: auto;
+        }
+
+        /* Asegurar que el icono del carrito sea visible */
+        .middle-header-optional {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+        }
+
+        .middle-header-optional .cart-icon {
+            font-size: 24px;
+            color: #333;
+            text-decoration: none;
+            padding: 5px;
+        }
+
+        .middle-header-optional .cart-icon i {
+            font-size: 24px;
+        }
+
+        /* Logo en el navbar principal */
+        .main-navbar {
+            background: #fff;
+        }
+
+        .main-navbar .navbar {
+            min-height: 72px;
+            padding: 8px 0;
+            align-items: center;
+        }
+
+        .navbar-brand {
+            padding: 0;
+            margin-right: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logo-navbar {
+            max-width: 92px;
+            height: auto;
+            display: block;
+        }
+
+        @media (max-width: 991px) {
+            .navbar-brand {
+                display: none;
+            }
+        }
+
+        .main-responsive-menu>div,
+        .main-responsive-menu a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Icono del carrito en el navbar */
+        .cart-icon-navbar {
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .cart-icon-navbar i {
+            font-size: 20px;
+        }
+
+        .cart-count-navbar {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background-color: #800000;
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: bold;
+            min-width: 18px;
+        }
+
+        .cart-count-navbar:empty {
+            display: none;
+        }
+
+        /* FIX: selector categorías encima del botón hamburguesa */
+        @media (max-width: 991px) {
+
+            .middle-header-search {
+                position: relative;
+                z-index: 99999;
+            }
+
+            #select-categoria-header {
+                position: relative;
+                z-index: 999999;
+            }
+
+            .mean-container .mean-bar {
+                z-index: 5 !important;
+            }
+
+        }
+    </style>
+
+    <!-- Start Navbar Area -->
+    <div class="navbar-area">
+        <div class="main-responsive-nav">
+            <div class="container">
+                <div class="main-responsive-menu">
+                    <div>
+                        <a href="index.php">
+                            <img src="assets/img/LogoTi-Cell.jpeg" alt="logo" class="logo-grande"
+                                onerror="this.src='assets/img/LogoTi-Cell.jpeg'; this.onerror=null;">
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="main-navbar">
+            <div class="container">
+                <nav class="navbar navbar-expand-md navbar-light">
+                    <a class="navbar-brand" href="index.php">
+                        <img src="assets/img/LogoTi-Cell.jpeg" alt="logo" class="logo-navbar"
+                            onerror="this.src='assets/img/LogoTi-Cell.jpeg'; this.onerror=null;">
+                    </a>
+
+                    <div class="collapse navbar-collapse mean-menu">
+                        <ul class="navbar-nav">
+                            <li class="nav-item">
+                                <a href="index.php" class="nav-link">
+                                    Inicio
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="tienda.php" class="nav-link">
+                                    Productos
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="servicios.php" class="nav-link">
+                                    Servicios
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="ofertas.php" class="nav-link">
+                                    Ofertas
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="menosde100.php" class="nav-link">
+                                    Menos de 100
+                                </a>
+                            </li>
+
+
+                            <li class="nav-item">
+                                <a href="cart.php" class="nav-link cart-icon-navbar">
+                                    <i class="flaticon-shopping-cart"></i>
+                                    Carrito
+                                    <span class="cart-count-navbar"></span>
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a href="contact.php" class="nav-link">Contactanos</a>
+                            </li>
+                        </ul>
+                    </div>
+                </nav>
+            </div>
+        </div>
+
+
+    </div>
+    <!-- End Navbar Area -->

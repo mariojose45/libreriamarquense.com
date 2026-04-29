@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+
+    <!-- Página Principal -->
+    <url>
+        <loc>https://ti-cell.com/</loc>
+        <lastmod>2025-01-26</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>1.0</priority>
+    </url>
+
+    <!-- Tienda - Productos Naturales -->
+    <url>
+        <loc>https://ti-cell.com/tienda.php</loc>
+        <lastmod>2025-01-26</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>0.9</priority>
+    </url>
+
+    <!-- Nosotros -->
+    <url>
+        <loc>https://ti-cell.com/nosotros.php</loc>
+        <lastmod>2025-01-26</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+
+    <!-- Servicios -->
+    <url>
+        <loc>https://ti-cell.com/servicios.php</loc>
+        <lastmod>2025-01-26</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+    </url>
+
+    <!-- Contacto -->
+    <url>
+        <loc>https://ti-cell.com/contact.php</loc>
+        <lastmod>2025-01-26</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+    </url>
+
+    <!-- Preguntas Frecuentes -->
+    <url>
+        <loc>https://ti-cell.com/preguntas_frecuentes.php</loc>
+        <lastmod>2025-01-26</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.6</priority>
+    </url>
+
+    <!-- Términos y Condiciones -->
+    <url>
+        <loc>https://ti-cell.com/terminos.php</loc>
+        <lastmod>2025-01-26</lastmod>
+        <changefreq>yearly</changefreq>
+        <priority>0.4</priority>
+    </url>
+
+    <!-- Políticas de Garantía -->
+    <url>
+        <loc>https://ti-cell.com/politicas_de_garantia.php</loc>
+        <lastmod>2025-01-26</lastmod>
+        <changefreq>yearly</changefreq>
+        <priority>0.4</priority>
+    </url>
+
+    <!-- Métodos de Pago -->
+    <url>
+        <loc>https://ti-cell.com/metodos_de_pago.php</loc>
+        <lastmod>2025-01-26</lastmod>
+        <changefreq>yearly</changefreq>
+        <priority>0.4</priority>
+    </url>
+
+</urlset>

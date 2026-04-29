@@ -1,0 +1,19 @@
+# robots.txt para Medinature Productos
+# Empresa especializada en tratamientos naturales para la salud
+
+User-agent: *
+Allow: /
+
+# No indexar archivos de configuración y carpetas privadas
+Disallow: /assets/php/
+Disallow: /tema de tienda/
+
+# Permitir recursos estáticos necesarios para el sitio
+Allow: /assets/css/
+Allow: /assets/js/
+Allow: /assets/img/
+Allow: /files/
+
+# Sitemap XML para ayudar a los buscadores a indexar el sitio
+Sitemap: https://ti-cell.com/sitemap.xml
+
