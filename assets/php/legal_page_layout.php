@@ -6,7 +6,7 @@ if (!function_exists('ticell_render_legal_styles')) {
         ?>
         <style>
             .ti-cell-legal-area {
-                background: #e9e9e9;
+                background: #F7F8FC;
                 padding: 50px 0;
             }
 

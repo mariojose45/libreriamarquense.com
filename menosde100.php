@@ -33,16 +33,16 @@ $current_page = basename($_SERVER['PHP_SELF']);
 
     /* Para el botón */
     .main-slider-content .default-btn {
-        background-color: #004090;
-        /* tu azul corporativo */
-        border-color: #004090;
+        background-color: #1A2697;
+        /* azul institucional */
+        border-color: #1A2697;
         color: #fff !important;
     }
 
     .main-slider-content .default-btn:hover {
-        background-color: #092447;
+        background-color: #101A5C;
         /* azul más oscuro */
-        border-color: #092447;
+        border-color: #101A5C;
     }
 
     /* FORZAR VISIBILIDAD DE TODOS LOS ELEMENTOS DEL SLIDER */
@@ -66,7 +66,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
    BANNER SUAVE / SECUNDARIO
 ========================= */
     .exclusive-offers-banner.banner-soft {
-        background: #f6f7fb;
+        background: #F7F8FC;
         margin-top: 40px;
         margin-bottom: 0;
         padding: 30px 0;
@@ -78,19 +78,19 @@ $current_page = basename($_SERVER['PHP_SELF']);
     }
 
     .banner-soft .banner-text {
-        color: #4A6CF7;
+        color: #1A2697;
         font-size: 24px;
         font-weight: 700;
         text-shadow: none;
     }
 
     .banner-soft .banner-btn {
-        background: #4A6CF7;
+        background: #1A2697;
         color: #fff;
     }
 
     .banner-soft .banner-btn:hover {
-        background: #3b5bdb;
+        background: #142276;
     }
 </style>
 
@@ -160,7 +160,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
     /* Banner Ofertas Exclusivas */
     .exclusive-offers-banner {
         position: relative;
-        background: linear-gradient(90deg, #5e35b1 0%, #3949ab 100%);
+        background: linear-gradient(90deg, #1A2697 0%, #B73639 58%, #466934 100%);
         padding: 25px 0;
         margin-top: 50px;
         margin-bottom: -50px;
@@ -206,7 +206,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
     }
 
     .banner-btn {
-        background: #00A060;
+        background: #466934;
         color: #fff;
         font-weight: 700;
         padding: 12px 35px;
@@ -220,7 +220,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
     .banner-btn:hover {
         transform: translateY(-3px) scale(1.05);
         box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
-        background: #008a53;
+        background: #355329;
         color: #fff;
     }
 
@@ -298,7 +298,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
         /* Mantener borde negro al hover */
     }
 
-    /* Estilo Tag - Rediseño tipo Ovalado Azul */
+    /* Estilo tag con acento Marquense */
     .single-arrivals-products .arrivals-products-image .tag {
         border-radius: 50px !important;
         padding: 5px 15px !important;
@@ -310,18 +310,18 @@ $current_page = basename($_SERVER['PHP_SELF']);
         font-weight: 700 !important;
         top: 10px !important;
         right: 10px !important;
-        background: #800000 !important;
-        /* Color similar a la imagen (azul suave) */
-        color: #fff !important;
-        box-shadow: 0 4px 12px rgba(128, 0, 0, 0.28);
+        background: #B73639 !important;
+        /* Etiqueta roja uniforme */
+        color: #ffffff !important;
+        box-shadow: 0 4px 12px rgba(183, 54, 57, 0.35);
         display: flex;
         align-items: center;
         justify-content: center;
     }
 
-    /* Hover card no cambia color a rojo, mantiene azul oscuro */
+    /* Mantener el mismo rojo en hover */
     .single-arrivals-products:hover .arrivals-products-image .tag {
-        background: #6d0000 !important;
+        background: #B73639 !important;
     }
 
     /* Ajuste imagen para que no se salga del borde redondeado */
@@ -390,13 +390,13 @@ $current_page = basename($_SERVER['PHP_SELF']);
 
 <style>
     .section-header-soft {
-        background: #f6f7fb;
+        background: #F7F8FC;
         padding: 50px 0;
         text-align: center;
     }
 
     .section-header-soft h2 {
-        color: #4A6CF7;
+        color: #1A2697;
         font-size: 28px;
         font-weight: 800;
         margin-bottom: 15px;
@@ -404,7 +404,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
     }
 
     .section-header-soft .btn-soft {
-        background: #4A6CF7;
+        background: #1A2697;
         color: #fff;
         padding: 10px 28px;
         border-radius: 30px;
@@ -413,7 +413,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
     }
 
     .section-header-soft .btn-soft:hover {
-        background: #3b5bdb;
+        background: #142276;
     }
 </style>
 
@@ -429,7 +429,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
         display: flex;
         justify-content: center;
         align-items: center;
-        background: #f6f7fb;
+        background: #F7F8FC;
         padding: 0;
     }
 
@@ -439,8 +439,8 @@ $current_page = basename($_SERVER['PHP_SELF']);
         top: 0;
         width: 100%;
         height: 100%;
-        background: linear-gradient(90deg, #5e35b1 0%, #3949ab 100%);
-        /* Fondo Gradiente Purple/Indigo */
+        background: linear-gradient(90deg, #1A2697 0%, #B73639 58%, #466934 100%);
+        /* Fondo gradiente Marquense */
         box-shadow: inset 0 0 50px rgba(0, 0, 0, 0.1);
         z-index: 0;
     }
@@ -511,7 +511,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
 
     .section-header-soft .btn-soft {
         background: #fff;
-        color: #4973ff;
+        color: #2C3FAE;
         padding: 12px 30px;
         /* Botón un poco más compacto */
         border-radius: 30px;
@@ -524,7 +524,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
     }
 
     .section-header-soft .btn-soft:hover {
-        background: #4973ff;
+        background: #2C3FAE;
         color: #fff;
         box-shadow: 0 5px 20px rgba(73, 115, 255, 0.4);
         transform: translateY(-3px);
@@ -625,9 +625,9 @@ $current_page = basename($_SERVER['PHP_SELF']);
     }
 
     .mp-close:hover {
-        background: #800000;
+        background: #B73639;
         color: #fff;
-        border-color: #800000;
+        border-color: #B73639;
         transform: scale(1.1);
     }
 
@@ -689,7 +689,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
 
     .mp-thumb-item:hover,
     .mp-thumb-item.active {
-        border-color: #003781;
+        border-color: #1A2697;
     }
 
     /* ===========================
@@ -732,7 +732,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
     }
 
     .mp-precio {
-        color: #003781;
+        color: #1A2697;
         font-size: 28px;
         font-weight: bold;
         margin: 5px 0 10px;
@@ -751,7 +751,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
     .mp-cantidad-box button {
         width: 35px;
         height: 35px;
-        background: #e9e9e9;
+        background: #F2F5FA;
         border: none;
         border-radius: 8px;
         font-size: 22px;
@@ -771,7 +771,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
 =========================== */
     .mp-btn-agregar {
         width: 100%;
-        background: #003781;
+        background: #1A2697;
         color: #fff;
         padding: 12px;
         border: none;
@@ -781,7 +781,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
     }
 
     .mp-btn-agregar:hover {
-        background: #002a5b;
+        background: #101A5C;
     }
 
     /* ===========================
@@ -821,11 +821,11 @@ $current_page = basename($_SERVER['PHP_SELF']);
     }
 
     .mp-whatsapp {
-        background: #25D366;
+        background: #466934;
     }
 
     .mp-whatsapp:hover {
-        background: #20BA5A;
+        background: #466934;
         transform: translateY(-2px);
         box-shadow: 0 4px 12px rgba(37, 211, 102, 0.4);
     }

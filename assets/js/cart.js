@@ -498,7 +498,7 @@ function cambiarTipoDocumento() {
         documentoHelp.style.color = '#666';
     } else {
         documentoHelp.textContent = 'Seleccione un tipo de documento valido';
-        documentoHelp.style.color = '#800000';
+        documentoHelp.style.color = '#B73639';
         aplicarEstadoValidacion(numeroDocumento, 'Seleccione un tipo de documento valido');
         return;
     }
@@ -526,21 +526,21 @@ function validarDocumento() {
     if (tipoDocumento === 'dpi') {
         if (numeroDocumentoLimpiado.length < 13) {
             documentoHelp.textContent = `El DPI debe tener 13 caracteres (${numeroDocumentoLimpiado.length}/13)`;
-            documentoHelp.style.color = '#800000';
+            documentoHelp.style.color = '#B73639';
             aplicarEstadoValidacion(numeroDocumentoInput, 'El DPI debe tener exactamente 13 caracteres');
         } else if (numeroDocumentoLimpiado.length === 13) {
             documentoHelp.textContent = 'DPI valido';
-            documentoHelp.style.color = '#28a745';
+            documentoHelp.style.color = '#466934';
             aplicarEstadoValidacion(numeroDocumentoInput, '');
         } else {
             documentoHelp.textContent = 'El DPI debe tener exactamente 13 caracteres';
-            documentoHelp.style.color = '#800000';
+            documentoHelp.style.color = '#B73639';
             aplicarEstadoValidacion(numeroDocumentoInput, 'El DPI debe tener exactamente 13 caracteres');
         }
     } else if (tipoDocumento === 'nit') {
         if (numeroDocumentoLimpiado.length >= 13) {
             documentoHelp.textContent = 'El NIT debe tener menos de 13 caracteres';
-            documentoHelp.style.color = '#800000';
+            documentoHelp.style.color = '#B73639';
             aplicarEstadoValidacion(numeroDocumentoInput, 'El NIT debe tener entre 1 y 12 digitos');
         } else if (numeroDocumentoLimpiado.length === 0) {
             documentoHelp.textContent = 'El NIT debe tener menos de 13 caracteres';
@@ -548,7 +548,7 @@ function validarDocumento() {
             aplicarEstadoValidacion(numeroDocumentoInput, 'Por favor ingrese el NIT para la factura');
         } else {
             documentoHelp.textContent = 'NIT valido';
-            documentoHelp.style.color = '#28a745';
+            documentoHelp.style.color = '#466934';
             aplicarEstadoValidacion(numeroDocumentoInput, '');
         }
     }

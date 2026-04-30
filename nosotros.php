@@ -144,7 +144,7 @@ if (!empty($nosotrosData) && is_array($nosotrosData)) {
 
 <style>
     .ticell-about-area {
-        background: #e9e9e9;
+        background: #F7F8FC;
         padding: 50px 0;
     }
 
@@ -155,7 +155,7 @@ if (!empty($nosotrosData) && is_array($nosotrosData)) {
 
     .ticell-about-panel {
         background: #ffffff;
-        border: 1px solid rgba(36, 71, 155, 0.12);
+        border: 1px solid rgba(26, 38, 151, 0.12);
         border-radius: 28px;
         box-shadow: 0 22px 55px rgba(19, 33, 76, 0.10);
         overflow: hidden;
@@ -163,7 +163,7 @@ if (!empty($nosotrosData) && is_array($nosotrosData)) {
     }
 
     .ticell-about-panel::before {
-        background: #24479b;
+        background: #1A2697;
         content: "";
         display: block;
         height: 8px;
@@ -190,7 +190,7 @@ if (!empty($nosotrosData) && is_array($nosotrosData)) {
     .ticell-about-story h3,
     .ticell-about-card h3,
     .ticell-about-diff h3 {
-        color: #16224a;
+        color: #17214F;
         font-size: 34px;
         font-weight: 800;
         line-height: 1.15;
@@ -199,7 +199,7 @@ if (!empty($nosotrosData) && is_array($nosotrosData)) {
 
     .ticell-about-story p,
     .ticell-about-card p {
-        color: #2f3b52;
+        color: #2D3448;
         font-size: 18px;
         line-height: 1.9;
         margin-bottom: 14px;
@@ -243,7 +243,7 @@ if (!empty($nosotrosData) && is_array($nosotrosData)) {
     }
 
     .ticell-about-list li {
-        color: #2f3b52;
+        color: #2D3448;
         font-size: 18px;
         line-height: 1.85;
         padding-left: 30px;
@@ -255,7 +255,7 @@ if (!empty($nosotrosData) && is_array($nosotrosData)) {
     }
 
     .ticell-about-list li i {
-        color: #4aa364;
+        color: #466934;
         font-size: 18px;
         left: 0;
         position: absolute;

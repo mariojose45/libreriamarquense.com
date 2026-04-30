@@ -126,7 +126,7 @@ $rutaImagenes = "https://ssl.sol.sistemasolgt.com/ticel/files/articulos/";
     /* Banner Ofertas Exclusivas */
     .exclusive-offers-banner {
         position: relative;
-        background: linear-gradient(90deg, #5e35b1 0%, #3949ab 100%);
+        background: linear-gradient(90deg, #1A2697 0%, #B73639 58%, #466934 100%);
         padding: 25px 0;
         margin-top: 50px;
         margin-bottom: -50px;
@@ -172,7 +172,7 @@ $rutaImagenes = "https://ssl.sol.sistemasolgt.com/ticel/files/articulos/";
     }
 
     .banner-btn {
-        background: #00A060;
+        background: #466934;
         color: #fff;
         font-weight: 700;
         padding: 12px 35px;
@@ -186,7 +186,7 @@ $rutaImagenes = "https://ssl.sol.sistemasolgt.com/ticel/files/articulos/";
     .banner-btn:hover {
         transform: translateY(-3px) scale(1.05);
         box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
-        background: #008a53;
+        background: #355329;
         color: #fff;
     }
 
@@ -301,7 +301,7 @@ $rutaImagenes = "https://ssl.sol.sistemasolgt.com/ticel/files/articulos/";
         /* Mantener borde negro al hover */
     }
 
-    /* Estilo Tag - Rediseño tipo Ovalado Azul */
+    /* Estilo tag con acento Marquense */
     .single-arrivals-products .arrivals-products-image .tag {
         border-radius: 50px !important;
         padding: 5px 15px !important;
@@ -313,18 +313,18 @@ $rutaImagenes = "https://ssl.sol.sistemasolgt.com/ticel/files/articulos/";
         font-weight: 700 !important;
         top: 10px !important;
         right: 10px !important;
-        background: #8c9eff !important;
-        /* Color similar a la imagen (azul suave) */
-        color: #fff !important;
-        box-shadow: 0 4px 12px rgba(140, 158, 255, 0.4);
+        background: #B73639 !important;
+        /* Etiqueta roja uniforme */
+        color: #ffffff !important;
+        box-shadow: 0 4px 12px rgba(183, 54, 57, 0.35);
         display: flex;
         align-items: center;
         justify-content: center;
     }
 
-    /* Hover card no cambia color a rojo, mantiene azul oscuro */
+    /* Mantener el mismo rojo en hover */
     .single-arrivals-products:hover .arrivals-products-image .tag {
-        background: #536dfe !important;
+        background: #B73639 !important;
     }
 
     /* Ajuste imagen para que no se salga del borde redondeado */
@@ -335,10 +335,21 @@ $rutaImagenes = "https://ssl.sol.sistemasolgt.com/ticel/files/articulos/";
 
 
     /* ===== SWIPER 3D FLIP CARD ===== */
+    .team-area {
+        overflow-x: hidden;
+    }
+
     .servicios-swiper {
+        width: 100%;
+        max-width: 1120px;
+        margin: 0 auto;
         padding-top: 20px;
         padding-bottom: 60px;
         overflow: visible;
+    }
+
+    .servicios-swiper .swiper-wrapper {
+        align-items: center;
     }
 
     .servicios-swiper .swiper-slide {
@@ -347,9 +358,22 @@ $rutaImagenes = "https://ssl.sol.sistemasolgt.com/ticel/files/articulos/";
         display: flex;
         justify-content: center;
         align-items: center;
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+        transition: opacity .28s ease, visibility .28s ease;
+    }
+
+    .servicios-swiper .swiper-slide-active,
+    .servicios-swiper .swiper-slide-prev,
+    .servicios-swiper .swiper-slide-next {
+        opacity: 1;
+        visibility: visible;
+        pointer-events: auto;
     }
 
     .flip-card-custom {
+        --service-card-image: none;
         width: 100%;
         max-width: 320px;
         height: 500px;
@@ -381,7 +405,7 @@ $rutaImagenes = "https://ssl.sol.sistemasolgt.com/ticel/files/articulos/";
         backface-visibility: hidden;
         -webkit-backface-visibility: hidden;
         box-shadow: 0 20px 50px rgba(0, 0, 0, .18);
-        background: #1f1f1f;
+        background: #17214F;
     }
 
     .flip-card-front-custom img {
@@ -417,7 +441,7 @@ $rutaImagenes = "https://ssl.sol.sistemasolgt.com/ticel/files/articulos/";
     }
 
     .flip-card-back-custom {
-        background: linear-gradient(180deg, #23252f 0%, #171923 100%);
+        background: #17214F;
         color: #fff;
         transform: rotateY(180deg);
         display: flex;
@@ -425,6 +449,34 @@ $rutaImagenes = "https://ssl.sol.sistemasolgt.com/ticel/files/articulos/";
         justify-content: center;
         padding: 28px 24px;
         text-align: left;
+        isolation: isolate;
+    }
+
+    .flip-card-back-custom::before {
+        content: "";
+        position: absolute;
+        inset: -18px;
+        background-image: var(--service-card-image);
+        background-size: cover;
+        background-position: center;
+        filter: blur(13px);
+        opacity: .58;
+        transform: scale(1.08);
+        z-index: -2;
+    }
+
+    .flip-card-back-custom::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(180deg, rgba(26, 38, 151, .78) 0%, rgba(15, 23, 64, .9) 100%);
+        z-index: -1;
+    }
+
+    .flip-card-back-content-custom {
+        position: relative;
+        z-index: 1;
+        width: 100%;
     }
 
     .flip-card-back-content-custom h3 {
@@ -523,8 +575,8 @@ $rutaImagenes = "https://ssl.sol.sistemasolgt.com/ticel/files/articulos/";
         min-height: 440px;
         display: flex;
         flex-direction: column;
-        background: linear-gradient(180deg, #fdfdff 0%, #ffffff 100%);
-        border: 2px solid #3551aa;
+        background: linear-gradient(180deg, #F7F8FC 0%, #ffffff 100%);
+        border: 2px solid #1A2697;
         border-radius: 34px;
         box-shadow: 0 18px 46px rgba(11, 34, 86, 0.15);
         overflow: hidden;
@@ -533,7 +585,7 @@ $rutaImagenes = "https://ssl.sol.sistemasolgt.com/ticel/files/articulos/";
     .testimonial-carousel-card__media {
         position: relative;
         aspect-ratio: 1 / 0.82;
-        background: #eef2ff;
+        background: #EEF2FF;
         overflow: hidden;
     }
 
@@ -563,7 +615,7 @@ $rutaImagenes = "https://ssl.sol.sistemasolgt.com/ticel/files/articulos/";
     }
 
     .testimonial-carousel-card__tag {
-        color: #536dfe;
+        color: #2C3FAE;
         font-size: 12px;
         font-weight: 800;
         letter-spacing: .14em;
@@ -571,7 +623,7 @@ $rutaImagenes = "https://ssl.sol.sistemasolgt.com/ticel/files/articulos/";
     }
 
     .testimonial-carousel-card__content h3 {
-        color: #2f4797;
+        color: #1A2697;
         font-size: 20px;
         font-weight: 800;
         line-height: 1.15;
@@ -579,7 +631,7 @@ $rutaImagenes = "https://ssl.sol.sistemasolgt.com/ticel/files/articulos/";
     }
 
     .testimonial-carousel-card__content p {
-        color: #4b5776;
+        color: #5F6675;
         font-size: 16px;
         line-height: 1.65;
         margin-bottom: 0;
@@ -587,7 +639,7 @@ $rutaImagenes = "https://ssl.sol.sistemasolgt.com/ticel/files/articulos/";
 
     .testimonial-carousel-card__date {
         margin-top: auto;
-        color: #51a86a;
+        color: #466934;
         font-size: 15px;
         font-weight: 700;
         line-height: 1.4;
@@ -595,6 +647,7 @@ $rutaImagenes = "https://ssl.sol.sistemasolgt.com/ticel/files/articulos/";
 
     @media (max-width: 767px) {
         .servicios-swiper {
+            max-width: 100%;
             padding-top: 10px;
             padding-bottom: 45px;
         }
@@ -720,6 +773,27 @@ $rutaImagenes = "https://ssl.sol.sistemasolgt.com/ticel/files/articulos/";
 </section>
 
 
+<?php
+$serviciosCarrusel = $servicios;
+
+if (!empty($serviciosCarrusel)) {
+    $serviciosBase = array_values($serviciosCarrusel);
+
+    while (count($serviciosCarrusel) < 3) {
+        foreach ($serviciosBase as $servicioBase) {
+            $serviciosCarrusel[] = $servicioBase;
+
+            if (count($serviciosCarrusel) >= 3) {
+                break;
+            }
+        }
+    }
+}
+
+$serviciosCarruselTotal = count($serviciosCarrusel);
+$serviciosInitialSlide = $serviciosCarruselTotal > 0 ? (int) floor($serviciosCarruselTotal / 2) : 0;
+?>
+
 <section class="team-area pt-50 pb-20">
     <div class="container">
         <div class="section-title">
@@ -728,15 +802,15 @@ $rutaImagenes = "https://ssl.sol.sistemasolgt.com/ticel/files/articulos/";
 
         <div class="swiper servicios-swiper">
             <div class="swiper-wrapper">
-                <?php if (!empty($servicios)): ?>
-                        <?php foreach ($servicios as $servicio): ?>
+                <?php if (!empty($serviciosCarrusel)): ?>
+                        <?php foreach ($serviciosCarrusel as $servicio): ?>
                                 <?php
                                 $imagenUrl = !empty($servicio['imagen_servicio']) ? $rutaImagenes . $servicio['imagen_servicio'] : 'assets/img/team/team-1.jpg';
                                 $nombre = isset($servicio['nombre']) ? $servicio['nombre'] : 'Sin nombre';
                                 $descripcion = isset($servicio['descripcion_servicio']) ? $servicio['descripcion_servicio'] : '';
                                 ?>
                                 <div class="swiper-slide">
-                                    <div class="flip-card-custom">
+                                    <div class="flip-card-custom" style="--service-card-image: url(&quot;<?= htmlspecialchars($imagenUrl, ENT_QUOTES, 'UTF-8') ?>&quot;);">
                                         <div class="flip-card-inner-custom">
                                             <div class="flip-card-front-custom">
                                                 <img src="<?= htmlspecialchars($imagenUrl) ?>" alt="<?= htmlspecialchars($nombre) ?>">
@@ -844,12 +918,22 @@ if (count($testimoniosCarrusel) === 2) {
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        new Swiper('.servicios-swiper', {
+        const serviciosTotal = <?php echo (int) $serviciosCarruselTotal; ?>;
+        const serviciosCenterSlide = <?php echo (int) $serviciosInitialSlide; ?>;
+        const serviciosLoop = serviciosTotal > 3;
+
+        const serviciosSwiper = new Swiper('.servicios-swiper', {
             effect: 'coverflow',
             grabCursor: true,
             centeredSlides: true,
             slidesPerView: 'auto',
-            loop: <?php echo !empty($servicios) && count($servicios) > 3 ? 'true' : 'false'; ?>,
+            loop: serviciosLoop,
+            rewind: !serviciosLoop && serviciosTotal > 1,
+            initialSlide: serviciosCenterSlide,
+            loopAdditionalSlides: serviciosLoop ? serviciosTotal : 0,
+            slideToClickedSlide: true,
+            watchSlidesProgress: true,
+            watchOverflow: false,
             spaceBetween: 10,
             coverflowEffect: {
                 rotate: 0,
@@ -872,6 +956,21 @@ if (count($testimoniosCarrusel) === 2) {
                 }
             }
         });
+
+        const centerServiciosSwiper = () => {
+            serviciosSwiper.update();
+
+            if (serviciosLoop && typeof serviciosSwiper.slideToLoop === 'function') {
+                serviciosSwiper.slideToLoop(serviciosCenterSlide, 0, false);
+                return;
+            }
+
+            serviciosSwiper.slideTo(serviciosCenterSlide, 0, false);
+        };
+
+        requestAnimationFrame(centerServiciosSwiper);
+        window.addEventListener('load', centerServiciosSwiper, { once: true });
+        setTimeout(centerServiciosSwiper, 120);
 
     });
 </script>

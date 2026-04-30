@@ -20,16 +20,16 @@ $current_page = basename($_SERVER['PHP_SELF']);
 <?php
 ticell_open_legal_section(
     'M&eacute;todos de Pago',
-    'M&Eacute;TODOS DE PAGO - TI-CELL',
+    'M&Eacute;TODOS DE PAGO - LIBRER&Iacute;A MARQUENSE',
     '',
-    'En TI-CELL ofrecemos m&eacute;todos de pago seguros, claros y confiables para facilitar tu compra de celulares, accesorios, repuestos y servicios de reparaci&oacute;n. Todos los pagos se realizan bajo confirmaci&oacute;n del pedido o servicio.',
+    'En Librer&iacute;a Marquense ofrecemos m&eacute;todos de pago seguros, claros y confiables para facilitar la compra de &uacute;tiles escolares, papeler&iacute;a, libros, material did&aacute;ctico y art&iacute;culos de oficina. Todos los pagos se realizan bajo confirmaci&oacute;n del pedido.',
     'bx-wallet'
 );
 
 ticell_render_legal_block('1. Proceso de Compra', [], [
     'No se realiza ning&uacute;n cobro autom&aacute;tico sin confirmaci&oacute;n.',
     'El pedido queda en proceso de validaci&oacute;n.',
-    'Nuestro equipo puede comunicarse para confirmar detalles del producto o servicio.'
+    'Nuestro equipo puede comunicarse para confirmar disponibilidad, cantidades, presentaciones y detalles del pedido.'
 ]);
 
 ticell_render_legal_block('2. Pago Contra Entrega', [
@@ -44,7 +44,7 @@ ticell_render_legal_block('3. Transferencia Bancaria', [
     'Disponible previa coordinaci&oacute;n.'
 ], [
     'Los datos bancarios ser&aacute;n proporcionados &uacute;nicamente por nuestros canales oficiales.',
-    'El pedido o servicio ser&aacute; procesado una vez confirmado el pago.'
+    'El pedido ser&aacute; procesado una vez confirmado el pago.'
 ]);
 
 ticell_render_legal_block('4. Pago con Tarjeta', [
@@ -55,14 +55,14 @@ ticell_render_legal_block('4. Pago con Tarjeta', [
 ]);
 
 ticell_render_legal_block('5. Condiciones Generales', [], [
-    'TI-CELL no solicita pagos sin confirmaci&oacute;n previa.',
+    'Librer&iacute;a Marquense no solicita pagos sin confirmaci&oacute;n previa.',
     'Los precios publicados pueden estar sujetos a cambios sin previo aviso.',
     'Nos reservamos el derecho de cancelar pedidos con informaci&oacute;n incompleta o incorrecta.',
-    'Los pagos realizados no son reembolsables, salvo error comprobado por parte de TI-CELL o acuerdo comercial aplicable.'
+    'Los pagos realizados no son reembolsables, salvo error comprobado por parte de Librer&iacute;a Marquense o acuerdo comercial aplicable.'
 ]);
 
 ticell_render_legal_block('6. Aceptaci&oacute;n', [
-    'Al realizar una compra o contratar un servicio en TI-CELL, el cliente declara haber le&iacute;do, comprendido y aceptado estos M&eacute;todos de Pago.'
+    'Al realizar una compra en Librer&iacute;a Marquense, el cliente declara haber le&iacute;do, comprendido y aceptado estos M&eacute;todos de Pago.'
 ]);
 
 ticell_close_legal_section();

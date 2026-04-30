@@ -10,17 +10,19 @@ $footer_social_links = array_filter($site_social_links ?? []);
 
                     <ul class="footer-contact-info">
                         <li>
-                            <span>Ubicaciones:</span>
-                            <a href="contact.php">Sucursales en San Miguel Ixtahuac&aacute;n, Zamara, Sipacapa y Huit&aacute;n.</a>
+                            <span>Ubicaci&oacute;n:</span>
+                            <a href="contact.php">8A Avenida 19-55, Cdad. de Guatemala 01001.</a>
                         </li>
                         <li>
                             <span>Telefonos:</span>
-                            <a href="tel:+50223790625">Llamadas: <?php echo htmlspecialchars($site_phone_number); ?> | WhatsApp: <?php echo htmlspecialchars($site_whatsapp_number); ?></a>
+                            <a href="tel:+50255910533">Llamadas: <?php echo htmlspecialchars($site_phone_number); ?> | WhatsApp: <?php echo htmlspecialchars($site_whatsapp_number); ?></a>
                         </li>
-                        <li>
-                            <span>Email:</span>
-                            <a href="mailto:<?php echo htmlspecialchars($site_email); ?>"><?php echo htmlspecialchars($site_email); ?></a>
-                        </li>
+                        <?php if (!empty($site_email)): ?>
+                            <li>
+                                <span>Email:</span>
+                                <a href="mailto:<?php echo htmlspecialchars($site_email); ?>"><?php echo htmlspecialchars($site_email); ?></a>
+                            </li>
+                        <?php endif; ?>
                     </ul>
                     <?php if (!empty($footer_social_links)): ?>
                         <ul class="footer-social">
@@ -81,7 +83,7 @@ $footer_social_links = array_filter($site_social_links ?? []);
 
                     <div class="newsletter-item">
                         <div class="newsletter-content">
-                            <p>Necesitas ayuda con un celular, accesorio o reparacion? Escribenos por WhatsApp.</p>
+                            <p>Necesitas ayuda con utiles escolares, papeleria o una lista escolar? Escribenos por WhatsApp.</p>
                         </div>
 
                         <a href="<?php echo htmlspecialchars($site_whatsapp_url); ?>" target="_blank" rel="noopener" class="default-btn"
@@ -102,8 +104,8 @@ $footer_social_links = array_filter($site_social_links ?? []);
     <div class="container">
         <div class="copyright-area-content">
             <p>
-                Copyright <?php echo date('Y'); ?> TI-CELL. Todos los derechos reservados.
-                <a href="derechos.php" target="_blank">ti-cell.com</a>
+                Copyright &copy; <?php echo date('Y'); ?> COMPUSISGT. Todos los derechos reservados.
+                <a href="derechos.php">libreriamarquense.com</a>
             </p>
         </div>
     </div>
@@ -130,7 +132,7 @@ $footer_social_links = array_filter($site_social_links ?? []);
         height: 60px;
         bottom: 120px;
         right: 20px;
-        background-color: #25d366;
+        background-color: #466934;
         color: #FFF;
         border-radius: 50px;
         text-align: center;
@@ -150,7 +152,7 @@ $footer_social_links = array_filter($site_social_links ?? []);
     }
 
     .whatsapp-float:hover {
-        background-color: #128c7e;
+        background-color: #355329;
         transform: scale(1.1);
         box-shadow: 3px 3px 5px #666;
         color: #FFF;

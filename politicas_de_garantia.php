@@ -20,9 +20,9 @@ $current_page = basename($_SERVER['PHP_SELF']);
 <?php
 ticell_open_legal_section(
     'Pol&iacute;ticas de Garant&iacute;a',
-    'POL&Iacute;TICAS DE GARANT&Iacute;A - TI-CELL',
+    'POL&Iacute;TICAS DE GARANT&Iacute;A - LIBRER&Iacute;A MARQUENSE',
     '',
-    'En TI-CELL nuestro compromiso es ofrecer celulares, accesorios, repuestos y servicios de reparaci&oacute;n con una experiencia de compra clara, segura y confiable. Por ello, establecemos las siguientes Pol&iacute;ticas de Garant&iacute;a aplicables a los productos y servicios comercializados en nuestro sitio web y sucursales.',
+    'En Librer&iacute;a Marquense nuestro compromiso es ofrecer &uacute;tiles escolares, papeler&iacute;a, libros, material did&aacute;ctico y art&iacute;culos de oficina en buen estado, con una experiencia de compra clara, segura y confiable. Por ello, establecemos las siguientes Pol&iacute;ticas de Garant&iacute;a aplicables a los productos comercializados en nuestro sitio web y tienda.',
     'bx-shield-quarter'
 );
 
@@ -30,51 +30,52 @@ ticell_render_legal_block('1. Alcance de la Garant&iacute;a', [], [
     'La entrega del producto en buen estado.',
     'Que el producto corresponda a lo solicitado.',
     'Productos con defectos de f&aacute;brica.',
-    'Reparaciones realizadas por TI-CELL, limitadas al servicio efectuado y a los repuestos instalados cuando corresponda.'
+    'Paquetes, listas escolares o pedidos preparados conforme a la informaci&oacute;n confirmada por el cliente.'
 ]);
 
-ticell_render_legal_block('2. Alcance para Reparaciones', [
-    'Las reparaciones est&aacute;n sujetas a diagn&oacute;stico t&eacute;cnico previo. La garant&iacute;a cubre la falla atendida y no incluye da&ntilde;os diferentes o fallas no relacionadas con la intervenci&oacute;n realizada. Se recomienda realizar respaldo de informaci&oacute;n antes de entregar el equipo.'
+ticell_render_legal_block('2. Productos Cubiertos', [
+    'La garant&iacute;a aplica cuando el producto presenta defecto de f&aacute;brica, da&ntilde;o visible al momento de la entrega o error comprobado en el pedido. Para listas escolares o paquetes, la revisi&oacute;n se realiza contra la informaci&oacute;n confirmada por el cliente.'
 ]);
 
 ticell_render_legal_block('3. Casos Cubiertos por Garant&iacute;a', [], [
     'Producto da&ntilde;ado durante el env&iacute;o.',
     'Error en el producto entregado.',
     'Producto con defecto de f&aacute;brica.',
-    'Falla relacionada directamente con la reparaci&oacute;n realizada por TI-CELL.'
+    'Faltante comprobado en un paquete o lista escolar previamente confirmada.'
 ]);
 
 ticell_render_legal_block('4. Casos NO Cubiertos por Garant&iacute;a', [], [
-    'Golpes, humedad, sulfataci&oacute;n o da&ntilde;os por mal uso.',
-    'Da&ntilde;os ocasionados por cargadores, energ&iacute;a inestable o accesorios incompatibles.',
-    'Equipos abiertos, alterados o manipulados por terceros.',
+    'Productos usados, manchados, rotos, rayados o da&ntilde;ados por mal uso.',
+    'Da&ntilde;os por humedad, calor, almacenamiento inadecuado o manipulaci&oacute;n posterior a la entrega.',
+    'Empaques abiertos o alterados cuando el producto requiere empaque sellado para cambio.',
     'Desgaste normal, da&ntilde;o est&eacute;tico o preferencia personal.',
-    'Fallas de software, bloqueos por cuentas o informaci&oacute;n perdida no relacionadas con el servicio realizado.'
+    'Productos personalizados, de pedido especial o cortados a medida, salvo defecto comprobado.'
 ]);
 
 ticell_render_legal_block('5. Revisi&oacute;n, Cambios y Reposici&oacute;n', [
-    'Los cambios o revisiones &uacute;nicamente se realizar&aacute;n cuando el producto presente da&ntilde;os visibles al momento de la entrega, exista un error en el pedido o se detecte una falla relacionada con la garant&iacute;a aplicable.',
-    'No se aceptan devoluciones por cambio de opini&oacute;n. No se realizan devoluciones de dinero una vez entregado el producto o finalizado el servicio, salvo acuerdo expreso o error comprobado por parte de TI-CELL.'
+    'Los cambios o revisiones se realizar&aacute;n cuando el producto presente da&ntilde;os visibles al momento de la entrega, exista un error en el pedido o se detecte una falla cubierta por la garant&iacute;a aplicable.',
+    'Todo cambio est&aacute; sujeto a revisi&oacute;n, disponibilidad de inventario y presentaci&oacute;n del comprobante de compra. No se aceptan devoluciones por cambio de opini&oacute;n, salvo acuerdo expreso o error comprobado por parte de Librer&iacute;a Marquense.'
 ]);
 
 ticell_render_legal_block('6. Responsabilidad del Cliente', [], [
-    'Revisar el producto o equipo al momento de recibirlo.',
-    'Verificar marca, modelo y compatibilidad antes de comprar accesorios o repuestos.',
-    'Informar con claridad la falla reportada y conservar su comprobante de compra o servicio.'
+    'Revisar el producto al momento de recibirlo o retirarlo.',
+    'Verificar cantidades, marcas, colores, medidas, grado escolar y especificaciones antes de confirmar la compra.',
+    'Conservar el comprobante de compra y reportar cualquier inconveniente con claridad y evidencia cuando corresponda.'
 ]);
 
 ticell_render_legal_block('7. Limitaci&oacute;n de Responsabilidad', [], [
-    'Uso indebido del producto o del equipo reparado.',
+    'Uso indebido del producto.',
     'Da&ntilde;os ocasionados despu&eacute;s de la entrega.',
-    'Fallas provocadas por terceros o por incumplimiento de recomendaciones t&eacute;cnicas.'
+    'P&eacute;rdidas, deterioro o faltantes reportados despu&eacute;s de haber recibido el pedido conforme.',
+    'Incumplimiento de recomendaciones de uso, almacenamiento o cuidado del producto.'
 ]);
 
 ticell_render_legal_block('8. Modificaciones', [
-    'TI-CELL se reserva el derecho de modificar estas Pol&iacute;ticas de Garant&iacute;a en cualquier momento. Las modificaciones entrar&aacute;n en vigor a partir de su publicaci&oacute;n en el sitio web.'
+    'Librer&iacute;a Marquense se reserva el derecho de modificar estas Pol&iacute;ticas de Garant&iacute;a en cualquier momento. Las modificaciones entrar&aacute;n en vigor a partir de su publicaci&oacute;n en el sitio web.'
 ]);
 
 ticell_render_legal_block('9. Aceptaci&oacute;n', [
-    'Al realizar una compra o contratar un servicio en TI-CELL, el cliente declara haber le&iacute;do, comprendido y aceptado estas Pol&iacute;ticas de Garant&iacute;a en su totalidad.'
+    'Al realizar una compra en Librer&iacute;a Marquense, el cliente declara haber le&iacute;do, comprendido y aceptado estas Pol&iacute;ticas de Garant&iacute;a en su totalidad.'
 ]);
 
 ticell_close_legal_section();

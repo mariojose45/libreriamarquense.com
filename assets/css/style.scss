@@ -67,10 +67,10 @@ Default CSS
 
 $main-font-family: 'Lato', sans-serif;
 $optional-font-family: 'Poppins', sans-serif;
-$body-color: #f9f9f9;
-$main-color: #004090;
-$optional-color: #800000;
-$accent-color: #00A060;
+$body-color: #F7F8FC;
+$main-color: #1A2697;
+$optional-color: #B73639;
+$accent-color: #466934;
 $white-color: #ffffff;
 $black-color: #292929;
 $paragraph-color: #656565;
@@ -617,7 +617,7 @@ Top Header Area CSS
 Middle Header Area CSS
 =================================================*/
 .middle-header-area {
-    background-color: #004090;
+    background-color: #1A2697;
     padding-top: 20px;
     padding-bottom: 20px;
 
@@ -868,13 +868,13 @@ Navbar Area CSS
                     }
                     &:hover, &:focus, &.active {
                         color: $white-color;
-                        background-color: $main-color;
+                        background-color: $accent-color;
                     }
                 }
                 &:hover, &.active {
                     a {
                         color: $white-color;
-                        background-color: $main-color;
+                        background-color: $accent-color;
                     }
                 }
                 .dropdown-menu {
@@ -1509,7 +1509,7 @@ Navbar Area CSS
 Main Slider Area CSS
 =================================================*/
 .main-slider-item {
-    background: linear-gradient(to bottom, #99b9da, #aac4e0, #bbcfe6, #ccdbec, #dce6f2);
+    background: linear-gradient(to bottom, #EEF2FF, #E6E9FA, #F8EAEB, #E8F0E5, #DDEBD8);
     height: 730px;
 }
 .main-slider-item-box {
@@ -1774,7 +1774,7 @@ Main Slider Area CSS
 Overview Area CSS
 =================================================*/
 .single-overview {
-    background-color: #f0e9ea;
+    background-color: #F8EAEB;
     padding: 35px 25px;
     position: relative;
     transition: $transition;
@@ -1785,7 +1785,7 @@ Overview Area CSS
         content: "";
         height: 100%;
         width: 35%;
-        background-color: #ddd0d3;
+        background-color: #E8CBCD;
         top: 0;
         left: 0;
         border-radius: 0 50% 50% 0;
@@ -1820,7 +1820,7 @@ Overview Area CSS
     }
 }
 .single-overview-item {
-    background-color: #dce3fa;
+    background-color: #E6E9FA;
     padding: 10px 25px;
     transition: $transition;
     margin-bottom: 30px;
@@ -2056,7 +2056,7 @@ Arrivals Products Area CSS
                 list-style-type: none;
 
                 i {
-                    color: #ffb607;
+                    color: #D0C32B;
                 }
             }
         }
@@ -2172,7 +2172,7 @@ Offer Products Area CSS
                 list-style-type: none;
                 i {
                     font-size: $font-size;
-                    color: #ffb607;
+                    color: #D0C32B;
                 }
             }
         }
@@ -2304,7 +2304,7 @@ Offer Products Area CSS
                 list-style-type: none;
                 i {
                     font-size: $font-size;
-                    color: #ffb607;
+                    color: #D0C32B;
                 }
             }
         }
@@ -2323,7 +2323,7 @@ Offer Products Area CSS
     }
 }
 .offer-overview {
-    background-color: #f0e9ea;
+    background-color: #F8EAEB;
     padding: 25px 25px;
     position: relative;
     transition: $transition;
@@ -2333,7 +2333,7 @@ Offer Products Area CSS
         content: "";
         height: 100%;
         width: 35%;
-        background-color: #ddd0d3;
+        background-color: #E8CBCD;
         top: 0;
         left: 0;
         border-radius: 0 50% 50% 0;
@@ -2357,10 +2357,10 @@ Offer Products Area CSS
         }
     }
     &.bg-b9e0df {
-        background-color: #b9e0df;
+        background-color: #E8F0E5;
 
         &::before {
-            background-color: #9fc8cd;
+            background-color: #D7E5D2;
         }
     }
     .offer-image {
@@ -2372,7 +2372,7 @@ Offer Products Area CSS
         margin-top: 20px;
 
         div {
-            background-color: #e9e9e9;
+            background-color: #F2F5FA;
             color: $black-color;
             width: 79px;
             height: 70px;
@@ -2402,7 +2402,7 @@ Offer Products Area CSS
 Collection Area CSS
 =================================================*/
 .collection-inner-box {
-    background-color: #e3efed;
+    background-color: #E8F0E5;
     overflow: hidden;
     padding: 20px 50px;
     position: relative;
@@ -2414,7 +2414,7 @@ Collection Area CSS
         right: 0;
         top: -140px;
         margin: auto;
-        background-color: #d3e5e2;
+        background-color: #DDEBD8;
         height: 1050px;
         width: 30%;
         transform: rotate(20deg);
@@ -2446,7 +2446,7 @@ Collection Area CSS
         text-align: center;
     }
     &.bg-b8bae1 {
-        background-color: #b8bae1;
+        background-color: #D5DAF0;
 
         .collection-content {
             span {
@@ -2454,7 +2454,7 @@ Collection Area CSS
             }
         }
         &::before {
-            background-color: #a7a9db;
+            background-color: #C5CBE8;
         }
     }
 }
@@ -2585,7 +2585,7 @@ Bestsellers Area CSS
                 list-style-type: none;
 
                 i {
-                    color: #ffb607;
+                    color: #D0C32B;
                 }
             }
         }
@@ -2767,7 +2767,7 @@ Special Products Area CSS
                 list-style-type: none;
 
                 i {
-                    color: #ffb607;
+                    color: #D0C32B;
                 }
             }
         }
@@ -3027,7 +3027,7 @@ Testimonial Area CSS
             display: inline-block;
 
             i {
-                color: #ffb607;
+                color: #D0C32B;
             }
         }
     }
@@ -3055,7 +3055,7 @@ Testimonial Area CSS
         }
     }
     &.bg-f3e4e2 {
-        background-color: #f3e4e2;
+        background-color: #F8EAEB;
     }
 }
 
@@ -3232,7 +3232,7 @@ Page Title CSS
 .page-title-area {
     padding-top: 35px;
     padding-bottom: 32px;
-    background-color: #f5f5f5;
+    background-color: $body-color;
 }
 .page-title-content {
     position: relative;
@@ -3299,7 +3299,7 @@ Story Area CSS
     }
 }
 .story-area {
-    background-color: #f5f5f5;
+    background-color: $body-color;
     border-top: 1px solid #cccccc;
 }
 .story-image {
@@ -3397,7 +3397,7 @@ Mission Area CSS
 Vision Area CSS
 =================================================*/
 .vision-area {
-    background-color: #f5f5f5;
+    background-color: $body-color;
 }
 .vision-content {
     padding: 45px 0;
@@ -3468,7 +3468,7 @@ Fun Facts Area CSS
         width: 1px;
         content: '';
         height: 100%;
-        background-color: #31578f;
+        background-color: #142276;
     }
     h3 {
         margin-bottom: 0;
@@ -3577,7 +3577,7 @@ Pricing Area CSS
             a {
                 display: block;
                 background-color: #f2f2f2;
-                color: #8d8fb4;
+                color: #7A82B8;
                 padding: 10px 30px 10px 35px;
                 position: relative;
                 border-radius: 5px;
@@ -4861,7 +4861,7 @@ Shop Area CSS
                 list-style-type: none;
 
                 i {
-                    color: #ffb607;
+                    color: #D0C32B;
                 }
             }
         }
@@ -4900,7 +4900,7 @@ Shop Area CSS
 Cart Area CSS
 =================================================*/
 .cart-area {
-    background-color: #f5f5f5;
+    background-color: $body-color;
     border-top: 1px solid #eeeeee;
 }
 .cart-table {
@@ -5148,7 +5148,7 @@ Cart Area CSS
 Wishlist Area CSS
 =================================================*/
 .wishlist-area {
-    background-color: #f5f5f5;
+    background-color: $body-color;
     border-top: 1px solid #eeeeee;
 }
 .wishlist-table {
@@ -5246,7 +5246,7 @@ Wishlist Area CSS
 Checkout Area CSS
 =================================================*/
 .checkout-area {
-    background-color: #f5f5f5;
+    background-color: $body-color;
     border-top: 1px solid #eeeeee;
 }
 .user-actions {
@@ -5651,7 +5651,7 @@ Products Details Area CSS
                 font-size: 20px;
 
                 i {
-                    color: #ffba0a;
+                    color: #D0C32B;
                 }
             }
         }
@@ -5663,7 +5663,7 @@ Products Details Area CSS
             
             .old-price {
                 text-decoration: line-through;
-                color: #828893;
+                color: #6B7280;
             }
         }
         p {
@@ -6016,7 +6016,7 @@ Products Details Area CSS
                         display: inline-block;
 
                         .bx.bxs-star {
-                            color: #ffba0a;
+                            color: #D0C32B;
                         }
                         i {
                             color: #ebebeb;
@@ -6048,7 +6048,7 @@ Products Details Area CSS
 
                         .rating {
                             .bx.bxs-star {
-                                color: #ffba0a;
+                                color: #D0C32B;
                             }
                             i {
                                 font-size: $font-size;
@@ -6894,7 +6894,7 @@ Widget Sidebar CSS
                         display: inline-block;
 
                         i {
-                            color: #ffb607;
+                            color: #D0C32B;
                         }
                     }
                 }
@@ -7396,7 +7396,7 @@ Modal CSS
                     font-size: 30px;
     
                     i {
-                        color: #ffba0a;
+                        color: #D0C32B;
                     }
                 }
             }
@@ -7408,7 +7408,7 @@ Modal CSS
                 
                 .old-price {
                     text-decoration: line-through;
-                    color: #828893;
+                    color: #6B7280;
                 }
             }
             p {
@@ -7594,7 +7594,7 @@ Buy Now Btn
     border-radius: 30px;
     display: inline-block;
     color: $white-color !important;
-    background-color: #82b440;
+    background-color: #466934;
     padding: 3.5px 10px 3.5px;
     font-size: 12px;
     font-weight: 500;
@@ -7627,3 +7627,231 @@ Buy Now Btn
     }
 }
 
+/* Header search palette */
+.middle-header-area,
+.middle-header-area.bg-color {
+    background-color: #466934;
+}
+
+.middle-header-area.bg-color {
+    .middle-header-search {
+        border-color: #466934;
+    }
+}
+
+.middle-header-search {
+    form {
+        .form-group {
+            .nice-select {
+                background-color: #466934;
+
+                .list {
+                    .option {
+                        &:hover,
+                        &.selected {
+                            background-color: #466934 !important;
+                        }
+                    }
+                }
+            }
+        }
+
+        .search-box {
+            button {
+                background-color: #1A2697;
+                border-color: #1A2697;
+                color: #ffffff;
+
+                &:hover,
+                &:focus {
+                    background-color: #142276;
+                    border-color: #142276;
+                    color: #ffffff;
+                }
+            }
+        }
+    }
+}
+
+/* Product label color overrides */
+.tag,
+.products-sale span,
+.single-products .sale-tag,
+.single-products .new-tag,
+.single-arrivals-products .arrivals-products-image .tag,
+.single-offer-products .offer-products-image .tag,
+.single-offer-products-box .offer-products-image .tag,
+.single-bestsellers-products .bestsellers-products-image .tag,
+.single-special-products .special-products-image .tag,
+.single-featured .featured-content .tag,
+.single-hot-featured .featured-content .tag,
+.single-hot-products .hot-products-image .tag,
+.single-shop-products .shop-products-image .tag {
+    background: #B73639 !important;
+    background-color: #B73639 !important;
+    border-color: #B73639 !important;
+    color: #ffffff !important;
+}
+
+.single-arrivals-products:hover .arrivals-products-image .tag,
+.single-offer-products:hover .offer-products-image .tag,
+.single-offer-products-box:hover .offer-products-image .tag,
+.single-bestsellers-products:hover .bestsellers-products-image .tag,
+.single-special-products:hover .special-products-image .tag,
+.single-featured:hover .featured-content .tag,
+.single-hot-featured:hover .featured-content .tag,
+.single-hot-products:hover .hot-products-image .tag,
+.single-shop-products:hover .shop-products-image .tag {
+    background: #B73639 !important;
+    background-color: #B73639 !important;
+    border-color: #B73639 !important;
+    color: #ffffff !important;
+}
+
+/* Product price color stability */
+.single-arrivals-products .arrivals-products-content > span,
+.single-arrivals-products:hover .arrivals-products-content > span,
+.single-shop-products .shop-products-content > span,
+.single-shop-products:hover .shop-products-content > span,
+.single-bestsellers-products .bestsellers-products-content > span,
+.single-bestsellers-products:hover .bestsellers-products-content > span,
+.single-special-products .special-products-content > span,
+.single-special-products:hover .special-products-content > span,
+.single-hot-products .hot-products-content > span,
+.single-hot-products:hover .hot-products-content > span,
+.single-offer-products .offer-products-content .price .new-price,
+.single-offer-products:hover .offer-products-content .price .new-price,
+.single-offer-products-box .offer-products-content .price .new-price,
+.single-offer-products-box:hover .offer-products-content .price .new-price {
+    color: #292929 !important;
+}
+
+/* Home slider buttons */
+.main-slider-area {
+    .main-slider-content {
+        .default-btn,
+        .default-btn:hover,
+        .default-btn:focus {
+            background-color: #466934;
+            border-color: #466934;
+            color: #ffffff !important;
+        }
+
+        .default-btn {
+            span {
+                background-color: #355329;
+            }
+
+            i,
+            &:hover i,
+            &:focus i {
+                color: #ffffff !important;
+            }
+        }
+    }
+
+    .slider-stack-buttons {
+        button {
+            background: #466934;
+            color: #ffffff;
+            box-shadow: 0 10px 22px rgba(70, 105, 52, 0.22);
+
+            &:hover,
+            &:focus {
+                background: #355329;
+                color: #ffffff;
+            }
+        }
+    }
+}
+
+/* Global surface overrides */
+:root {
+    --lm-main-bg: #F7F8FC;
+}
+
+html,
+body {
+    background-color: var(--lm-main-bg);
+}
+
+.page-title-area,
+.main-slider-area,
+.shop-area,
+.cart-area,
+.wishlist-area,
+.checkout-area,
+.contact-area,
+.branches-area,
+.story-area,
+.team-area,
+.vision-area,
+.arrivals-products-area,
+.special-products-area,
+.blog-area.bg-color,
+.products-details-area,
+.exclusive-offers-banner.banner-soft,
+.section-header-soft,
+.carousel-section,
+.ti-cell-legal-area,
+.copyright-showcase-area,
+.ticell-about-area {
+    background-color: var(--lm-main-bg) !important;
+}
+
+/* Promotional banner palette */
+.exclusive-offers-banner,
+.exclusive-offers-banner.banner-soft,
+.banner-best,
+.section-header-soft {
+    background: linear-gradient(90deg, #101A5C 0%, #1A2697 48%, #2C3FAE 100%) !important;
+    background-color: #1A2697 !important;
+}
+
+.section-header-soft {
+    .wave {
+        background: linear-gradient(90deg, #101A5C 0%, #1A2697 48%, #2C3FAE 100%) !important;
+        box-shadow: inset 0 0 50px rgba(0, 0, 0, 0.16);
+    }
+}
+
+.banner-text,
+.banner-soft .banner-text,
+.banner-best .banner-text,
+.section-header-soft h2 {
+    color: #ffffff !important;
+}
+
+.banner-best {
+    .banner-text {
+        &::after {
+            background: linear-gradient(90deg, #D0C32B, #F1E86A) !important;
+        }
+    }
+}
+
+.banner-btn,
+.banner-soft .banner-btn,
+.banner-best .banner-btn,
+.section-header-soft .btn-soft {
+    background: #D0C32B !important;
+    background-color: #D0C32B !important;
+    border-color: #D0C32B !important;
+    color: #292929 !important;
+    box-shadow: 0 10px 24px rgba(208, 195, 43, 0.25) !important;
+}
+
+.banner-btn:hover,
+.banner-btn:focus,
+.banner-soft .banner-btn:hover,
+.banner-soft .banner-btn:focus,
+.banner-best .banner-btn:hover,
+.banner-best .banner-btn:focus,
+.section-header-soft .btn-soft:hover,
+.section-header-soft .btn-soft:focus {
+    background: #B8AD25 !important;
+    background-color: #B8AD25 !important;
+    border-color: #B8AD25 !important;
+    color: #292929 !important;
+    box-shadow: 0 12px 28px rgba(184, 173, 37, 0.34) !important;
+}

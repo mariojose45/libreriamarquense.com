@@ -101,21 +101,21 @@ $categorias = $data["data"] ?? [];
     $current_url = $site_url . $_SERVER['REQUEST_URI'];
 
     // SEO por defecto (puedes personalizar por pagina)
-    $seo_title = isset($seo_title) ? $seo_title : "TI-CELL | Celulares, accesorios y reparacion en Guatemala";
-    $seo_description = isset($seo_description) ? $seo_description : "TI-CELL ofrece venta de celulares, accesorios, repuestos y servicio tecnico de reparacion con atencion confiable en Guatemala.";
-    $seo_keywords = isset($seo_keywords) ? $seo_keywords : "TI-CELL, celulares Guatemala, accesorios para celulares, reparacion de celulares, repuestos para telefonos, tienda de celulares Guatemala";
-    $seo_image = isset($seo_image) ? $seo_image : $site_url . "/assets/img/Ti-Cell-01.jpeg";
-    $browser_title = "TI-CELL - Venta y Reparación de Celulares";
-    $site_name = isset($site_name) ? $site_name : "TI-CELL";
-    $site_phone_number = isset($site_phone_number) ? $site_phone_number : "+502 23790625";
-    $site_whatsapp_number = isset($site_whatsapp_number) ? $site_whatsapp_number : "+502 46442321";
-    $site_whatsapp_url = isset($site_whatsapp_url) ? $site_whatsapp_url : "https://wa.me/50246442321";
-    $site_email = isset($site_email) ? $site_email : "ticell852@gmail.com";
-    $site_business_description = isset($site_business_description) ? $site_business_description : "Venta de celulares, accesorios, repuestos y servicio tecnico de reparacion en Guatemala.";
+    $seo_title = isset($seo_title) ? $seo_title : "Librería Marquense | Útiles escolares y papelería";
+    $seo_description = isset($seo_description) ? $seo_description : "Librería Marquense ofrece útiles escolares, papelería, libros, material didáctico y productos de oficina con atención confiable en Guatemala.";
+    $seo_keywords = isset($seo_keywords) ? $seo_keywords : "Librería Marquense, útiles escolares Guatemala, papelería, libros, material didáctico, productos escolares";
+    $seo_image = isset($seo_image) ? $seo_image : $site_url . "/assets/img/LogoLibreriaMarquense.jpeg";
+    $browser_title = "Librería Marquense | Útiles escolares y papelería";
+    $site_name = isset($site_name) ? $site_name : "Librería Marquense";
+    $site_phone_number = isset($site_phone_number) ? $site_phone_number : "+502 5591-0533";
+    $site_whatsapp_number = isset($site_whatsapp_number) ? $site_whatsapp_number : "+502 5591-0533";
+    $site_whatsapp_url = isset($site_whatsapp_url) ? $site_whatsapp_url : "https://wa.me/50255910533";
+    $site_email = isset($site_email) ? $site_email : "servicioalcliente@gmail.com";
+    $site_business_description = isset($site_business_description) ? $site_business_description : "Venta de útiles escolares, papelería, libros, material didáctico y productos de oficina en Guatemala.";
     $site_social_links = isset($site_social_links) ? $site_social_links : [
-        'facebook' => 'https://www.facebook.com/share/19tcLytYiM/',
-        'instagram' => 'https://www.instagram.com/ti_cell_sm?igsh=MXF0dTR0cG13aTNk',
-        'tiktok' => 'https://tiktok.com/@ti_cell_gt',
+        'facebook' => 'https://www.facebook.com/LibreriaMarquenseSA?locale=es_LA',
+        'instagram' => 'https://www.instagram.com/libreriamarquense/?hl=es',
+        'tiktok' => 'https://www.tiktok.com/@lmmarquense/video/7632414546631658760',
     ];
     $site_social_same_as = array_values(array_filter($site_social_links));
 
@@ -159,7 +159,7 @@ $categorias = $data["data"] ?? [];
                 "@type": "Store",
                 "name": <?php echo json_encode($site_name); ?>,
                 "url": <?php echo json_encode($site_url); ?>,
-                "logo": <?php echo json_encode($site_url . "/assets/img/LogoTi-Cell.jpeg"); ?>,
+                "logo": <?php echo json_encode($site_url . "/assets/img/LogoLibreriaMarquense.jpeg"); ?>,
                 "description": <?php echo json_encode($site_business_description); ?>,
                 "address": {
                     "@type": "PostalAddress",
@@ -168,8 +168,8 @@ $categorias = $data["data"] ?? [];
                 "contactPoint": {
                     "@type": "ContactPoint",
                     "telephone": <?php echo json_encode($site_phone_number); ?>,
-                    "contactType": "servicio al cliente",
-                    "email": <?php echo json_encode($site_email); ?>
+                    "contactType": "servicio al cliente"<?php if (!empty($site_email)): ?>,
+                    "email": <?php echo json_encode($site_email); ?><?php endif; ?>
                 },
                 "sameAs": <?php echo json_encode($site_social_same_as, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE); ?>
                 }
@@ -192,8 +192,8 @@ $categorias = $data["data"] ?? [];
                 </script>
 
 
-    <link rel="icon" type="image/jpeg" href="assets/img/Ti-Cell-01.jpeg?v=2">
-    <link rel="shortcut icon" type="image/jpeg" href="assets/img/Ti-Cell-01.jpeg?v=2">
+    <link rel="icon" type="image/jpeg" href="assets/img/LogoLibreriaMarquense.jpeg?v=2">
+    <link rel="shortcut icon" type="image/jpeg" href="assets/img/LogoLibreriaMarquense.jpeg?v=2">
 </head>
 
 <body>
@@ -201,7 +201,7 @@ $categorias = $data["data"] ?? [];
     <!-- Start Preloader Area -->
     <div class="preloader">
         <div class="loader">
-            <img src="assets/img/LogoTi-Cell.jpeg" alt="Cargando..." style="max-width: 300px; border-radius: 10px;">
+            <img src="assets/img/LogoLibreriaMarquense.jpeg" alt="Cargando..." style="max-width: 300px; border-radius: 10px;">
         </div>
     </div>
     <!-- End Preloader Area -->
@@ -292,7 +292,7 @@ $categorias = $data["data"] ?? [];
         }
 
         .cart-icon:hover {
-            color: #004090;
+            color: #1A2697;
         }
 
         .cart-icon .flaticon-shopping-cart {
@@ -303,7 +303,7 @@ $categorias = $data["data"] ?? [];
             position: absolute;
             top: -8px;
             right: -8px;
-            background-color: #004090;
+            background-color: #1A2697;
             color: white;
             border-radius: 50%;
             width: 20px;
@@ -402,7 +402,7 @@ $categorias = $data["data"] ?? [];
             position: absolute;
             top: -5px;
             right: -5px;
-            background-color: #800000;
+            background-color: #B73639;
             color: white;
             border-radius: 50%;
             width: 18px;
@@ -446,8 +446,8 @@ $categorias = $data["data"] ?? [];
                 <div class="main-responsive-menu">
                     <div>
                         <a href="index.php">
-                            <img src="assets/img/LogoTi-Cell.jpeg" alt="logo" class="logo-grande"
-                                onerror="this.src='assets/img/LogoTi-Cell.jpeg'; this.onerror=null;">
+                            <img src="assets/img/LogoLibreriaMarquense.jpeg" alt="Librería Marquense" class="logo-grande"
+                                onerror="this.src='assets/img/LogoLibreriaMarquense.jpeg'; this.onerror=null;">
                         </a>
                     </div>
                 </div>
@@ -458,8 +458,8 @@ $categorias = $data["data"] ?? [];
             <div class="container">
                 <nav class="navbar navbar-expand-md navbar-light">
                     <a class="navbar-brand" href="index.php">
-                        <img src="assets/img/LogoTi-Cell.jpeg" alt="logo" class="logo-navbar"
-                            onerror="this.src='assets/img/LogoTi-Cell.jpeg'; this.onerror=null;">
+                        <img src="assets/img/LogoLibreriaMarquense.jpeg" alt="Librería Marquense" class="logo-navbar"
+                            onerror="this.src='assets/img/LogoLibreriaMarquense.jpeg'; this.onerror=null;">
                     </a>
 
                     <div class="collapse navbar-collapse mean-menu">

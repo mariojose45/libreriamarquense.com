@@ -83,15 +83,15 @@ if (isset($_GET['id'])) {
 
 
     .main-slider-content .default-btn {
-        background-color: #004090;
-        /* tu azul corporativo */
-        border-color: #004090;
+        background-color: #1A2697;
+        /* azul institucional */
+        border-color: #1A2697;
         color: #fff !important;
     }
 
     .main-slider-content .default-btn:hover {
-        background-color: #092447;
-        border-color: #092447;
+        background-color: #101A5C;
+        border-color: #101A5C;
     }
 </style>
 
@@ -159,7 +159,7 @@ if (isset($_GET['id'])) {
         right: 45px;
         top: 50%;
         transform: translateY(-50%);
-        background: #800000;
+        background: #B73639;
         color: white;
         border: none;
         border-radius: 50%;
@@ -176,7 +176,7 @@ if (isset($_GET['id'])) {
     }
 
     .btn-limpiar-busqueda:hover {
-        background: #c82333;
+        background: #8F1F24;
         transform: translateY(-50%) scale(1.1);
     }
 
@@ -236,14 +236,14 @@ if (isset($_GET['id'])) {
 
     .slider-nav>div:hover {
         opacity: 1;
-        border-color: #003781;
+        border-color: #1A2697;
         transform: scale(1.05);
     }
 
     .slider-nav>div.active {
-        border-color: #003781;
+        border-color: #1A2697;
         opacity: 1;
-        box-shadow: 0 2px 8px rgba(0, 55, 129, 0.3);
+        box-shadow: 0 2px 8px rgba(26, 38, 151, 0.3);
     }
 
     .slider-nav>div img {
@@ -317,9 +317,9 @@ if (isset($_GET['id'])) {
 
     /* Activa */
     #slider-nav .thumb-item.active {
-        border-color: #003781;
+        border-color: #1A2697;
         opacity: 1;
-        box-shadow: 0 2px 8px rgba(0, 55, 129, .35);
+        box-shadow: 0 2px 8px rgba(26, 38, 151, .35);
     }
 
     /* Mobile */
@@ -512,7 +512,7 @@ if (isset($_GET['id'])) {
                                                     <button id="btn-compartir-whatsapp-producto"
                                                         class="mp-btn-compartir mp-whatsapp"
                                                         onclick="compartirWhatsAppProducto(event)"
-                                                        style="background: #25D366; color: white; border: none; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer;"
+                                                        style="background: #466934; color: white; border: none; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer;"
                                                         title="Compartir por WhatsApp">
                                                         <i class='bx bxl-whatsapp'></i>
                                                     </button>
@@ -967,7 +967,7 @@ if (isset($_GET['id'])) {
                 // i = 0 es la imagen principal, i > 0 son las fotos de la API
                 if ((index === -1 && i === 0) || (index >= 0 && i === index + 1)) {
                     thumbItem.classList.add('active');
-                    thumbItem.style.border = '2px solid #003781';
+                    thumbItem.style.border = '2px solid #1A2697';
                     thumbItem.style.opacity = '1';
                 } else {
                     thumbItem.classList.remove('active');
@@ -1034,10 +1034,10 @@ if (isset($_GET['id'])) {
             `💰 Precio: *Q${parseFloat(productoActual.precio_venta || 0).toFixed(2)}*\n\n` +
             `📦 Disponibilidad: ${parseFloat(productoActual.stock || 0) > 0 ? 'En stock' : 'Agotado'}\n\n` +
             `🔗 Ver más detalles:\n${url}\n\n` +
-            `_TI-CELL - Venta y reparación de celulares_`
+            `_Librería Marquense - Útiles escolares y papelería_`
         );
 
-        const whatsappUrl = `https://wa.me/?text=${mensaje}`;
+        const whatsappUrl = `https://wa.me/50255910533?text=${mensaje}`;
 
         const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 

@@ -51,9 +51,9 @@ if (empty($_POST["message"])) {
 }
 
 
-$EmailTo = "info@ti-cell.com";
+$EmailTo = "servicioalcliente@gmail.com";
 
-$Subject = "Nuevo Mensaje del Formulario de Contacto";
+$Subject = "Nuevo Mensaje para Librería Marquense";
 
 // prepare email body text
 $Body = "";
@@ -98,9 +98,12 @@ $headers .= "Content-type:text/plain;charset=UTF-8" . "\r\n";
 $headers .= "From: " . $email . "\r\n";
 $headers .= "Reply-To: " . $email . "\r\n";
 
-// Intentar enviar email (suprimir errores para desarrollo local)
-// En producción, necesitarás configurar SMTP o usar PHPMailer
-@$success = mail($EmailTo, $Subject, $Body, $headers);
+// Intentar enviar email solo si se configura una cuenta de destino.
+// El formulario visible actualmente abre WhatsApp con el mensaje preparado.
+$success = true;
+if (!empty($EmailTo)) {
+    @$success = mail($EmailTo, $Subject, $Body, $headers);
+}
 
 // En desarrollo local (XAMPP), mail() puede fallar pero los datos se guardaron
 // Consideramos éxito si no hay errores de validación

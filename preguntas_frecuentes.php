@@ -23,52 +23,52 @@ $faqContacto = 'Puedes escribirnos por WhatsApp al ' . htmlspecialchars($site_wh
 <?php
 ticell_open_legal_section(
     'Preguntas Frecuentes',
-    'PREGUNTAS FRECUENTES - TI-CELL',
+    'PREGUNTAS FRECUENTES - LIBRER&Iacute;A MARQUENSE',
     '',
-    'Resolvemos aqu&iacute; las consultas m&aacute;s comunes sobre compra, reparaci&oacute;n, garant&iacute;as y atenci&oacute;n para que puedas comprar o solicitar servicio con mayor confianza.',
+    'Resolvemos aqu&iacute; las consultas m&aacute;s comunes sobre compras, productos, listas escolares, entregas, garant&iacute;as y atenci&oacute;n para que puedas realizar tu pedido con mayor confianza.',
     'bx-help-circle'
 );
 
-ticell_render_legal_block('&iquest;Qu&eacute; es TI-CELL?', [
-    'TI-CELL es una tienda especializada en venta de celulares, accesorios, repuestos y servicios de reparaci&oacute;n, enfocada en brindar atenci&oacute;n confiable y soluciones pr&aacute;cticas para tu equipo.'
+ticell_render_legal_block('&iquest;Qu&eacute; es Librer&iacute;a Marquense?', [
+    'Librer&iacute;a Marquense es una tienda especializada en &uacute;tiles escolares, papeler&iacute;a, libros, material did&aacute;ctico y art&iacute;culos de oficina, enfocada en brindar atenci&oacute;n cercana y productos pr&aacute;cticos para estudiantes, docentes, familias y empresas.'
 ]);
 
 ticell_render_legal_block('&iquest;Qu&eacute; tipo de productos venden?', [
     'Ofrecemos productos y soluciones como:'
 ], [
-    'Celulares.',
-    'Accesorios para celular.',
-    'Repuestos.',
-    'Equipos y art&iacute;culos de tecnolog&iacute;a.',
-    'Servicios de reparaci&oacute;n y mantenimiento.'
+    '&Uacute;tiles escolares.',
+    'Papeler&iacute;a general.',
+    'Cuadernos, hojas, cartulinas y materiales para tareas.',
+    'Lapiceros, l&aacute;pices, marcadores, crayones y productos de escritura.',
+    'Libros, material did&aacute;ctico y art&iacute;culos de oficina, seg&uacute;n disponibilidad.'
 ]);
 
-ticell_render_legal_block('&iquest;Tambi&eacute;n realizan reparaciones?', [
-    'S&iacute;. Atendemos diagn&oacute;stico y reparaci&oacute;n de celulares, sujeto a revisi&oacute;n t&eacute;cnica y disponibilidad de repuestos.'
+ticell_render_legal_block('&iquest;Pueden preparar listas escolares completas?', [
+    'S&iacute;. Podemos apoyar con la preparaci&oacute;n de listas escolares, paquetes o pedidos por cantidad, siempre sujeto a disponibilidad de inventario y confirmaci&oacute;n previa de marcas, presentaciones y cantidades.'
 ]);
 
-ticell_render_legal_block('&iquest;Los productos son originales?', [
-    'Trabajamos con productos seleccionados y proveedores confiables. La disponibilidad y caracter&iacute;sticas pueden variar seg&uacute;n la marca y el modelo.'
+ticell_render_legal_block('&iquest;Los productos est&aacute;n disponibles de inmediato?', [
+    'La disponibilidad puede variar seg&uacute;n temporada, demanda y presentaci&oacute;n del producto. Recomendamos confirmar existencias antes de cerrar compras grandes, listas escolares o pedidos especiales.'
 ]);
 
 ticell_render_legal_block('&iquest;C&oacute;mo puedo realizar una compra?', [
-    'Puedes realizar tu compra desde el sitio web, por WhatsApp o coordinando directamente con nuestro equipo.'
+    'Puedes realizar tu compra desde el sitio web, por WhatsApp o coordinando directamente con nuestro equipo. Nuestro personal puede confirmar disponibilidad, precio y forma de entrega antes de finalizar el pedido.'
 ]);
 
 ticell_render_legal_block('&iquest;Cu&aacute;les son los m&eacute;todos de pago disponibles?', [
-    'Aceptamos pago contra entrega, transferencias bancarias y pagos con tarjeta, seg&uacute;n disponibilidad y confirmaci&oacute;n del pedido o servicio.'
+    'Aceptamos pago contra entrega, transferencias bancarias y pagos con tarjeta, seg&uacute;n disponibilidad y confirmaci&oacute;n del pedido.'
 ]);
 
-ticell_render_legal_block('&iquest;Realizan env&iacute;os?', [
-    'S&iacute;. Realizamos env&iacute;os a nivel nacional. Los tiempos de entrega pueden variar seg&uacute;n la ubicaci&oacute;n y las condiciones log&iacute;sticas.'
+ticell_render_legal_block('&iquest;Realizan entregas o env&iacute;os?', [
+    'S&iacute;. Podemos coordinar entregas o env&iacute;os seg&uacute;n ubicaci&oacute;n y disponibilidad. Los tiempos de entrega pueden variar por distancia, volumen del pedido y condiciones log&iacute;sticas.'
 ]);
 
-ticell_render_legal_block('&iquest;Los productos o reparaciones tienen garant&iacute;a?', [
-    'S&iacute;. La garant&iacute;a aplica seg&uacute;n el tipo de producto o servicio realizado. Puedes revisar el detalle en nuestra p&aacute;gina de Pol&iacute;ticas de Garant&iacute;a.'
+ticell_render_legal_block('&iquest;Los productos tienen garant&iacute;a o cambio?', [
+    'S&iacute;. La garant&iacute;a o cambio aplica seg&uacute;n el tipo de producto y las condiciones establecidas. Puedes revisar el detalle en nuestra p&aacute;gina de Pol&iacute;ticas de Garant&iacute;a.'
 ]);
 
 ticell_render_legal_block('&iquest;C&oacute;mo puedo recibir asesor&iacute;a antes de comprar?', [
-    'Nuestro equipo puede brindarte asesor&iacute;a personalizada para elegir el celular, accesorio o servicio adecuado para tu necesidad.'
+    'Nuestro equipo puede brindarte asesor&iacute;a para elegir &uacute;tiles, materiales, cantidades o presentaciones adecuadas seg&uacute;n tu lista escolar, tarea, oficina o necesidad espec&iacute;fica.'
 ]);
 
 ticell_render_legal_block('&iquest;C&oacute;mo puedo contactarlos?', [
@@ -76,7 +76,7 @@ ticell_render_legal_block('&iquest;C&oacute;mo puedo contactarlos?', [
 ]);
 
 ticell_render_legal_block('Importante', [
-    'Para reparaciones y compatibilidad de accesorios, recomendamos confirmar marca, modelo y detalle de la falla antes de cerrar la compra o el servicio.'
+    'Para listas escolares, pedidos por cantidad o productos espec&iacute;ficos, recomendamos confirmar nombres, marcas, medidas, colores y cantidades antes de cerrar la compra.'
 ]);
 
 ticell_close_legal_section();

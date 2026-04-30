@@ -54,7 +54,7 @@ if ($ch !== false) {
    BANNER SUAVE / SECUNDARIO
 ========================= */
     .exclusive-offers-banner.banner-soft {
-        background: #f6f7fb;
+        background: #F7F8FC;
         margin-top: 40px;
         margin-bottom: 0;
         padding: 30px 0;
@@ -62,14 +62,14 @@ if ($ch !== false) {
 
     .banner-best {
         position: relative;
-        background: linear-gradient(90deg, #eef2ff 0%, #e3ebff 50%, #dfe7ff 100%);
+        background: linear-gradient(90deg, #EEF2FF 0%, #E6E9FA 50%, #E6E9FA 100%);
         margin-top: 50px;
         margin-bottom: -50px;
         padding: 28px 0;
         overflow: hidden;
         z-index: 5;
-        border-top: 1px solid rgba(74, 108, 247, 0.12);
-        border-bottom: 1px solid rgba(74, 108, 247, 0.12);
+        border-top: 1px solid rgba(26, 38, 151, 0.12);
+        border-bottom: 1px solid rgba(26, 38, 151, 0.12);
     }
 
     .banner-best::before {
@@ -98,7 +98,7 @@ if ($ch !== false) {
     }
 
     .banner-best .banner-text {
-        color: #4A6CF7;
+        color: #1A2697;
         font-size: 24px;
         font-weight: 800;
         text-transform: uppercase;
@@ -112,21 +112,21 @@ if ($ch !== false) {
         height: 3px;
         margin: 8px auto 0;
         border-radius: 10px;
-        background: linear-gradient(90deg, #4A6CF7, #7f9cff);
+        background: linear-gradient(90deg, #1A2697, #6A79D6);
     }
 
     .banner-best .banner-btn {
-        background: linear-gradient(90deg, #4A6CF7 0%, #5c7cff 100%);
+        background: linear-gradient(90deg, #1A2697 0%, #2C3FAE 100%);
         color: #fff;
         font-weight: 700;
         padding: 12px 35px;
         border-radius: 50px;
-        box-shadow: 0 8px 22px rgba(74, 108, 247, 0.22);
+        box-shadow: 0 8px 22px rgba(26, 38, 151, 0.22);
         transition: all 0.3s ease;
     }
 
     .banner-best .banner-btn:hover {
-        background: linear-gradient(90deg, #3b5bdb 0%, #4A6CF7 100%);
+        background: linear-gradient(90deg, #142276 0%, #1A2697 100%);
         transform: translateY(-3px);
     }
 
@@ -310,7 +310,7 @@ if ($slider) {
         border-radius: 16px;
         text-align: center;
         box-shadow: none;
-        border: 2px solid #800000;
+        border: 2px solid #B73639;
         transition: all .3s ease;
 
         display: flex;
@@ -323,13 +323,13 @@ if ($slider) {
 
     .support-card:hover {
         transform: translateY(-6px);
-        border-color: #800000;
-        box-shadow: 0 10px 25px rgba(128, 0, 0, 0.12);
+        border-color: #B73639;
+        box-shadow: 0 10px 25px rgba(183, 54, 57, 0.12);
     }
 
     .support-card i {
         font-size: 46px;
-        color: #800000;
+        color: #B73639;
         margin-bottom: 14px;
         line-height: 1;
     }
@@ -497,7 +497,7 @@ if ($slider) {
     /* Banner Ofertas Exclusivas */
     .exclusive-offers-banner {
         position: relative;
-        background: linear-gradient(90deg, #5e35b1 0%, #3949ab 100%);
+        background: linear-gradient(90deg, #1A2697 0%, #B73639 58%, #466934 100%);
         padding: 25px 0;
         margin-top: 50px;
         margin-bottom: 60px;
@@ -542,7 +542,7 @@ if ($slider) {
     }
 
     .banner-btn {
-        background: #00A060;
+        background: #466934;
         color: #fff;
         font-weight: 700;
         padding: 12px 35px;
@@ -556,7 +556,7 @@ if ($slider) {
     .banner-btn:hover {
         transform: translateY(-3px) scale(1.05);
         box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
-        background: #008a53;
+        background: #355329;
         color: #fff;
     }
 
@@ -646,7 +646,7 @@ if ($slider) {
         /* Mantener borde negro al hover */
     }
 
-    /* Estilo Tag - Rediseño tipo Ovalado Azul */
+    /* Estilo tag con acento Marquense */
     .single-arrivals-products .arrivals-products-image .tag {
         border-radius: 50px !important;
         padding: 5px 15px !important;
@@ -658,18 +658,18 @@ if ($slider) {
         font-weight: 700 !important;
         top: 10px !important;
         right: 10px !important;
-        background: #800000 !important;
-        /* Color similar a la imagen (azul suave) */
-        color: #fff !important;
-        box-shadow: 0 4px 12px rgba(128, 0, 0, 0.28);
+        background: #B73639 !important;
+        /* Etiqueta roja uniforme */
+        color: #ffffff !important;
+        box-shadow: 0 4px 12px rgba(183, 54, 57, 0.35);
         display: flex;
         align-items: center;
         justify-content: center;
     }
 
-    /* Hover card no cambia color a rojo, mantiene azul oscuro */
+    /* Mantener el mismo rojo en hover */
     .single-arrivals-products:hover .arrivals-products-image .tag {
-        background: #6d0000 !important;
+        background: #B73639 !important;
     }
 
     /* Ajuste imagen para que no se salga del borde redondeado */
@@ -752,7 +752,7 @@ if ($slider) {
 
 <style>
     .section-header-soft h2 {
-        color: #4A6CF7;
+        color: #1A2697;
         font-size: 28px;
         font-weight: 800;
         margin-bottom: 15px;
@@ -760,7 +760,7 @@ if ($slider) {
     }
 
     .section-header-soft .btn-soft {
-        background: #4A6CF7;
+        background: #1A2697;
         color: #fff;
         padding: 10px 28px;
         border-radius: 30px;
@@ -769,7 +769,7 @@ if ($slider) {
     }
 
     .section-header-soft .btn-soft:hover {
-        background: #3b5bdb;
+        background: #142276;
     }
 </style>
 
@@ -784,7 +784,7 @@ if ($slider) {
         display: flex;
         justify-content: center;
         align-items: center;
-        background: #f6f7fb;
+        background: #F7F8FC;
         padding: 0;
         margin-bottom: 60px;
     }
@@ -799,8 +799,8 @@ if ($slider) {
         top: 0;
         width: 100%;
         height: 100%;
-        background: linear-gradient(90deg, #5e35b1 0%, #3949ab 100%);
-        /* Fondo Gradiente Purple/Indigo */
+        background: linear-gradient(90deg, #1A2697 0%, #B73639 58%, #466934 100%);
+        /* Fondo gradiente Marquense */
         box-shadow: inset 0 0 50px rgba(0, 0, 0, 0.1);
         z-index: 0;
     }
@@ -870,7 +870,7 @@ if ($slider) {
     }
 
     .section-header-soft .btn-soft {
-        background: #00A060;
+        background: #466934;
         color: #fff;
         padding: 12px 35px;
         /* Botón un poco más compacto */
@@ -886,9 +886,9 @@ if ($slider) {
     }
 
     .section-header-soft .btn-soft:hover {
-        background: #008a53;
+        background: #355329;
         color: #fff;
-        box-shadow: 0 6px 20px rgba(0, 160, 96, 0.35);
+        box-shadow: 0 6px 20px rgba(70, 105, 52, 0.35);
         transform: translateY(-3px) scale(1.05);
     }
 
@@ -1046,9 +1046,9 @@ if ($slider) {
     }
 
     .mp-close:hover {
-        background: #800000;
+        background: #B73639;
         color: #fff;
-        border-color: #800000;
+        border-color: #B73639;
         transform: scale(1.1);
     }
 
@@ -1110,7 +1110,7 @@ if ($slider) {
 
     .mp-thumb-item:hover,
     .mp-thumb-item.active {
-        border-color: #003781;
+        border-color: #1A2697;
     }
 
     /* ===========================
@@ -1153,7 +1153,7 @@ if ($slider) {
     }
 
     .mp-precio {
-        color: #003781;
+        color: #1A2697;
         font-size: 28px;
         font-weight: bold;
         margin: 5px 0 10px;
@@ -1172,7 +1172,7 @@ if ($slider) {
     .mp-cantidad-box button {
         width: 35px;
         height: 35px;
-        background: #e9e9e9;
+        background: #F2F5FA;
         border: none;
         border-radius: 8px;
         font-size: 22px;
@@ -1192,7 +1192,7 @@ if ($slider) {
 =========================== */
     .mp-btn-agregar {
         width: 100%;
-        background: #003781;
+        background: #1A2697;
         color: #fff;
         padding: 12px;
         border: none;
@@ -1202,7 +1202,7 @@ if ($slider) {
     }
 
     .mp-btn-agregar:hover {
-        background: #002a5b;
+        background: #101A5C;
     }
 
     /* ===========================
@@ -1242,11 +1242,11 @@ if ($slider) {
     }
 
     .mp-whatsapp {
-        background: #25D366;
+        background: #466934;
     }
 
     .mp-whatsapp:hover {
-        background: #20BA5A;
+        background: #466934;
         transform: translateY(-2px);
         box-shadow: 0 4px 12px rgba(37, 211, 102, 0.4);
     }

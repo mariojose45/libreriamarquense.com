@@ -1,10 +1,10 @@
 /*================================================
 Default CSS
 =================================================*/
-$main-color: #004090;
+$main-color: #1A2697;
 $white-color: #ffffff;
 $black-color: #000000;
-$optional-color: #800000;
+$optional-color: #B73639;
 
 // Switch css
 .switch-box {
@@ -202,12 +202,14 @@ $optional-color: #800000;
                         color: $white-color !important;
                         
                         &:hover, &:focus, &.active {
-                            color: $optional-color !important;
+                            color: $white-color !important;
+                            background-color: $accent-color;
                         }
                     }
                     &:hover, &.active {
                         a {
-                            color: $optional-color;
+                            color: $white-color;
+                            background-color: $accent-color;
                         }
                     }
                     .dropdown-menu {
@@ -449,7 +451,7 @@ $optional-color: #800000;
             background-color: #0e0e0e;
     
             &::before {
-                background-color: #e9e9e9;
+                background-color: #F2F5FA;
             }
         }
     }
@@ -1563,7 +1565,7 @@ $optional-color: #800000;
             }
             input[type="date"], input[type="time"], input[type="datetime-local"], input[type="week"], input[type="month"], input[type="text"], input[type="email"], input[type="url"], input[type="password"], input[type="search"], input[type="tel"], input[type="number"], textarea {
                 color: $white-color;
-                border: 1px solid #004090;
+                border: 1px solid #1A2697;
     
                 &:focus {
                     border: 1px solid $main-color;
@@ -2140,6 +2142,77 @@ $optional-color: #800000;
                 .inner {
                     .circle {
                         background-color: $white-color;
+                    }
+                }
+            }
+        }
+    }
+}
+
+.theme-dark {
+    .tag,
+    .products-sale span,
+    .single-products .sale-tag,
+    .single-products .new-tag,
+    .single-arrivals-products .arrivals-products-image .tag,
+    .single-offer-products .offer-products-image .tag,
+    .single-offer-products-box .offer-products-image .tag,
+    .single-bestsellers-products .bestsellers-products-image .tag,
+    .single-special-products .special-products-image .tag,
+    .single-featured .featured-content .tag,
+    .single-hot-featured .featured-content .tag,
+    .single-hot-products .hot-products-image .tag,
+    .single-shop-products .shop-products-image .tag,
+    .single-arrivals-products:hover .arrivals-products-image .tag,
+    .single-offer-products:hover .offer-products-image .tag,
+    .single-offer-products-box:hover .offer-products-image .tag,
+    .single-bestsellers-products:hover .bestsellers-products-image .tag,
+    .single-special-products:hover .special-products-image .tag,
+    .single-featured:hover .featured-content .tag,
+    .single-hot-featured:hover .featured-content .tag,
+    .single-hot-products:hover .hot-products-image .tag,
+    .single-shop-products:hover .shop-products-image .tag {
+        background: #D0C32B !important;
+        background-color: #D0C32B !important;
+        border-color: #D0C32B !important;
+        color: #292929 !important;
+    }
+}
+
+.theme-dark {
+    .middle-header-area,
+    .middle-header-area.bg-color {
+        background-color: #466934;
+    }
+
+    .middle-header-search {
+        form {
+            .form-group {
+                .nice-select {
+                    background-color: #466934;
+
+                    .list {
+                        .option {
+                            &:hover,
+                            &.selected {
+                                background-color: #466934 !important;
+                            }
+                        }
+                    }
+                }
+            }
+
+            .search-box {
+                button {
+                    background-color: #1A2697;
+                    border-color: #1A2697;
+                    color: #ffffff;
+
+                    &:hover,
+                    &:focus {
+                        background-color: #142276;
+                        border-color: #142276;
+                        color: #ffffff;
                     }
                 }
             }

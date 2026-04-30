@@ -24,7 +24,6 @@
         var phone_number = $("#phone_number").val();
         var message = $("#message").val();
 
-
         $.ajax({
             type: "POST",
             url: "assets/php/form-process.php",
@@ -42,13 +41,13 @@
 
     function formSuccess(){
         $("#contactForm")[0].reset();
-        submitMSG(true, "¡Mensaje enviado exitosamente!");
+        submitMSG(true, "Mensaje enviado exitosamente.");
         
         // Mostrar mensaje con SweetAlert si está disponible
         if (typeof Swal !== 'undefined') {
             Swal.fire({
                 icon: 'success',
-                title: '¡Mensaje enviado!',
+                title: 'Mensaje enviado',
                 text: 'Tu mensaje ha sido enviado correctamente. Nos pondremos en contacto contigo pronto.',
                 confirmButtonText: 'Aceptar'
             });

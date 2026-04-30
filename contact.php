@@ -1,8 +1,8 @@
 <?php
 // SEO para la pagina de contacto
-$seo_title = "Contacto - TI-CELL | Celulares, accesorios y reparaciones";
-$seo_description = "Contacta a TI-CELL para consultas sobre celulares, accesorios, repuestos, sucursales y reparaciones.";
-$seo_keywords = "contacto TI-CELL, sucursales TI-CELL, reparacion de celulares Guatemala, accesorios para celulares";
+$seo_title = "Contacto - Librería Marquense | Útiles escolares y papelería";
+$seo_description = "Contacta a Librería Marquense para consultas sobre útiles escolares, papelería, listas escolares, sucursales y pedidos.";
+$seo_keywords = "contacto Librería Marquense, librería Guatemala, útiles escolares, papelería, listas escolares";
 
 $branch_timezone = new DateTimeZone('America/Guatemala');
 
@@ -44,7 +44,13 @@ function branch_image_src($filename) {
 }
 
 $branch_statuses = [
-    'san_miguel_ixtahuacan' => get_branch_status(create_daily_schedule([1, 2, 3, 4, 5, 7], 8, 0, 18, 0), $branch_timezone),
+    'san_miguel_ixtahuacan' => get_branch_status(
+        array_replace(
+            create_daily_schedule([1, 2, 3, 4, 5], 8, 0, 17, 30),
+            create_daily_schedule([6], 8, 0, 13, 0)
+        ),
+        $branch_timezone
+    ),
     'zamara' => get_branch_status(create_daily_schedule([1, 2, 3, 4, 5, 7], 8, 30, 17, 0), $branch_timezone),
     'san_miguel_ixtahuacan_2' => get_branch_status(create_daily_schedule([1, 2, 3, 4, 5, 7], 8, 0, 17, 0), $branch_timezone),
     'sipacapa' => get_branch_status(create_daily_schedule([1, 2, 3, 4, 5, 7], 8, 30, 18, 0), $branch_timezone),
@@ -155,20 +161,20 @@ $current_page = basename($_SERVER['PHP_SELF']);
         <section class="branches-area pb-50">
             <div class="container">
                 <div class="tile branch-title">
-                    <h3>Nuestras Sucursales</h3>
+                    <h3>Nuestra Sucursal</h3>
                 </div>
 
                 <div class="row justify-content-center">
                     <div class="col-lg-6 col-md-12">
                         <div class="branch-card">
                             <div class="branch-card__media">
-                                <img src="<?= htmlspecialchars(branch_image_src('TI-CELL San Miguel Ixtahuacán.jpeg')) ?>" alt="Sucursal TI-CELL San Miguel Ixtahuacán">
+                                <img src="<?= htmlspecialchars(branch_image_src('LibreriaMarquense01.jpeg')) ?>" alt="Sucursal Librer&iacute;a Marquense Ciudad de Guatemala">
                             </div>
                             <div class="branch-card__body">
                                 <div class="branch-card__summary">
                                     <div class="branch-card__copy">
-                                        <h3>TI-CELL San Miguel Ixtahuac&aacute;n</h3>
-                                        <p class="branch-card__address">Informacion de direccion pendiente de confirmar.</p>
+                                        <h3>Librer&iacute;a Marquense</h3>
+                                        <p class="branch-card__address">8A Avenida 19-55, Cdad. de Guatemala 01001.</p>
                                         <p class="branch-card__pickup">Atencion en tienda disponible</p>
                                     </div>
 
@@ -178,29 +184,31 @@ $current_page = basename($_SERVER['PHP_SELF']);
                                             <?php echo $branch_statuses['san_miguel_ixtahuacan']['label']; ?>
                                         </li>
                             <li><i class='bx bx-phone-call'></i> <?php echo htmlspecialchars($site_phone_number); ?></li>
-                                        <li><i class='bx bx-envelope'></i> ticell852@gmail.com</li>
-                                        <li><i class='bx bx-time-five'></i> Domingo a Viernes 8:00 am a 6:00 pm</li>
-                                        <li><i class='bx bx-calendar-x'></i> Sabado cerrado</li>
+                                        <li><i class='bx bx-envelope'></i> <a href="mailto:<?php echo htmlspecialchars($site_email); ?>"><?php echo htmlspecialchars($site_email); ?></a></li>
+                                        <li><i class='bx bx-time-five'></i> Lunes a Viernes 8:00 am a 5:30 pm</li>
+                                        <li><i class='bx bx-calendar'></i> Sabado 8:00 am a 1:00 pm</li>
+                                        <li><i class='bx bx-calendar-x'></i> Domingo cerrado</li>
                                     </ul>
                                 </div>
                             </div>
                             <div class="branch-card__actions">
-                                <a href="https://maps.app.goo.gl/UU2wKqqgESeceLhu8?g_st=awb" target="_blank" rel="noopener"><span>Ir con Maps</span><img src="assets/img/Sucursales/GoogleMaps.png" alt="Google Maps"></a>
-                                <a href="https://waze.com/ul?q=Ti-Cell%20San%20Miguel%20Ixtahuacan" target="_blank" rel="noopener"><span>Ir con Waze</span><img src="assets/img/Sucursales/Waze.png" alt="Waze"></a>
-                                <a href="https://wa.me/50246442321" target="_blank" rel="noopener"><span>WhatsApp</span><i class='bx bxl-whatsapp'></i></a>
+                                <a href="https://maps.app.goo.gl/MyeMAYkL67PXadYY6" target="_blank" rel="noopener"><span>Ir con Maps</span><img src="assets/img/Sucursales/GoogleMaps.png" alt="Google Maps"></a>
+                                <a href="https://waze.com/ul?q=8A%20Avenida%2019-55%2C%20Ciudad%20de%20Guatemala%2001001" target="_blank" rel="noopener"><span>Ir con Waze</span><img src="assets/img/Sucursales/Waze.png" alt="Waze"></a>
+                                <a href="<?php echo htmlspecialchars($site_whatsapp_url); ?>" target="_blank" rel="noopener"><span>WhatsApp</span><i class='bx bxl-whatsapp'></i></a>
                             </div>
                         </div>
                     </div>
 
+                    <?php if (false): ?>
                     <div class="col-lg-6 col-md-12">
                         <div class="branch-card">
                             <div class="branch-card__media">
-                                <img src="<?= htmlspecialchars(branch_image_src('TI-CELL Zamara.jpeg')) ?>" alt="Sucursal TI-CELL Zamara">
+                                <img src="<?= htmlspecialchars(branch_image_src('TI-CELL Zamara.jpeg')) ?>" alt="Sucursal Librer&iacute;a Marquense Zamara">
                             </div>
                             <div class="branch-card__body">
                                 <div class="branch-card__summary">
                                     <div class="branch-card__copy">
-                                        <h3>TI-CELL Zamara</h3>
+                                        <h3>Librer&iacute;a Marquense Zamara</h3>
                                         <p class="branch-card__address">Informacion de direccion pendiente de confirmar.</p>
                                         <p class="branch-card__pickup">Atencion en tienda disponible</p>
                                     </div>
@@ -211,7 +219,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
                                             <?php echo $branch_statuses['zamara']['label']; ?>
                                         </li>
                             <li><i class='bx bx-phone-call'></i> <?php echo htmlspecialchars($site_phone_number); ?></li>
-                                        <li><i class='bx bx-envelope'></i> ticell852@gmail.com</li>
+                                        <li><i class='bx bx-envelope'></i> <a href="mailto:<?php echo htmlspecialchars($site_email); ?>"><?php echo htmlspecialchars($site_email); ?></a></li>
                                         <li><i class='bx bx-time-five'></i> Domingo a Viernes 8:30 am a 5:00 pm</li>
                                         <li><i class='bx bx-calendar-x'></i> Sabado cerrado</li>
                                     </ul>
@@ -219,8 +227,8 @@ $current_page = basename($_SERVER['PHP_SELF']);
                             </div>
                             <div class="branch-card__actions">
                                 <a href="https://maps.app.goo.gl/1PLmn8J6Uncqh8dY8?g_st=ac" target="_blank" rel="noopener"><span>Ir con Maps</span><img src="assets/img/Sucursales/GoogleMaps.png" alt="Google Maps"></a>
-                                <a href="https://waze.com/ul?q=Ti-Cell%20Zamara" target="_blank" rel="noopener"><span>Ir con Waze</span><img src="assets/img/Sucursales/Waze.png" alt="Waze"></a>
-                                <a href="https://wa.me/50246442321" target="_blank" rel="noopener"><span>WhatsApp</span><i class='bx bxl-whatsapp'></i></a>
+                                <a href="https://waze.com/ul?q=Libreria%20Marquense%20Zamara" target="_blank" rel="noopener"><span>Ir con Waze</span><img src="assets/img/Sucursales/Waze.png" alt="Waze"></a>
+                                <a href="<?php echo htmlspecialchars($site_whatsapp_url); ?>" target="_blank" rel="noopener"><span>WhatsApp</span><i class='bx bxl-whatsapp'></i></a>
                             </div>
                         </div>
                     </div>
@@ -228,12 +236,12 @@ $current_page = basename($_SERVER['PHP_SELF']);
                     <div class="col-lg-6 col-md-12">
                         <div class="branch-card">
                             <div class="branch-card__media">
-                                <img src="<?= htmlspecialchars(branch_image_src('TI-CELL San Miguel Ixtahuacán2.jpeg')) ?>" alt="Sucursal TI-CELL San Miguel Ixtahuacán 2">
+                                <img src="<?= htmlspecialchars(branch_image_src('TI-CELL San Miguel Ixtahuacán2.jpeg')) ?>" alt="Sucursal Librer&iacute;a Marquense San Miguel Ixtahuac&aacute;n 2">
                             </div>
                             <div class="branch-card__body">
                                 <div class="branch-card__summary">
                                     <div class="branch-card__copy">
-                                        <h3>TI-CELL San Miguel Ixtahuac&aacute;n 2</h3>
+                                        <h3>Librer&iacute;a Marquense San Miguel Ixtahuac&aacute;n 2</h3>
                                         <p class="branch-card__address">Informacion de direccion pendiente de confirmar.</p>
                                         <p class="branch-card__pickup">Atencion en tienda disponible</p>
                                     </div>
@@ -244,7 +252,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
                                             <?php echo $branch_statuses['san_miguel_ixtahuacan_2']['label']; ?>
                                         </li>
                             <li><i class='bx bx-phone-call'></i> <?php echo htmlspecialchars($site_phone_number); ?></li>
-                                        <li><i class='bx bx-envelope'></i> ticell852@gmail.com</li>
+                                        <li><i class='bx bx-envelope'></i> <a href="mailto:<?php echo htmlspecialchars($site_email); ?>"><?php echo htmlspecialchars($site_email); ?></a></li>
                                         <li><i class='bx bx-time-five'></i> Domingo a Viernes 8:00 am a 5:00 pm</li>
                                         <li><i class='bx bx-calendar-x'></i> Sabado cerrado</li>
                                     </ul>
@@ -252,8 +260,8 @@ $current_page = basename($_SERVER['PHP_SELF']);
                             </div>
                             <div class="branch-card__actions">
                                 <a href="https://maps.app.goo.gl/tSR2G5jenkkegkJJ6?g_st=aw" target="_blank" rel="noopener"><span>Ir con Maps</span><img src="assets/img/Sucursales/GoogleMaps.png" alt="Google Maps"></a>
-                                <a href="https://waze.com/ul?q=Ti-Cell%20San%20Miguel%20Ixtahuacan%202" target="_blank" rel="noopener"><span>Ir con Waze</span><img src="assets/img/Sucursales/Waze.png" alt="Waze"></a>
-                                <a href="https://wa.me/50246442321" target="_blank" rel="noopener"><span>WhatsApp</span><i class='bx bxl-whatsapp'></i></a>
+                                <a href="https://waze.com/ul?q=Libreria%20Marquense%20San%20Miguel%20Ixtahuacan%202" target="_blank" rel="noopener"><span>Ir con Waze</span><img src="assets/img/Sucursales/Waze.png" alt="Waze"></a>
+                                <a href="<?php echo htmlspecialchars($site_whatsapp_url); ?>" target="_blank" rel="noopener"><span>WhatsApp</span><i class='bx bxl-whatsapp'></i></a>
                             </div>
                         </div>
                     </div>
@@ -261,12 +269,12 @@ $current_page = basename($_SERVER['PHP_SELF']);
                     <div class="col-lg-6 col-md-12">
                         <div class="branch-card">
                             <div class="branch-card__media">
-                                <img src="<?= htmlspecialchars(branch_image_src('TI-CELL Sipacapa.jpeg')) ?>" alt="Sucursal TI-CELL Sipacapa">
+                                <img src="<?= htmlspecialchars(branch_image_src('TI-CELL Sipacapa.jpeg')) ?>" alt="Sucursal Librer&iacute;a Marquense Sipacapa">
                             </div>
                             <div class="branch-card__body">
                                 <div class="branch-card__summary">
                                     <div class="branch-card__copy">
-                                        <h3>TI-CELL Sipacapa</h3>
+                                        <h3>Librer&iacute;a Marquense Sipacapa</h3>
                                         <p class="branch-card__address">Informacion de direccion pendiente de confirmar.</p>
                                         <p class="branch-card__pickup">Atencion en tienda disponible</p>
                                     </div>
@@ -277,7 +285,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
                                             <?php echo $branch_statuses['sipacapa']['label']; ?>
                                         </li>
                             <li><i class='bx bx-phone-call'></i> <?php echo htmlspecialchars($site_phone_number); ?></li>
-                                        <li><i class='bx bx-envelope'></i> ticell852@gmail.com</li>
+                                        <li><i class='bx bx-envelope'></i> <a href="mailto:<?php echo htmlspecialchars($site_email); ?>"><?php echo htmlspecialchars($site_email); ?></a></li>
                                         <li><i class='bx bx-time-five'></i> Domingo a Viernes 8:30 am a 6:00 pm</li>
                                         <li><i class='bx bx-calendar-x'></i> Sabado cerrado</li>
                                     </ul>
@@ -285,8 +293,8 @@ $current_page = basename($_SERVER['PHP_SELF']);
                             </div>
                             <div class="branch-card__actions">
                                 <a href="https://maps.app.goo.gl/F5BjPJA7QTPsLif26?g_st=aw" target="_blank" rel="noopener"><span>Ir con Maps</span><img src="assets/img/Sucursales/GoogleMaps.png" alt="Google Maps"></a>
-                                <a href="https://waze.com/ul?q=TI-CELL%20Sipacapa" target="_blank" rel="noopener"><span>Ir con Waze</span><img src="assets/img/Sucursales/Waze.png" alt="Waze"></a>
-                                <a href="https://wa.me/50246442321" target="_blank" rel="noopener"><span>WhatsApp</span><i class='bx bxl-whatsapp'></i></a>
+                                <a href="https://waze.com/ul?q=Libreria%20Marquense%20Sipacapa" target="_blank" rel="noopener"><span>Ir con Waze</span><img src="assets/img/Sucursales/Waze.png" alt="Waze"></a>
+                                <a href="<?php echo htmlspecialchars($site_whatsapp_url); ?>" target="_blank" rel="noopener"><span>WhatsApp</span><i class='bx bxl-whatsapp'></i></a>
                             </div>
                         </div>
                     </div>
@@ -294,12 +302,12 @@ $current_page = basename($_SERVER['PHP_SELF']);
                     <div class="col-lg-6 col-md-12">
                         <div class="branch-card">
                             <div class="branch-card__media">
-                                <img src="<?= htmlspecialchars(branch_image_src('TI-CELL Huitán.jpeg')) ?>" alt="Sucursal TI-CELL Huitán">
+                                <img src="<?= htmlspecialchars(branch_image_src('TI-CELL Huitán.jpeg')) ?>" alt="Sucursal Librer&iacute;a Marquense Huit&aacute;n">
                             </div>
                             <div class="branch-card__body">
                                 <div class="branch-card__summary">
                                     <div class="branch-card__copy">
-                                        <h3>TI-CELL Huit&aacute;n</h3>
+                                        <h3>Librer&iacute;a Marquense Huit&aacute;n</h3>
                                         <p class="branch-card__address">Informacion de direccion pendiente de confirmar.</p>
                                         <p class="branch-card__pickup">Atencion en tienda disponible</p>
                                     </div>
@@ -310,7 +318,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
                                             <?php echo $branch_statuses['huitan']['label']; ?>
                                         </li>
                             <li><i class='bx bx-phone-call'></i> <?php echo htmlspecialchars($site_phone_number); ?></li>
-                                        <li><i class='bx bx-envelope'></i> ticell852@gmail.com</li>
+                                        <li><i class='bx bx-envelope'></i> <a href="mailto:<?php echo htmlspecialchars($site_email); ?>"><?php echo htmlspecialchars($site_email); ?></a></li>
                                         <li><i class='bx bx-time-five'></i> Lunes a Viernes 8:00 am a 6:00 pm</li>
                                         <li><i class='bx bx-calendar'></i> Sabado y Domingo 8:00 am a 5:00 pm</li>
                                     </ul>
@@ -318,11 +326,12 @@ $current_page = basename($_SERVER['PHP_SELF']);
                             </div>
                             <div class="branch-card__actions">
                                 <a href="https://maps.app.goo.gl/uucnyxR72uFgJuHb8" target="_blank" rel="noopener"><span>Ir con Maps</span><img src="assets/img/Sucursales/GoogleMaps.png" alt="Google Maps"></a>
-                                <a href="https://waze.com/ul?q=TI-CELL%20Huitan" target="_blank" rel="noopener"><span>Ir con Waze</span><img src="assets/img/Sucursales/Waze.png" alt="Waze"></a>
-                                <a href="https://wa.me/50246442321" target="_blank" rel="noopener"><span>WhatsApp</span><i class='bx bxl-whatsapp'></i></a>
+                                <a href="https://waze.com/ul?q=Libreria%20Marquense%20Huitan" target="_blank" rel="noopener"><span>Ir con Waze</span><img src="assets/img/Sucursales/Waze.png" alt="Waze"></a>
+                                <a href="<?php echo htmlspecialchars($site_whatsapp_url); ?>" target="_blank" rel="noopener"><span>WhatsApp</span><i class='bx bxl-whatsapp'></i></a>
                             </div>
                         </div>
                     </div>
+                    <?php endif; ?>
                 </div>
             </div>
         </section>
@@ -349,7 +358,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
         }
 
         .branch-title h3::before {
-            background-color: #004090;
+            background-color: #1A2697;
             bottom: 0;
             content: "";
             height: 1px;
@@ -371,9 +380,9 @@ $current_page = basename($_SERVER['PHP_SELF']);
 
         .branch-card {
             background: #ffffff;
-            border: 2px solid #004090;
+            border: 2px solid #1A2697;
             border-radius: 36px;
-            box-shadow: 0 16px 36px rgba(0, 64, 144, .10);
+            box-shadow: 0 16px 36px rgba(26, 38, 151, .10);
             display: flex;
             flex-wrap: wrap;
             gap: 22px;
@@ -411,7 +420,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
         }
 
         .branch-card__body h3 {
-            color: #c96b18;
+            color: #A68B00;
             font-size: 20px;
             font-weight: 700;
             line-height: 1.2;
@@ -426,7 +435,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
         }
 
         .branch-card__pickup {
-            color: #00A060;
+            color: #466934;
             font-weight: 700;
         }
 
@@ -458,11 +467,11 @@ $current_page = basename($_SERVER['PHP_SELF']);
         }
 
         .branch-card__availability--open {
-            color: #1f8b4c !important;
+            color: #466934 !important;
         }
 
         .branch-card__availability--closed {
-            color: #c62828 !important;
+            color: #B73639 !important;
         }
 
         .branch-card__status-dot {
@@ -489,7 +498,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
             background: #ffffff;
             border: 1px solid #d8d8d8;
             border-radius: 20px;
-            color: #6d7380;
+            color: #5F6675;
             display: flex;
             font-size: 13px;
             font-weight: 500;
@@ -509,14 +518,14 @@ $current_page = basename($_SERVER['PHP_SELF']);
         }
 
         .branch-card__actions a i {
-            color: #25D366;
+            color: #466934;
             font-size: 20px;
             line-height: 1;
         }
 
         .branch-card__actions a:hover {
-            border-color: #004090;
-            color: #004090;
+            border-color: #1A2697;
+            color: #1A2697;
             transform: translateY(-2px);
         }
 

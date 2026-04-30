@@ -21,7 +21,7 @@ $paginas_servicios = [
 
 <style>
     .copyright-showcase-area {
-        background: #e9e9e9;
+        background: #F7F8FC;
         padding: 50px 0;
     }
 
@@ -32,7 +32,7 @@ $paginas_servicios = [
     }
 
     .copyright-showcase-header h2 {
-        color: #16224a;
+        color: #17214F;
         font-size: 56px;
         font-weight: 800;
         line-height: 1.05;
@@ -40,7 +40,7 @@ $paginas_servicios = [
     }
 
     .copyright-showcase-header p {
-        color: #56637a;
+        color: #5F6675;
         font-size: 18px;
         line-height: 1.7;
         margin-bottom: 0;
@@ -48,7 +48,7 @@ $paginas_servicios = [
 
     .copyright-legal-card {
         background: #ffffff;
-        border: 1px solid rgba(36, 71, 155, 0.12);
+        border: 1px solid rgba(26, 38, 151, 0.12);
         border-radius: 30px;
         box-shadow: 0 24px 60px rgba(19, 33, 76, 0.10);
         overflow: hidden;
@@ -56,7 +56,7 @@ $paginas_servicios = [
     }
 
     .copyright-legal-card::before {
-        background: #24479b;
+        background: #1A2697;
         content: "";
         display: block;
         height: 8px;
@@ -72,7 +72,7 @@ $paginas_servicios = [
     }
 
     .copyright-legal-heading h3 {
-        color: #16224a;
+        color: #17214F;
         font-size: 28px;
         font-weight: 800;
         line-height: 1.2;
@@ -80,14 +80,14 @@ $paginas_servicios = [
     }
 
     .copyright-legal-updated {
-        color: #58657b;
+        color: #5F6675;
         font-size: 20px;
         line-height: 1.7;
         margin-bottom: 24px;
     }
 
     .copyright-legal-copy {
-        color: #283248;
+        color: #2D3448;
         font-size: 21px;
         font-weight: 500;
         line-height: 1.8;
@@ -96,10 +96,10 @@ $paginas_servicios = [
 
     .copyright-legal-note {
         align-items: center;
-        background: #f6f9ff;
-        border-left: 5px solid #24479b;
+        background: #EEF2FF;
+        border-left: 5px solid #1A2697;
         border-radius: 18px;
-        color: #24479b;
+        color: #1A2697;
         display: flex;
         font-size: 17px;
         font-weight: 600;
@@ -109,7 +109,7 @@ $paginas_servicios = [
     }
 
     .copyright-legal-note i {
-        color: #4aa364;
+        color: #466934;
         font-size: 24px;
     }
 

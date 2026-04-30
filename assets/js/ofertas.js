@@ -331,7 +331,7 @@ window.obtenerTextoCompartir = function () {
     const nombre = mpProductoActual.nombre || 'Producto';
     const precio = mpProductoActual.precio || '0.00';
     const url = obtenerUrlProducto();
-    return `¡Mira este producto en CompusisGT!\n\n${nombre}\nPrecio: Q${precio}\n\n${url}`;
+    return `¡Mira este producto en Librería Marquense!\n\n${nombre}\nPrecio: Q${precio}\n\n${url}`;
 }
 
 // Compartir por WhatsApp - Función global
@@ -355,10 +355,10 @@ window.compartirWhatsApp = function (e) {
             `💰 Precio: *Q${mpProductoActual.precio}*\n\n` +
             `📦 Disponibilidad: ${mpProductoActual.stocksucursal || 'Consultar'}\n\n` +
             `🔗 Ver más detalles:\n${url}\n\n` +
-            `_CompusisGT - Tecnología en Guatemala_`
+            `_Librería Marquense - Útiles escolares y papelería_`
         );
 
-        const whatsappUrl = `https://wa.me/?text=${mensaje}`;
+        const whatsappUrl = `https://wa.me/50255910533?text=${mensaje}`;
 
         // Detectar si es móvil
         const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);

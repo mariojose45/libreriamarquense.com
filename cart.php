@@ -205,7 +205,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
             }
 
             .mp-close:hover {
-                color: #800000;
+                color: #B73639;
             }
 
             /* ===========================
@@ -221,7 +221,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
 
             .mp-form-content h2 {
                 margin-bottom: 10px;
-                color: #003781;
+                color: #1A2697;
                 font-size: 24px;
             }
 
@@ -249,7 +249,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
             }
 
             .required {
-                color: #800000;
+                color: #B73639;
             }
 
             .mp-form-group .form-control {
@@ -263,8 +263,8 @@ $current_page = basename($_SERVER['PHP_SELF']);
 
             .mp-form-group .form-control:focus {
                 outline: none;
-                border-color: #003781;
-                box-shadow: 0 0 0 2px rgba(0, 55, 129, 0.1);
+                border-color: #1A2697;
+                box-shadow: 0 0 0 2px rgba(26, 38, 151, 0.1);
             }
 
             .mp-form-group select.form-control {
@@ -321,12 +321,12 @@ $current_page = basename($_SERVER['PHP_SELF']);
             }
 
             .mp-btn-enviar {
-                background: #003781;
+                background: #1A2697;
                 color: #fff;
             }
 
             .mp-btn-enviar:hover {
-                background: #002d66;
+                background: #101A5C;
             }
 
             .mp-btn-enviar:disabled {
@@ -408,12 +408,12 @@ $current_page = basename($_SERVER['PHP_SELF']);
             }
 
             .mp-btn-enviar {
-                background: #003781;
+                background: #1A2697;
                 color: #fff;
             }
 
             .mp-btn-enviar:hover {
-                background: #002d66;
+                background: #101A5C;
             }
 
             .mp-btn-enviar:disabled {
@@ -517,8 +517,8 @@ $current_page = basename($_SERVER['PHP_SELF']);
             .cart-area .default-btn span,
             .cart-area .cart-totals .default-btn,
             .cart-area .cart-totals .default-btn span{
-                background: #004090 !important;
-                border-color: #004090 !important;
+                background: #1A2697 !important;
+                border-color: #1A2697 !important;
                 color: #ffffff !important;
             }
 
@@ -526,30 +526,30 @@ $current_page = basename($_SERVER['PHP_SELF']);
             .cart-area .default-btn:focus,
             .cart-area .cart-totals .default-btn:hover,
             .cart-area .cart-totals .default-btn:focus{
-                background: #00306d !important;
-                border-color: #00306d !important;
+                background: #101A5C !important;
+                border-color: #101A5C !important;
                 color: #ffffff !important;
             }
 
             .mp-btn-enviar{
-                background: #004090 !important;
+                background: #1A2697 !important;
                 color: #ffffff !important;
             }
 
             .mp-btn-enviar:hover{
-                background: #00306d !important;
+                background: #101A5C !important;
                 color: #ffffff !important;
             }
 
             .mp-btn-cancelar{
-                background: #e7eefb !important;
-                color: #004090 !important;
-                border: 1px solid #004090 !important;
+                background: #EEF2FF !important;
+                color: #1A2697 !important;
+                border: 1px solid #1A2697 !important;
             }
 
             .mp-btn-cancelar:hover{
-                background: #d7e4fb !important;
-                color: #00306d !important;
+                background: #E6E9FA !important;
+                color: #101A5C !important;
             }
 
         </style>

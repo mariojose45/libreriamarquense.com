@@ -1,4 +1,4 @@
-<?php 
+<?php
 // SEO para la pagina de tienda
 $seo_title = "Tienda - TI-CELL | Celulares, accesorios y reparaciones";
 $seo_description = "Explora la tienda en linea de TI-CELL con celulares, accesorios, repuestos y soluciones de reparacion.";
@@ -27,14 +27,14 @@ $categoria_actual = isset($_GET['categoria']) ? (string) $_GET['categoria'] : ''
 
             /* Para el botón */
             .main-slider-content .default-btn {
-                background-color: #004090; /* tu azul corporativo */
-                border-color: #004090;
+                background-color: #1A2697; /* azul institucional */
+                border-color: #1A2697;
                 color: #fff !important;
             }
 
             .main-slider-content .default-btn:hover {
-                background-color: #092447; /* azul más oscuro */
-                border-color: #092447;
+                background-color: #101A5C; /* azul más oscuro */
+                border-color: #101A5C;
             }
         </style>
 
@@ -44,7 +44,7 @@ $categoria_actual = isset($_GET['categoria']) ? (string) $_GET['categoria'] : ''
 <style>
     .arrivals-products-image {
         width: 100%;
-        aspect-ratio: 1 / 1; 
+        aspect-ratio: 1 / 1;
         overflow: hidden;
         position: relative;
     }
@@ -52,7 +52,7 @@ $categoria_actual = isset($_GET['categoria']) ? (string) $_GET['categoria'] : ''
     .arrivals-products-image img {
         width: 100%;
         height: 100%;
-        object-fit: cover; 
+        object-fit: cover;
         object-position: center;
         display: block;
     }
@@ -69,7 +69,7 @@ $categoria_actual = isset($_GET['categoria']) ? (string) $_GET['categoria'] : ''
     /* Estilos para tienda.php - mismo tamaño fijo que index.php */
     .shop-products-image {
         width: 100%;
-        aspect-ratio: 1 / 1; 
+        aspect-ratio: 1 / 1;
         overflow: hidden;
         position: relative;
     }
@@ -77,7 +77,7 @@ $categoria_actual = isset($_GET['categoria']) ? (string) $_GET['categoria'] : ''
     .shop-products-image img {
         width: 100%;
         height: 100%;
-        object-fit: cover; 
+        object-fit: cover;
         object-position: center;
         display: block;
     }
@@ -101,7 +101,7 @@ $categoria_actual = isset($_GET['categoria']) ? (string) $_GET['categoria'] : ''
         right: 45px;
         top: 50%;
         transform: translateY(-50%);
-        background: #800000;
+        background: #B73639;
         color: white;
         border: none;
         border-radius: 50%;
@@ -118,7 +118,7 @@ $categoria_actual = isset($_GET['categoria']) ? (string) $_GET['categoria'] : ''
     }
 
     .btn-limpiar-busqueda:hover {
-        background: #c82333;
+        background: #8F1F24;
         transform: translateY(-50%) scale(1.1);
     }
 
@@ -131,7 +131,7 @@ $categoria_actual = isset($_GET['categoria']) ? (string) $_GET['categoria'] : ''
         .shop-area .col-lg-4.col-md-12 {
             display: none !important;
         }
-        
+
         /* Hacer que el contenido de productos ocupe todo el ancho en móvil */
         .shop-area .col-lg-8.col-md-12 {
             width: 100% !important;
@@ -139,7 +139,7 @@ $categoria_actual = isset($_GET['categoria']) ? (string) $_GET['categoria'] : ''
             max-width: 100% !important;
         }
     }
-    
+
     .single-arrivals-products {
         border: 4px solid #000;
         border-radius: 15px;
@@ -172,16 +172,16 @@ $categoria_actual = isset($_GET['categoria']) ? (string) $_GET['categoria'] : ''
         font-weight: 700 !important;
         top: 10px !important;
         right: 10px !important;
-        background: #800000 !important;
-        color: #fff !important;
-        box-shadow: 0 4px 12px rgba(128, 0, 0, 0.28);
+        background: #B73639 !important;
+        color: #ffffff !important;
+        box-shadow: 0 4px 12px rgba(183, 54, 57, 0.35);
         display: flex;
         align-items: center;
         justify-content: center;
     }
 
     .single-arrivals-products:hover .arrivals-products-image .tag {
-        background: #6d0000 !important;
+        background: #B73639 !important;
     }
 
     .product-title-limit {
@@ -249,8 +249,8 @@ $categoria_actual = isset($_GET['categoria']) ? (string) $_GET['categoria'] : ''
     .widget-area .widget_categories .categories li a:hover,
     .widget-area .widget_categories .categories li a:focus,
     .widget-area .widget_categories .categories li a.active {
-        background-color: #00A060;
-        border-color: #00A060;
+        background-color: #466934;
+        border-color: #466934;
         color: #ffffff;
     }
 
@@ -281,7 +281,7 @@ $categoria_actual = isset($_GET['categoria']) ? (string) $_GET['categoria'] : ''
         justify-content: center;
         overflow: hidden;
         border-radius: 0;
-        background: #02142b;
+        background: #101A5C;
         min-height: 500px;
         isolation: isolate;
     }
@@ -424,12 +424,12 @@ $categoria_actual = isset($_GET['categoria']) ? (string) $_GET['categoria'] : ''
                     <div class="col-lg-4 col-md-12">
                         <aside class="widget-area">
 
-                    
+
                             <div class="widget widget_categories">
                                 <h3 class="widget-title">Categorías</h3>
-    
+
                                 <ul class="categories">
-                                    <?php 
+                                    <?php
                                     $iconosPorCategoria = [
                                         "CABLES DE AUDIO" => "bx bx-headphone",
                                         "COMPONENTES ELECTRONICOS" => "bx bx-microchip",
@@ -502,7 +502,7 @@ $categoria_actual = isset($_GET['categoria']) ? (string) $_GET['categoria'] : ''
                                     ];
 
                                     $index = 0;
-                                    foreach ($categorias as $cat): 
+                                    foreach ($categorias as $cat):
                                         // Solo mostrar categorías activas (condicion == 1)
                                         if (isset($cat['condicion']) && $cat['condicion'] == 1):
                                             $nombreCategoria = strtoupper(trim((string) $cat['nombre']));
@@ -518,11 +518,11 @@ $categoria_actual = isset($_GET['categoria']) ? (string) $_GET['categoria'] : ''
                                             <?= htmlspecialchars($cat['nombre']) ?>
                                         </a>
                                     </li>
-                                    <?php 
+                                    <?php
                                             $index++;
                                         endif;
-                                    endforeach; 
-                                    
+                                    endforeach;
+
                                     // Si no hay categorías, mostrar mensaje
                                     if (empty($categorias) || $index == 0):
                                     ?>
@@ -534,10 +534,10 @@ $categoria_actual = isset($_GET['categoria']) ? (string) $_GET['categoria'] : ''
                                     <?php endif; ?>
                                 </ul>
                             </div>
-                            
+
                             <div class="widget widget_price">
                                 <h3 class="widget-title">Precio</h3>
-                                
+
                                 <form class="price-range-content">
                                     <div class="price-range-bar" id="range-slider"></div>
                                     <div class="price-range-filter">
@@ -554,22 +554,22 @@ $categoria_actual = isset($_GET['categoria']) ? (string) $_GET['categoria'] : ''
                             </div>
                         </aside>
                     </div>
-                    
+
                     <div class="col-lg-8 col-md-12">
                         <div class="products-filter-options">
                             <div class="row align-items-center">
                                 <div class="col-lg- col-sm-2 col-md-12 col-xs-12">
                                     <div class="d-lg-flex d-md-flex align-items-center">
-    
+
                                         <span class="sub-title d-none d-lg-block d-md-block">View:</span>
-    
+
                                         <div class="view-list-row d-none d-lg-block d-md-block">
                                             <div class="view-column">
                                                 <a href="#" class="icon-view-two">
                                                     <span></span>
                                                     <span></span>
                                                 </a>
-        
+
                                                 <a href="#" class="icon-view-three active">
                                                     <span></span>
                                                     <span></span>
@@ -582,12 +582,12 @@ $categoria_actual = isset($_GET['categoria']) ? (string) $_GET['categoria'] : ''
 
                             </div>
                         </div>
-        
+
                         <div id="products-collections-filter" class="row">
                             <!-- Los productos se cargarán dinámicamente desde la API -->
                         </div>
                         <div id="products-pagination" class="catalog-pagination-host"></div>
-        
+
 
                         </div>
                     </div>
@@ -647,7 +647,7 @@ $categoria_actual = isset($_GET['categoria']) ? (string) $_GET['categoria'] : ''
     /* Botón cerrar */
     .mp-close {
         position: absolute;
-        top: 12px; 
+        top: 12px;
         right: 15px;
         background: rgba(255, 255, 255, 0.9);
         border: 2px solid #333;
@@ -667,9 +667,9 @@ $categoria_actual = isset($_GET['categoria']) ? (string) $_GET['categoria'] : ''
     }
 
     .mp-close:hover {
-        background: #800000;
+        background: #B73639;
         color: #fff;
-        border-color: #800000;
+        border-color: #B73639;
         transform: scale(1.1);
     }
 
@@ -731,7 +731,7 @@ $categoria_actual = isset($_GET['categoria']) ? (string) $_GET['categoria'] : ''
 
     .mp-thumb-item:hover,
     .mp-thumb-item.active {
-        border-color: #003781;
+        border-color: #1A2697;
     }
 
     /* ===========================
@@ -769,7 +769,7 @@ $categoria_actual = isset($_GET['categoria']) ? (string) $_GET['categoria'] : ''
     }
 
     .mp-precio {
-        color: #003781;
+        color: #1A2697;
         font-size: 28px;
         font-weight: bold;
         margin: 5px 0 10px;
@@ -788,7 +788,7 @@ $categoria_actual = isset($_GET['categoria']) ? (string) $_GET['categoria'] : ''
     .mp-cantidad-box button {
         width: 35px;
         height: 35px;
-        background: #e9e9e9;
+        background: #F2F5FA;
         border: none;
         border-radius: 8px;
         font-size: 22px;
@@ -808,7 +808,7 @@ $categoria_actual = isset($_GET['categoria']) ? (string) $_GET['categoria'] : ''
     =========================== */
     .mp-btn-agregar {
         width: 100%;
-        background: #003781;    
+        background: #1A2697;
         color: #fff;
         padding: 12px;
         border: none;
@@ -818,7 +818,7 @@ $categoria_actual = isset($_GET['categoria']) ? (string) $_GET['categoria'] : ''
     }
 
     .mp-btn-agregar:hover {
-        background: #002a5b;
+        background: #101A5C;
     }
 
     /* ===========================
@@ -858,11 +858,11 @@ $categoria_actual = isset($_GET['categoria']) ? (string) $_GET['categoria'] : ''
     }
 
     .mp-whatsapp {
-        background: #25D366;
+        background: #466934;
     }
 
     .mp-whatsapp:hover {
-        background: #20BA5A;
+        background: #466934;
         transform: translateY(-2px);
         box-shadow: 0 4px 12px rgba(37, 211, 102, 0.4);
     }
@@ -901,7 +901,7 @@ $categoria_actual = isset($_GET['categoria']) ? (string) $_GET['categoria'] : ''
             gap: 15px;
         }
 
-        .mp-left, 
+        .mp-left,
         .mp-right {
             width: 100%;
         }
@@ -929,12 +929,12 @@ $categoria_actual = isset($_GET['categoria']) ? (string) $_GET['categoria'] : ''
             font-size: 18px;
         }
 
-        .mp-prev { 
-            left: 5px; 
+        .mp-prev {
+            left: 5px;
         }
-        
-        .mp-next { 
-            right: 5px; 
+
+        .mp-next {
+            right: 5px;
         }
 
         /* Miniaturas más pequeñas en móvil */
@@ -1070,7 +1070,7 @@ $categoria_actual = isset($_GET['categoria']) ? (string) $_GET['categoria'] : ''
         <!-- Start Footer Area -->
 
 <?php include 'footer.php'; ?>
-<script type="text/javascript" src="assets/js/sweatlert.js"></script> 
+<script type="text/javascript" src="assets/js/sweatlert.js"></script>
 <script type="text/javascript" src="assets/js/tienda.js?v=<?php echo filemtime('assets/js/tienda.js'); ?>"></script>
 <script>
 // ============================================================
@@ -1080,12 +1080,12 @@ function buscarProductosSidebar(event) {
     event.preventDefault();
     const searchInput = document.getElementById('search-sidebar');
     const termino = searchInput.value.trim();
-    
+
     if (!termino) {
         alert('Por favor ingresa un término de búsqueda');
         return;
     }
-    
+
     // Redirigir a tienda.php con el parámetro de búsqueda
     window.location.href = 'tienda.php?buscar=' + encodeURIComponent(termino);
 }
@@ -1099,7 +1099,7 @@ function limpiarBusqueda() {
     if (searchInput) {
         searchInput.value = '';
     }
-    
+
     // Redirigir a tienda.php sin parámetros de búsqueda
     window.location.href = 'tienda.php';
 }
@@ -1116,4 +1116,4 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
-</script> 
+</script>
