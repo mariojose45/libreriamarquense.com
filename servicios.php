@@ -550,11 +550,11 @@ $rutaImagenes = "https://ssl.sol.sistemasolgt.com/ticel/files/articulos/";
     }
 
     .testimonios-track {
-        flex-shrink: 0;
+        flex: 0 0 auto;
         display: flex;
         align-items: stretch;
         gap: var(--testimonios-gap);
-        min-width: max-content;
+        width: max-content;
         animation: testimoniosMarquee 34s linear infinite;
         will-change: transform;
     }
@@ -866,10 +866,20 @@ $serviciosInitialSlide = $serviciosCarruselTotal > 0 ? (int) floor($serviciosCar
 
 
 <?php
-$testimoniosCarrusel = $testimonios;
+$testimoniosCarrusel = array_values($testimonios);
 
-if (count($testimoniosCarrusel) === 2) {
-    $testimoniosCarrusel = array_merge($testimoniosCarrusel, $testimoniosCarrusel);
+if (!empty($testimoniosCarrusel)) {
+    $testimoniosBase = $testimoniosCarrusel;
+
+    while (count($testimoniosCarrusel) < 8) {
+        foreach ($testimoniosBase as $testimonioBase) {
+            $testimoniosCarrusel[] = $testimonioBase;
+
+            if (count($testimoniosCarrusel) >= 8) {
+                break;
+            }
+        }
+    }
 }
 ?>
 
@@ -982,3 +992,7 @@ if (count($testimoniosCarrusel) === 2) {
 
 <!-- Start Footer Area -->
 <?php include 'footer.php'; ?>
+<?php
+header('Location: contact.php');
+exit;
+?>

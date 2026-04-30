@@ -207,6 +207,16 @@ $footer_social_links = array_filter($site_social_links ?? []);
 <script src="assets/js/carrito.js"></script>
 <!-- Custom JS -->
 <script src="assets/js/main.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('a[href*="servicios.php"]').forEach(function (link) {
+        if (link.textContent.trim().toLowerCase() === 'servicios') {
+            var item = link.closest('li') || link;
+            item.remove();
+        }
+    });
+});
+</script>
 </body>
 
 </html>
