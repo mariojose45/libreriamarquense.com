@@ -1178,6 +1178,415 @@ Dirigite a Nosotros
 </section>
 <!-- End Special Products Area -->
 
+<?php
+$iconosCategoriasInicio = [
+    "CABLES DE AUDIO" => "bx bx-headphone",
+    "COMPONENTES ELECTRONICOS" => "bx bx-microchip",
+    "USO TECNICO" => "bx bx-wrench",
+    "CAR AUDIO" => "bx bx-car",
+    "MODULOS" => "bx bx-chip",
+    "PANTALLAS SAMSUNG" => "bx bx-mobile",
+    "PANTALLAS IPHONE" => "bx bxl-apple",
+    "BATERIAS" => "bx bx-battery",
+    "PLACAS" => "bx bx-microchip",
+    "RATON" => "bx bx-mouse",
+    "CONTROLES" => "bx bx-joystick",
+    "CONECTORES" => "bx bx-plug",
+    "LUCES LED" => "bx bx-bulb",
+    "FOCOS" => "bx bx-bulb",
+    "PANTALLAS HONOR" => "bx bx-mobile",
+    "ACCESORIOS" => "bx bx-category",
+    "MEMORIAS" => "bx bx-memory-card",
+    "PROTECTORES" => "bx bx-shield",
+    "TOUCH" => "bx bx-mobile",
+    "PANTALLAS MOTOROLA" => "bx bx-mobile",
+    "PANTALLAS HUAWEI" => "bx bx-mobile",
+    "PANTALLAS TECNO SPARK" => "bx bx-mobile",
+    "PANTALLAS XIAOMI REDMI" => "bx bx-mobile",
+    "PANTALLAS ALCATEL" => "bx bx-mobile",
+    "PANTALLAS MAXWEST" => "bx bx-mobile",
+    "PANTALLAS HAIER" => "bx bx-mobile",
+    "PANTALLAS LG" => "bx bx-mobile",
+    "PANTALLAS SKY" => "bx bx-mobile",
+    "PANTALLAS POCO" => "bx bx-mobile",
+    "PANTALLAS NOKIA" => "bx bx-mobile",
+    "PANTALLAS ONE PLUS" => "bx bx-mobile",
+    "ADAPTADOR OTG" => "bx bx-usb",
+    "PANTALLAS REALME" => "bx bx-mobile",
+    "PANTALLAS XIAOMI" => "bx bx-mobile",
+    "PANTALLAS ZTE" => "bx bx-mobile",
+    "PANTALLAS OPPO" => "bx bx-mobile",
+    "GLASS + OCA" => "bx bx-layer",
+    "PANTALLAS INFINIX" => "bx bx-mobile",
+    "PUERTOS DE CARGA" => "bx bx-plug",
+    "RACK DE CARGA" => "bx bx-plug",
+    "FLEX DE CARGA" => "bx bx-extension",
+    "LAMINAS DE HIDROGEL" => "bx bx-shield",
+    "FLEX MAIN" => "bx bx-extension",
+    "BANDEJA SIM" => "bx bx-chip",
+    "MICROFONOS" => "bx bx-microphone",
+    "HERRAMIENTAS" => "bx bx-wrench",
+    "TAPADERAS" => "bx bx-layer",
+    "AURICULARES" => "bx bx-headphone",
+    "REPUESTOS" => "bx bx-cog",
+    "LENTES" => "bx bx-show",
+    "BATERIA PARA RELOJ" => "bx bx-time-five",
+    "VIDRIOS TEMPLADOS" => "bx bx-shield",
+    "CAMARAS" => "bx bx-camera",
+    "CUBOS" => "bx bx-plug",
+    "ACCESORIOS PARA CARRO" => "bx bx-car",
+    "ACCESORIOS VARIOS" => "bx bx-category",
+    "CARGADORES" => "bx bx-plug",
+    "CABLES" => "bx bx-usb",
+    "HUELLAS" => "bx bx-fingerprint",
+    "TELEFONOS F/TIGO" => "bx bx-phone",
+    "TELEFONOS SMARTHONE TIGO" => "bx bx-phone",
+    "TELEFONO SMARTHONE LIBERADOS" => "bx bx-mobile",
+    "VIDRIOS DE CAMARAS" => "bx bx-camera",
+    "PEGAMENTO IMPERMEABLE" => "bx bx-water",
+    "SOPORTE" => "bx bx-package",
+    "BOCINA" => "bx bx-volume-full",
+];
+
+$categoriasInicio = isset($categorias) && is_array($categorias)
+    ? array_values(array_filter($categorias, static function ($cat) {
+        return isset($cat['condicion']) && (string) $cat['condicion'] === '1';
+    }))
+    : [];
+?>
+
+<style>
+    .home-categories-area {
+        background: #F7F8FC;
+        padding: 10px 0 78px;
+    }
+
+    .home-categories-shell {
+        position: relative;
+        width: calc(100% - 24px);
+        max-width: 1360px;
+        margin: 0 auto;
+        padding: 30px 28px 28px;
+        background: #ffffff;
+        border: 1px solid rgba(26, 38, 151, 0.08);
+        border-radius: 22px;
+        box-shadow: 0 18px 45px rgba(16, 26, 92, 0.08);
+        overflow: hidden;
+    }
+
+    .home-categories-shell::before {
+        content: "";
+        position: absolute;
+        inset: 0 0 auto;
+        height: 6px;
+        background: linear-gradient(112deg, #101A5C 0%, #1A2697 49%, #466934 49.25%, #355329 100%);
+    }
+
+    .home-categories-title {
+        margin: 0 0 24px;
+        color: #1f2430;
+        font-size: 26px;
+        font-weight: 800;
+        line-height: 1.2;
+    }
+
+    .home-categories-viewport {
+        margin: 0 -8px;
+        overflow-x: auto;
+        overflow-y: hidden;
+        scroll-behavior: smooth;
+        scroll-snap-type: x proximity;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+    }
+
+    .home-categories-viewport::-webkit-scrollbar {
+        display: none;
+    }
+
+    .home-categories-track {
+        display: flex;
+        align-items: flex-start;
+        gap: 18px;
+        min-width: max-content;
+        padding: 4px 8px 12px;
+    }
+
+    .home-category-card {
+        width: 148px;
+        flex: 0 0 148px;
+        text-align: center;
+        color: #292929;
+        text-decoration: none;
+        scroll-snap-align: center;
+    }
+
+    .home-category-card:hover,
+    .home-category-card:focus {
+        color: #1A2697;
+        text-decoration: none;
+    }
+
+    .home-category-circle {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 122px;
+        height: 122px;
+        margin: 0 auto 14px;
+        border-radius: 50%;
+        background:
+            radial-gradient(circle at 30% 28%, rgba(255, 255, 255, 0.95) 0 26%, rgba(255, 255, 255, 0) 27%),
+            linear-gradient(135deg, rgba(26, 38, 151, 0.1), rgba(70, 105, 52, 0.12));
+        border: 1px solid rgba(26, 38, 151, 0.08);
+        box-shadow: inset 0 0 0 10px rgba(255, 255, 255, 0.58), 0 14px 28px rgba(16, 26, 92, 0.1);
+        transition: transform .22s ease, box-shadow .22s ease, border-color .22s ease;
+    }
+
+    .home-category-circle::after {
+        content: "";
+        position: absolute;
+        inset: 14px;
+        border-radius: 50%;
+        background: linear-gradient(112deg, rgba(26, 38, 151, 0.14) 0%, rgba(26, 38, 151, 0.14) 48%, rgba(70, 105, 52, 0.16) 48.5%, rgba(70, 105, 52, 0.16) 100%);
+        opacity: 0;
+        transition: opacity .22s ease;
+    }
+
+    .home-category-circle i {
+        position: relative;
+        z-index: 2;
+        color: #1A2697;
+        font-size: 52px;
+        line-height: 1;
+        transition: color .22s ease, transform .22s ease;
+    }
+
+    .home-category-card:hover .home-category-circle,
+    .home-category-card:focus .home-category-circle {
+        border-color: rgba(70, 105, 52, 0.28);
+        box-shadow: inset 0 0 0 10px rgba(255, 255, 255, 0.62), 0 18px 34px rgba(70, 105, 52, 0.16);
+        transform: translateY(-4px);
+    }
+
+    .home-category-card:hover .home-category-circle::after,
+    .home-category-card:focus .home-category-circle::after {
+        opacity: 1;
+    }
+
+    .home-category-card:hover .home-category-circle i,
+    .home-category-card:focus .home-category-circle i {
+        color: #466934;
+        transform: scale(1.06);
+    }
+
+    .home-category-label {
+        display: block;
+        min-height: 42px;
+        color: #333333;
+        font-size: 17px;
+        font-weight: 700;
+        line-height: 1.22;
+        overflow-wrap: anywhere;
+    }
+
+    .home-categories-controls {
+        display: flex;
+        justify-content: center;
+        gap: 14px;
+        margin-top: 18px;
+    }
+
+    .home-categories-arrow {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 48px;
+        height: 48px;
+        border: 0;
+        border-radius: 50%;
+        background: #466934;
+        color: #ffffff;
+        box-shadow: 0 12px 25px rgba(70, 105, 52, 0.24);
+        cursor: pointer;
+        transition: transform .2s ease, background .2s ease, box-shadow .2s ease;
+    }
+
+    .home-categories-arrow:first-child {
+        background: #1A2697;
+        box-shadow: 0 12px 25px rgba(26, 38, 151, 0.22);
+    }
+
+    .home-categories-arrow:hover,
+    .home-categories-arrow:focus {
+        transform: translateY(-2px);
+        background: #355329;
+        color: #ffffff;
+    }
+
+    .home-categories-arrow:first-child:hover,
+    .home-categories-arrow:first-child:focus {
+        background: #101A5C;
+    }
+
+    .home-categories-arrow i {
+        font-size: 30px;
+        line-height: 1;
+    }
+
+    .home-categories-empty {
+        margin: 0;
+        color: #555555;
+        font-size: 16px;
+    }
+
+    @media (max-width: 991px) {
+        .home-categories-area {
+            padding: 6px 0 58px;
+        }
+
+        .home-categories-shell {
+            width: calc(100% - 18px);
+            padding: 26px 18px 24px;
+            border-radius: 18px;
+        }
+
+        .home-categories-title {
+            margin-bottom: 20px;
+            font-size: 23px;
+        }
+
+        .home-categories-track {
+            gap: 14px;
+        }
+
+        .home-category-card {
+            width: 124px;
+            flex-basis: 124px;
+        }
+
+        .home-category-circle {
+            width: 104px;
+            height: 104px;
+            margin-bottom: 12px;
+        }
+
+        .home-category-circle i {
+            font-size: 44px;
+        }
+
+        .home-category-label {
+            font-size: 15px;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .home-categories-shell {
+            padding-left: 14px;
+            padding-right: 14px;
+        }
+
+        .home-categories-title {
+            font-size: 21px;
+        }
+
+        .home-category-card {
+            width: 112px;
+            flex-basis: 112px;
+        }
+
+        .home-category-circle {
+            width: 92px;
+            height: 92px;
+            box-shadow: inset 0 0 0 8px rgba(255, 255, 255, 0.58), 0 12px 22px rgba(16, 26, 92, 0.1);
+        }
+
+        .home-category-circle::after {
+            inset: 12px;
+        }
+
+        .home-category-circle i {
+            font-size: 38px;
+        }
+
+        .home-category-label {
+            font-size: 14px;
+        }
+
+        .home-categories-arrow {
+            width: 44px;
+            height: 44px;
+        }
+    }
+</style>
+
+<section class="home-categories-area" aria-labelledby="home-categories-title">
+    <div class="home-categories-shell">
+        <h2 id="home-categories-title" class="home-categories-title">Buscar por categor&iacute;a</h2>
+
+        <?php if (!empty($categoriasInicio)): ?>
+            <div class="home-categories-viewport" id="home-categories-viewport">
+                <div class="home-categories-track">
+                    <?php foreach ($categoriasInicio as $cat):
+                        $nombreCategoriaInicio = strtoupper(trim((string) ($cat['nombre'] ?? '')));
+                        $iconoCategoriaInicio = $iconosCategoriasInicio[$nombreCategoriaInicio] ?? "bx bx-category";
+
+                        if (strpos($nombreCategoriaInicio, 'ANTENA') !== false || (strpos($nombreCategoriaInicio, 'FLEX') !== false && strpos($nombreCategoriaInicio, 'SE') !== false)) {
+                            $iconoCategoriaInicio = "bx bx-broadcast";
+                        }
+
+                        $idCategoriaInicio = (string) ($cat['idcategoria'] ?? '');
+                        $textoCategoriaInicio = (string) ($cat['nombre'] ?? 'Categoria');
+                    ?>
+                        <a class="home-category-card" href="tienda.php?categoria=<?= urlencode($idCategoriaInicio) ?>" aria-label="Ver productos de <?= htmlspecialchars($textoCategoriaInicio, ENT_QUOTES, 'UTF-8') ?>">
+                            <span class="home-category-circle" aria-hidden="true">
+                                <i class="<?= htmlspecialchars($iconoCategoriaInicio, ENT_QUOTES, 'UTF-8') ?>"></i>
+                            </span>
+                            <span class="home-category-label"><?= htmlspecialchars($textoCategoriaInicio, ENT_QUOTES, 'UTF-8') ?></span>
+                        </a>
+                    <?php endforeach; ?>
+                </div>
+            </div>
+
+            <div class="home-categories-controls" aria-label="Controles de categorias">
+                <button class="home-categories-arrow" type="button" data-home-categories-dir="-1" aria-label="Categorias anteriores">
+                    <i class="bx bx-chevron-left" aria-hidden="true"></i>
+                </button>
+                <button class="home-categories-arrow" type="button" data-home-categories-dir="1" aria-label="Categorias siguientes">
+                    <i class="bx bx-chevron-right" aria-hidden="true"></i>
+                </button>
+            </div>
+        <?php else: ?>
+            <p class="home-categories-empty">No hay categor&iacute;as disponibles.</p>
+        <?php endif; ?>
+    </div>
+</section>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var viewport = document.getElementById('home-categories-viewport');
+
+        if (!viewport) {
+            return;
+        }
+
+        var buttons = document.querySelectorAll('[data-home-categories-dir]');
+
+        buttons.forEach(function (button) {
+            button.addEventListener('click', function () {
+                var direction = parseInt(button.getAttribute('data-home-categories-dir'), 10) || 1;
+                var amount = Math.max(220, Math.floor(viewport.clientWidth * 0.82));
+
+                viewport.scrollBy({
+                    left: amount * direction,
+                    behavior: 'smooth'
+                });
+            });
+        });
+    });
+</script>
+
 
 
 
