@@ -479,6 +479,7 @@ Dirigite a Nosotros
     .arrivals-products-image {
         width: 100%;
         aspect-ratio: 1 / 1;
+        max-width: 100%;
         overflow: hidden;
         position: relative;
     }
@@ -646,6 +647,8 @@ Dirigite a Nosotros
         background: #fff;
         transition: all 0.3s ease;
         position: relative;
+        width: 100%;
+        min-width: 0;
     }
 
     .single-arrivals-products:hover {
@@ -687,6 +690,62 @@ Dirigite a Nosotros
         overflow: hidden;
     }
 
+    #contenedor-promociones-productos,
+    #contenedor-nuevos-productos,
+    #productos-mas-vendidos {
+        --bs-gutter-x: 0;
+        --bs-gutter-y: 0;
+        display: grid !important;
+        grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+        gap: 30px 24px !important;
+        align-items: stretch;
+        justify-content: center;
+        width: 100%;
+        max-width: 930px;
+        margin-left: auto !important;
+        margin-right: auto !important;
+    }
+
+    #contenedor-promociones-productos>div,
+    #contenedor-nuevos-productos>div,
+    #productos-mas-vendidos>div {
+        width: 100% !important;
+        max-width: none !important;
+        min-width: 0 !important;
+        flex: none !important;
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+        margin: 0 !important;
+    }
+
+    #contenedor-promociones-productos .single-arrivals-products,
+    #contenedor-nuevos-productos .single-arrivals-products,
+    #productos-mas-vendidos .single-arrivals-products {
+        height: 100%;
+        margin-bottom: 0;
+    }
+
+    @media (max-width: 991px) {
+
+        #contenedor-promociones-productos,
+        #contenedor-nuevos-productos,
+        #productos-mas-vendidos {
+            grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+            max-width: 660px;
+            gap: 22px 16px !important;
+        }
+    }
+
+    @media (max-width: 575px) {
+
+        #contenedor-promociones-productos,
+        #contenedor-nuevos-productos,
+        #productos-mas-vendidos {
+            max-width: 100%;
+            gap: 16px 12px !important;
+        }
+    }
+
     @media (max-width: 767px) {
 
         #contenedor-promociones-productos>div,
@@ -694,6 +753,7 @@ Dirigite a Nosotros
         #productos-mas-vendidos>div {
             flex: 0 0 50%;
             max-width: 50%;
+            min-width: 0;
             padding-left: 6px;
             padding-right: 6px;
             margin-bottom: 12px;
@@ -3295,10 +3355,25 @@ document.addEventListener('DOMContentLoaded', function () {
                 .lm-products-nine-layout > .lm-product-grid-item {
                     width: auto !important;
                     max-width: none !important;
+                    min-width: 0 !important;
                     flex: none !important;
                     padding-left: 0 !important;
                     padding-right: 0 !important;
                     margin: 0 !important;
+                }
+
+                .lm-products-nine-layout .single-arrivals-products,
+                .lm-products-nine-layout .arrivals-products-image,
+                .lm-products-nine-layout .arrivals-products-content,
+                .lm-products-nine-layout .rating {
+                    width: 100% !important;
+                    max-width: 100% !important;
+                    min-width: 0 !important;
+                }
+
+                .lm-products-nine-layout .arrivals-products-image img {
+                    width: 100% !important;
+                    max-width: 100% !important;
                 }
 
                 .lm-products-nine-layout > .lm-product-side-panel {
@@ -3338,7 +3413,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 @media (max-width: 575px) {
                     .lm-products-nine-layout {
-                        grid-template-columns: 1fr !important;
+                        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+                        gap: 16px 12px !important;
                     }
                 }
             `;
@@ -3483,10 +3559,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 return;
             }
 
-            fillFromPage('nuevos productos', nuevosContainer).then(function () {
+                fillFromPage('nuevos productos', nuevosContainer).then(function () {
                 applyNineProductLayout('nuevos productos', nuevosContainer);
                 nuevosContainer.style.display = 'grid';
-                nuevosContainer.style.gridTemplateColumns = 'repeat(3, minmax(0, 1fr))';
                 nuevosContainer.style.maxWidth = '900px';
                 nuevosContainer.style.width = '100%';
                 nuevosContainer.style.marginLeft = 'auto';

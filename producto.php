@@ -3,16 +3,7 @@
 $seo_title = "Producto - TI-CELL | Celulares y accesorios";
 $seo_description = "Consulta detalles de productos en TI-CELL: celulares, accesorios, repuestos y tecnologia para tu dia a dia.";
 $seo_keywords = "TI-CELL, producto celular, accesorios para telefonos, repuestos, tienda de tecnologia Guatemala";
-
-include 'head.php';
 $current_page = basename($_SERVER['PHP_SELF']);
-
-// Cargar categorias desde la API (igual que en head.php)
-include "assets/php/rutas.php";
-$response = getApi($url_listar_categorias);
-$data = json_decode($response, true);
-$categorias = $data["data"] ?? [];
-
 
 // Obtener y validar idarticulo de la URL
 $idarticulo = 0;
@@ -69,6 +60,8 @@ if (isset($_GET['id'])) {
     header("Location: index.php?error=id_faltante");
     exit();
 }
+
+include 'head.php';
 
 ?>
 

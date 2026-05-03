@@ -650,6 +650,7 @@ $rutaImagenes = "https://ssl.sol.sistemasolgt.com/ticel/files/articulos/";
             max-width: 100%;
             padding-top: 10px;
             padding-bottom: 45px;
+            overflow: hidden;
         }
 
         .servicios-swiper .swiper-slide {
@@ -992,7 +993,3 @@ if (!empty($testimoniosCarrusel)) {
 
 <!-- Start Footer Area -->
 <?php include 'footer.php'; ?>
-<?php
-header('Location: contact.php');
-exit;
-?>

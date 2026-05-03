@@ -10,6 +10,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
 const PRODUCTO_IMG_BASE = "https://ssl.sol.sistemasolgt.com/ticel/files/articulos/";
 const PRODUCTO_IMG_PLACEHOLDER = "assets/img/404.png";
+const INICIO_PRODUCTOS_POR_SECCION = 9;
+const INICIO_PRODUCTOS_COMPLEMENTO_ENDPOINT = "assets/php/productos_paginados.php";
 
 function construirUrlImagenProducto(nombreArchivo) {
     const nombre = (nombreArchivo ?? "").toString().trim();
@@ -18,6 +20,78 @@ function construirUrlImagenProducto(nombreArchivo) {
 
 function obtenerImagenProducto(producto) {
     return construirUrlImagenProducto(producto?.imagen) || PRODUCTO_IMG_PLACEHOLDER;
+}
+
+function obtenerClaveProductoInicio(producto) {
+    return (producto?.idarticulo || producto?.codigo || producto?.nombre || "").toString().trim().toLowerCase();
+}
+
+function agregarProductosUnicosInicio(destino, vistos, productos) {
+    if (!Array.isArray(productos)) {
+        return;
+    }
+
+    productos.forEach(producto => {
+        if (!producto || destino.length >= INICIO_PRODUCTOS_POR_SECCION) {
+            return;
+        }
+
+        const clave = obtenerClaveProductoInicio(producto);
+        if (!clave || vistos.has(clave)) {
+            return;
+        }
+
+        vistos.add(clave);
+        destino.push(producto);
+    });
+}
+
+async function obtenerProductosComplementoInicio(modo) {
+    const response = await fetch(INICIO_PRODUCTOS_COMPLEMENTO_ENDPOINT, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            mode: modo,
+            page: 1,
+            per_page: 30
+        })
+    });
+
+    if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data.success && Array.isArray(data.data) ? data.data : [];
+}
+
+async function completarProductosInicio(productosBase) {
+    const productos = [];
+    const vistos = new Set();
+
+    agregarProductosUnicosInicio(productos, vistos, productosBase);
+
+    if (productos.length < INICIO_PRODUCTOS_POR_SECCION) {
+        try {
+            const complementoOfertas = await obtenerProductosComplementoInicio("ofertas");
+            agregarProductosUnicosInicio(productos, vistos, complementoOfertas);
+        } catch (error) {
+            console.warn("No se pudo completar productos desde ofertas.", error);
+        }
+    }
+
+    if (productos.length < INICIO_PRODUCTOS_POR_SECCION) {
+        try {
+            const complementoMenosDe100 = await obtenerProductosComplementoInicio("menosde100");
+            agregarProductosUnicosInicio(productos, vistos, complementoMenosDe100);
+        } catch (error) {
+            console.warn("No se pudo completar productos desde menos de 100.", error);
+        }
+    }
+
+    return productos.slice(0, INICIO_PRODUCTOS_POR_SECCION);
 }
 
 /* ============================================================
@@ -33,7 +107,7 @@ function cargarProductosPromociones() {
         body: JSON.stringify({})
     })
         .then(response => response.json())
-        .then(data => {
+        .then(async data => {
 
             let contenedor = document.getElementById("contenedor-promociones-productos");
             contenedor.innerHTML = "";
@@ -46,7 +120,7 @@ function cargarProductosPromociones() {
                 return;
             }
 
-            let productos = data.data;
+            let productos = await completarProductosInicio(data.data);
 
             productos.forEach(producto => {
 
@@ -150,7 +224,7 @@ function cargarProductosNuevos() {
         body: JSON.stringify({})
     })
         .then(response => response.json())
-        .then(data => {
+        .then(async data => {
 
             let contenedor = document.getElementById("contenedor-nuevos-productos");
             contenedor.innerHTML = "";
@@ -163,7 +237,7 @@ function cargarProductosNuevos() {
                 return;
             }
 
-            let productos = data.data;
+            let productos = await completarProductosInicio(data.data);
 
             productos.forEach(producto => {
 
@@ -483,7 +557,7 @@ function cargarProductosMasVendidos() {
         body: JSON.stringify({})
     })
         .then(response => response.json())
-        .then(data => {
+        .then(async data => {
 
             // Mostrar JSON real (solo para pruebas)
             // alert(JSON.stringify(data, null, 2));
@@ -500,7 +574,7 @@ function cargarProductosMasVendidos() {
                 return;
             }
 
-            let productos = data.data;
+            let productos = await completarProductosInicio(data.data);
 
             productos.forEach(producto => {
 
@@ -577,7 +651,7 @@ function cargarProductosMasVendidos() {
         })
         .catch(error => {
             console.error("❌ Error:", error);
-            document.getElementById("contenedor-mas-vendidos").innerHTML = `
+            document.getElementById("productos-mas-vendidos").innerHTML = `
             <div class="col-12">
                 <div class="alert alert-danger">Error al cargar los productos.</div>
             </div>`;
