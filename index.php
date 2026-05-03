@@ -50,6 +50,15 @@ if ($ch !== false) {
 
     }
 
+    /* Evita que aparezcan miniaturas circulares generadas por scripts antiguos del slider de inicio. */
+    .main-slider-area .inicio-circular-carousel,
+    .main-slider-area .lm-final-circular-thumbs,
+    .main-slider-area .lm-professional-circle-nav,
+    .main-slider-area .lm-root-circular-nav,
+    .main-slider-area .lm-clean-real-slider__circle {
+        display: none !important;
+    }
+
     /* =========================
    BANNER SUAVE / SECUNDARIO
 ========================= */
@@ -1523,6 +1532,8 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
+    return;
+
     function addCircularSliderStyle() {
         if (document.getElementById('inicio-circular-slider-style')) {
             return;
@@ -1826,6 +1837,8 @@ document.addEventListener('DOMContentLoaded', function () {
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     setTimeout(function () {
+        return;
+
         function cleanSliderText(text) {
             return text.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
         }
@@ -2061,6 +2074,8 @@ document.addEventListener('DOMContentLoaded', function () {
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     setTimeout(function () {
+        return;
+
         function plain(text) {
             return (text || '').trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
         }
@@ -2429,6 +2444,8 @@ document.addEventListener('DOMContentLoaded', function () {
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     setTimeout(function () {
+        return;
+
         function lmText(value) {
             return (value || '').trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
         }
@@ -2766,6 +2783,8 @@ document.addEventListener('DOMContentLoaded', function () {
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     setTimeout(function () {
+        return;
+
         function normalText(value) {
             return (value || '').trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
         }
@@ -3130,6 +3149,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
+    return;
+
     function restoreOriginalSlider() {
         document.querySelectorAll(
             '#inicio-circular-slider-style, #lm-final-circular-slider-style, #lm-professional-circular-slider-style, #lm-root-circular-slider-style, #lm-clean-real-slider-style, .inicio-circular-carousel, .lm-final-circular-thumbs, .lm-professional-circle-nav, .lm-root-circular-nav, .lm-clean-real-slider'
@@ -3190,6 +3211,8 @@ document.addEventListener('DOMContentLoaded', function () {
 <?php include 'footer.php'; ?>
 <script>
 document.addEventListener('DOMContentLoaded', function () {
+    return;
+
     function cleanCircularSliderArtifacts() {
         document.querySelectorAll(
             '#inicio-circular-slider-style, #lm-final-circular-slider-style, #lm-professional-circular-slider-style, #lm-root-circular-slider-style, #lm-clean-real-slider-style, .inicio-circular-carousel, .lm-final-circular-thumbs, .lm-professional-circle-nav, .lm-root-circular-nav, .lm-clean-real-slider'
