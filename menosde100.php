@@ -160,13 +160,18 @@ $current_page = basename($_SERVER['PHP_SELF']);
     /* Banner Ofertas Exclusivas */
     .exclusive-offers-banner {
         position: relative;
-        background: linear-gradient(90deg, #1A2697 0%, #B73639 58%, #466934 100%);
-        padding: 25px 0;
-        margin-top: 50px;
-        margin-bottom: -50px;
-        /* Adjust for next section padding */
-        overflow: hidden;
+        width: calc(100% - 24px) !important;
+        max-width: 1360px !important;
+        min-height: 142px !important;
+        margin: 50px auto -50px !important;
+        padding: 0 !important;
+        overflow: hidden !important;
         z-index: 5;
+        border-radius: 22px !important;
+        box-sizing: border-box !important;
+        background: linear-gradient(112deg, #101A5C 0%, #1A2697 49.35%, #466934 49.55%, #355329 100%) !important;
+        background-color: #1A2697 !important;
+        box-shadow: 0 18px 42px rgba(16, 26, 92, 0.16) !important;
     }
 
     .exclusive-offers-banner::before {
@@ -188,16 +193,19 @@ $current_page = basename($_SERVER['PHP_SELF']);
     }
 
     .banner-content {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        gap: 30px;
+        min-height: 142px !important;
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: center !important;
+        align-items: center !important;
+        gap: 12px !important;
         position: relative;
         z-index: 2;
+        text-align: center !important;
     }
 
     .banner-text {
-        color: #fff;
+        color: #fff !important;
         font-size: 26px;
         font-weight: 800;
         letter-spacing: 1px;
@@ -206,34 +214,69 @@ $current_page = basename($_SERVER['PHP_SELF']);
     }
 
     .banner-btn {
-        background: #466934;
-        color: #fff;
+        background: #D0C32B !important;
+        background-color: #D0C32B !important;
+        color: #292929 !important;
         font-weight: 700;
         padding: 12px 35px;
         border-radius: 50px;
         font-size: 16px;
         text-transform: uppercase;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        box-shadow: 0 10px 24px rgba(208, 195, 43, 0.25) !important;
         transition: all 0.3s ease;
     }
 
     .banner-btn:hover {
         transform: translateY(-3px) scale(1.05);
-        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
-        background: #355329;
-        color: #fff;
+        background: #B8AD25 !important;
+        background-color: #B8AD25 !important;
+        color: #292929 !important;
+        box-shadow: 0 12px 28px rgba(184, 173, 37, 0.34) !important;
     }
 
     /* Responsive */
     @media (max-width: 768px) {
+        .exclusive-offers-banner {
+            width: calc(100% - 18px) !important;
+            min-height: 132px !important;
+            border-radius: 18px !important;
+        }
+
         .banner-content {
-            flex-direction: column;
-            gap: 15px;
-            text-align: center;
+            min-height: 132px !important;
+            gap: 12px !important;
         }
 
         .banner-text {
-            font-size: 18px;
+            font-size: 18px !important;
+            line-height: 1.22 !important;
+        }
+
+        .banner-btn {
+            padding: 10px 24px !important;
+            font-size: 14px !important;
+        }
+    }
+
+    @media (max-width: 359px) {
+        .exclusive-offers-banner {
+            width: calc(100% - 14px) !important;
+            min-height: 132px !important;
+            border-radius: 16px !important;
+        }
+
+        .banner-content {
+            min-height: 132px !important;
+            gap: 10px !important;
+        }
+
+        .banner-text {
+            font-size: 18px !important;
+        }
+
+        .banner-btn {
+            padding: 9px 18px !important;
+            font-size: 13px !important;
         }
     }
 

@@ -146,45 +146,38 @@ if ($ch !== false) {
     @media only screen and (max-width: 767px) {
 
         .main-slider-area {
-            height: 460px;
+            height: 540px;
         }
 
         .main-slider-area .main-slider-item-box {
 
-            width: 95px;
-            height: 150px;
+            width: 140px;
+            height: 205px;
 
-            bottom: 70px;
+            bottom: 78px;
             top: auto;
 
-            transform: none;
+            transform: translateX(-50%);
 
         }
 
         .main-slider-area .main-slider-item-box:nth-child(3) {
 
-            right: 110px;
-            left: auto;
+            left: 50%;
+            right: auto;
 
         }
 
-        .main-slider-area .main-slider-item-box:nth-child(4) {
+        .main-slider-area .main-slider-item-box:nth-child(n + 4) {
 
-            right: 10px;
-            left: auto;
-
-        }
-
-        .main-slider-area .main-slider-item-box:nth-child(5) {
-
-            display: none;
+            display: none !important;
 
         }
 
         .main-slider-area .main-slider-content {
 
-            bottom: 100px;
-            top: auto;
+            top: 36px;
+            bottom: auto;
 
             left: 18px;
             right: 18px;
@@ -193,14 +186,51 @@ if ($ch !== false) {
 
         .main-slider-area .main-slider-content h1 {
 
-            font-size: 26px;
+            font-size: 30px;
 
         }
 
         .main-slider-area .main-slider-content p {
 
-            max-width: 85%;
+            max-width: 100%;
 
+        }
+
+    }
+
+    @media only screen and (max-width: 359px) {
+
+        .main-slider-area {
+            height: 520px;
+        }
+
+        .main-slider-area .main-slider-item-box {
+            width: 118px;
+            height: 170px;
+            bottom: 74px;
+        }
+
+        .main-slider-area .main-slider-content {
+            top: 30px;
+            left: 14px;
+            right: 14px;
+        }
+
+        .main-slider-area .main-slider-content b {
+            font-size: 12px;
+        }
+
+        .main-slider-area .main-slider-content h1 {
+            font-size: 24px;
+        }
+
+        .main-slider-area .main-slider-content p {
+            font-size: 12px;
+        }
+
+        .main-slider-area .main-slider-content .default-btn {
+            padding: 9px 16px;
+            font-size: 13px;
         }
 
     }
@@ -595,6 +625,105 @@ Dirigite a Nosotros
         }
     }
 
+    /* Home banners: same visual width as the main slider, with the brand split color. */
+    .exclusive-offers-banner,
+    .section-header-soft {
+        width: calc(100% - 24px) !important;
+        max-width: 1360px !important;
+        min-height: 142px !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+        padding: 0 !important;
+        border-radius: 22px !important;
+        overflow: hidden !important;
+        box-sizing: border-box !important;
+        background: linear-gradient(112deg, #101A5C 0%, #1A2697 49.35%, #466934 49.55%, #355329 100%) !important;
+        background-color: #1A2697 !important;
+        box-shadow: 0 18px 42px rgba(16, 26, 92, 0.16) !important;
+    }
+
+    .section-header-soft .wave {
+        background: linear-gradient(112deg, #101A5C 0%, #1A2697 49.35%, #466934 49.55%, #355329 100%) !important;
+    }
+
+    .exclusive-offers-banner .container,
+    .section-header-soft .content.container {
+        width: 100% !important;
+        max-width: 1320px !important;
+        padding-left: 24px !important;
+        padding-right: 24px !important;
+    }
+
+    .exclusive-offers-banner .banner-content,
+    .section-header-soft .content {
+        min-height: 142px !important;
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: center !important;
+        align-items: center !important;
+        gap: 12px !important;
+        text-align: center !important;
+    }
+
+    .section-header-soft h2 {
+        margin-bottom: 0 !important;
+        font-size: 30px !important;
+        line-height: 1.15 !important;
+    }
+
+    @media (max-width: 768px) {
+        .exclusive-offers-banner,
+        .section-header-soft {
+            width: calc(100% - 18px) !important;
+            min-height: 132px !important;
+            border-radius: 18px !important;
+        }
+
+        .exclusive-offers-banner .container,
+        .section-header-soft .content.container {
+            padding-left: 18px !important;
+            padding-right: 18px !important;
+        }
+
+        .exclusive-offers-banner .banner-content,
+        .section-header-soft .content {
+            min-height: 132px !important;
+            flex-direction: column !important;
+            gap: 12px !important;
+        }
+
+        .section-header-soft h2 {
+            font-size: 22px !important;
+        }
+    }
+
+    @media (max-width: 359px) {
+        .exclusive-offers-banner,
+        .section-header-soft {
+            width: calc(100% - 14px) !important;
+            min-height: 132px !important;
+            border-radius: 16px !important;
+        }
+
+        .exclusive-offers-banner .banner-content,
+        .section-header-soft .content {
+            min-height: 132px !important;
+            gap: 10px !important;
+        }
+
+        .banner-text,
+        .section-header-soft h2 {
+            font-size: 18px !important;
+            line-height: 1.22 !important;
+        }
+
+        .banner-btn,
+        .section-header-soft .btn-soft {
+            padding: 9px 18px !important;
+            font-size: 13px !important;
+        }
+    }
+
     /* Estilo Título de Sección con Líneas */
     .section-title {
         border-bottom: none !important;
@@ -743,6 +872,17 @@ Dirigite a Nosotros
         #productos-mas-vendidos {
             max-width: 100%;
             gap: 16px 12px !important;
+        }
+    }
+
+    @media (max-width: 359px) {
+
+        #contenedor-promociones-productos,
+        #contenedor-nuevos-productos,
+        #productos-mas-vendidos {
+            grid-template-columns: minmax(0, 1fr) !important;
+            max-width: 250px;
+            gap: 18px !important;
         }
     }
 
@@ -3371,6 +3511,33 @@ document.addEventListener('DOMContentLoaded', function () {
                     min-width: 0 !important;
                 }
 
+                .lm-products-nine-layout .single-arrivals-products {
+                    height: 100% !important;
+                    display: flex !important;
+                    flex-direction: column !important;
+                }
+
+                .lm-products-nine-layout .arrivals-products-content {
+                    margin-top: 16px !important;
+                    display: flex !important;
+                    flex-direction: column !important;
+                }
+
+                .lm-products-nine-layout .arrivals-products-content h3 {
+                    font-size: 17px !important;
+                    line-height: 1.2 !important;
+                    margin-bottom: 8px !important;
+                }
+
+                .lm-products-nine-layout .arrivals-products-content .rating {
+                    margin-bottom: 8px !important;
+                }
+
+                .lm-products-nine-layout .arrivals-products-content span {
+                    font-size: 18px !important;
+                    line-height: 1.2 !important;
+                }
+
                 .lm-products-nine-layout .arrivals-products-image img {
                     width: 100% !important;
                     max-width: 100% !important;
@@ -3414,7 +3581,41 @@ document.addEventListener('DOMContentLoaded', function () {
                 @media (max-width: 575px) {
                     .lm-products-nine-layout {
                         grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+                        max-width: calc(100% - 24px) !important;
                         gap: 16px 12px !important;
+                    }
+
+                    .lm-products-nine-layout .arrivals-products-content {
+                        margin-top: 12px !important;
+                    }
+
+                    .lm-products-nine-layout .arrivals-products-content h3 {
+                        font-size: 15px !important;
+                    }
+
+                    .lm-products-nine-layout .arrivals-products-content .rating li i {
+                        font-size: 15px !important;
+                    }
+
+                    .lm-products-nine-layout .arrivals-products-content span {
+                        font-size: 17px !important;
+                    }
+
+                    .lm-products-nine-layout .arrivals-products-image .tag {
+                        font-size: 12px !important;
+                        padding: 5px 12px !important;
+                    }
+                }
+
+                @media (max-width: 359px) {
+                    .lm-products-nine-layout {
+                        grid-template-columns: minmax(0, 1fr) !important;
+                        max-width: 250px !important;
+                        gap: 18px !important;
+                    }
+
+                    .lm-products-nine-layout .arrivals-products-content h3 {
+                        font-size: 16px !important;
                     }
                 }
             `;
@@ -3464,7 +3665,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 return 'ofertas.php';
             }
 
-            return 'productos.php';
+            return 'tienda.php';
         }
 
         function fillFromPage(sectionName, container) {
@@ -3701,7 +3902,66 @@ document.addEventListener('DOMContentLoaded', function () {
                 @media (max-width: 575px) {
                     .lm-feature-banners-row {
                         grid-template-columns: 1fr !important;
+                        width: calc(100% - 24px) !important;
                         max-width: 360px !important;
+                    }
+
+                    .lm-feature-banner {
+                        min-height: 120px !important;
+                    }
+
+                    .lm-feature-banner__image {
+                        width: 108px !important;
+                        height: 108px !important;
+                        padding: 8px !important;
+                    }
+
+                    .lm-feature-banner__content {
+                        min-height: 82px !important;
+                        margin-left: 54px !important;
+                        padding: 16px 18px 16px 70px !important;
+                    }
+
+                    .lm-feature-banner__title {
+                        font-size: 20px !important;
+                    }
+
+                    .lm-feature-banner__subtitle {
+                        font-size: 12px !important;
+                    }
+                }
+
+                @media (max-width: 359px) {
+                    .lm-feature-banners-row {
+                        width: calc(100% - 18px) !important;
+                        max-width: 278px !important;
+                    }
+
+                    .lm-feature-banner {
+                        min-height: 104px !important;
+                    }
+
+                    .lm-feature-banner__image {
+                        width: 86px !important;
+                        height: 86px !important;
+                        border-width: 3px !important;
+                    }
+
+                    .lm-feature-banner__content {
+                        min-height: 72px !important;
+                        margin-left: 43px !important;
+                        padding: 13px 14px 13px 56px !important;
+                        border-radius: 0 34px 34px 0 !important;
+                    }
+
+                    .lm-feature-banner__title {
+                        font-size: 16px !important;
+                    }
+
+                    .lm-feature-banner__subtitle {
+                        margin-top: 6px !important;
+                        padding: 3px 10px !important;
+                        font-size: 10px !important;
                     }
                 }
             `;
@@ -3753,8 +4013,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 matches: ['envios', 'envíos'],
                 title: 'Envíos',
                 subtitle: 'a Domicilio',
-                image: 'EnviosDomicilio.png',
-                alternatives: ['EnviosaDomicilio.png']
+                image: 'EnviosaDomicilio.png',
+                alternatives: ['EnviosDomicilio.png']
             },
             {
                 matches: ['asesoria tecnica', 'asesoría técnica'],

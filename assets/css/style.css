@@ -1482,51 +1482,52 @@ Main Slider Area CSS
 @media only screen and (max-width: 991px) {
   .main-slider-area {
     max-width: calc(100% - 24px);
-    height: 520px;
+    height: 540px;
     margin: 20px auto 40px;
   }
 
   .main-slider-area .main-slider-item-box {
-    width: 170px;
-    height: 250px;
+    width: 190px;
+    height: 275px;
   }
 
   .main-slider-area .main-slider-item-box:nth-child(3) {
-    left: 62%;
+    left: auto;
+    right: 44px;
   }
 
-  .main-slider-area .main-slider-item-box:nth-child(4) {
-    left: calc(62% + 185px);
-  }
-
-  .main-slider-area .main-slider-item-box:nth-child(5) {
-    left: calc(62% + 370px);
+  .main-slider-area .main-slider-item-box:nth-child(n + 4) {
+    display: none;
   }
 
   .main-slider-area .main-slider-content {
-    left: 40px;
-    width: 300px;
+    left: 44px;
+    width: 330px;
   }
 
   .main-slider-area .main-slider-content h1 {
     font-size: 38px;
+  }
+
+  .main-slider-area .main-slider-content p {
+    max-width: 320px;
   }
 }
 
 @media only screen and (max-width: 767px) {
   .main-slider-area {
     max-width: calc(100% - 16px);
-    height: 500px;
+    height: 540px;
     margin: 12px auto 30px;
     box-shadow: 0 18px 35px rgba(0,0,0,.18);
   }
 
   .main-slider-area .main-slider-item-box {
-    width: 110px;
-    height: 170px;
+    width: 140px;
+    height: 205px;
     top: auto;
-    bottom: 70px;
-    transform: none;
+    bottom: 78px;
+    transform: translateX(-50%);
     border-radius: 18px;
   }
 
@@ -1542,21 +1543,11 @@ Main Slider Area CSS
   }
 
   .main-slider-area .main-slider-item-box:nth-child(3) {
-    left: auto;
-    right: 122px;
+    left: 50%;
+    right: auto;
   }
 
-  .main-slider-area .main-slider-item-box:nth-child(4) {
-    left: auto;
-    right: 8px;
-  }
-
-  .main-slider-area .main-slider-item-box:nth-child(5) {
-    left: auto;
-    right: -106px;
-  }
-
-  .main-slider-area .main-slider-item-box:nth-child(n + 6) {
+  .main-slider-area .main-slider-item-box:nth-child(n + 4) {
     display: none;
   }
 
@@ -1572,8 +1563,8 @@ Main Slider Area CSS
     left: 18px;
     right: 18px;
     width: auto;
-    top: auto;
-    bottom: 95px;
+    top: 36px;
+    bottom: auto;
     transform: none;
     text-align: left;
   }
@@ -1593,7 +1584,7 @@ Main Slider Area CSS
     font-size: 13px;
     line-height: 1.45;
     margin-bottom: 14px;
-    max-width: 85%;
+    max-width: 100%;
   }
 
   .main-slider-area .main-slider-content .default-btn {
@@ -1602,13 +1593,49 @@ Main Slider Area CSS
   }
 
   .main-slider-area .slider-stack-buttons {
-    bottom: 16px;
+    bottom: 20px;
   }
 
   .main-slider-area .slider-stack-buttons button {
     width: 40px;
     height: 34px;
     margin: 0 4px;
+  }
+}
+
+@media only screen and (max-width: 359px) {
+  .main-slider-area {
+    height: 520px;
+  }
+
+  .main-slider-area .main-slider-item-box {
+    width: 118px;
+    height: 170px;
+    bottom: 74px;
+  }
+
+  .main-slider-area .main-slider-content {
+    top: 30px;
+    left: 14px;
+    right: 14px;
+  }
+
+  .main-slider-area .main-slider-content b {
+    font-size: 12px;
+  }
+
+  .main-slider-area .main-slider-content h1 {
+    font-size: 24px;
+    line-height: 1.08;
+  }
+
+  .main-slider-area .main-slider-content p {
+    font-size: 12px;
+  }
+
+  .main-slider-area .main-slider-content .default-btn {
+    padding: 9px 16px;
+    font-size: 13px;
   }
 }
 

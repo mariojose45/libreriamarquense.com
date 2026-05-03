@@ -165,11 +165,28 @@ $footer_social_links = array_filter($site_social_links ?? []);
     /* Ajustar posicion cuando hay boton go-top activo */
     @media (max-width: 768px) {
         .whatsapp-float {
-            width: 55px;
-            height: 55px;
-            font-size: 28px;
-            bottom: 110px;
-            right: 15px;
+            width: 48px;
+            height: 48px;
+            font-size: 25px;
+            bottom: 96px;
+            right: 12px;
+        }
+    }
+
+    @media (max-width: 359px) {
+        .whatsapp-float {
+            width: 44px;
+            height: 44px;
+            font-size: 23px;
+            bottom: 88px;
+            right: 10px;
+        }
+
+        .go-top.active {
+            width: 40px;
+            height: 40px;
+            right: 12px;
+            bottom: 38px;
         }
     }
 </style>
