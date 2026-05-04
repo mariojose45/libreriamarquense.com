@@ -269,7 +269,8 @@ $categoria_actual = isset($_GET['categoria']) ? (string) $_GET['categoria'] : ''
     }
 
     .tienda-banner-section > .container {
-        max-width: 100%;
+        width: calc(100% - 24px);
+        max-width: 1360px;
         padding-left: 0;
         padding-right: 0;
     }
@@ -280,9 +281,10 @@ $categoria_actual = isset($_GET['categoria']) ? (string) $_GET['categoria'] : ''
         align-items: center;
         justify-content: center;
         overflow: hidden;
-        border-radius: 0;
+        border-radius: 22px;
         background: #101A5C;
-        min-height: 500px;
+        height: 350px;
+        min-height: 350px;
         isolation: isolate;
     }
 
@@ -316,15 +318,16 @@ $categoria_actual = isset($_GET['categoria']) ? (string) $_GET['categoria'] : ''
         display: flex;
         align-items: center;
         justify-content: center;
-        min-height: 500px;
-        padding: 36px 24px;
+        height: 350px;
+        min-height: 350px;
+        padding: 24px;
         text-align: center;
         width: 100%;
     }
 
     .tienda-banner__title {
         color: #ffffff;
-        font-size: clamp(40px, 6vw, 68px);
+        font-size: clamp(34px, 4.6vw, 56px);
         font-weight: 800;
         line-height: 1;
         margin: 0;
@@ -334,21 +337,31 @@ $categoria_actual = isset($_GET['categoria']) ? (string) $_GET['categoria'] : ''
     }
 
     @media (max-width: 991px) {
+        .tienda-banner-section > .container {
+            width: calc(100% - 18px);
+        }
+
         .tienda-banner {
-            min-height: 370px;
+            height: 290px;
+            min-height: 290px;
         }
 
         .tienda-banner__content {
-            min-height: 370px;
+            height: 290px;
+            min-height: 290px;
         }
     }
 
    /* ===== Movil ===== */
 
-    @media (max-width: 768px) {
+    @media (max-width: 767px) {
 
         .tienda-banner-section {
             padding-top: 18px;
+        }
+
+        .tienda-banner-section > .container {
+            width: calc(100% - 18px);
         }
 
         .tienda-banner {
@@ -356,6 +369,7 @@ $categoria_actual = isset($_GET['categoria']) ? (string) $_GET['categoria'] : ''
             min-height: 220px !important;
             overflow: hidden !important;
             position: relative !important;
+            border-radius: 18px !important;
         }
 
         .tienda-banner__content {
@@ -379,7 +393,7 @@ $categoria_actual = isset($_GET['categoria']) ? (string) $_GET['categoria'] : ''
         }
 
         .tienda-banner__title {
-            font-size: 32px;
+            font-size: 28px;
             letter-spacing: 0.10em;
         }
 
@@ -407,7 +421,7 @@ $categoria_actual = isset($_GET['categoria']) ? (string) $_GET['categoria'] : ''
             <div class="container">
                 <div class="tienda-banner tienda-banner--principal">
                     <video class="tienda-banner__video" autoplay muted loop playsinline preload="metadata">
-                        <source src="assets/img/BannerTienda/banneranimadoTI-CELL.mp4" type="video/mp4">
+                        <source src="assets/img/BannerTienda/VideoLibreria.mp4" type="video/mp4">
                     </video>
                     <div class="tienda-banner__content">
                         <h1 class="tienda-banner__title">TIENDA</h1>
@@ -1073,6 +1087,27 @@ $categoria_actual = isset($_GET['categoria']) ? (string) $_GET['categoria'] : ''
 <script type="text/javascript" src="assets/js/sweatlert.js"></script>
 <script type="text/javascript" src="assets/js/tienda.js?v=<?php echo filemtime('assets/js/tienda.js'); ?>"></script>
 <script>
+// Asegura que Tienda abra desde el inicio al entrar o recargar.
+(function () {
+    function scrollTiendaAlInicio() {
+        window.scrollTo({
+            top: 0,
+            left: 0,
+            behavior: 'auto'
+        });
+    }
+
+    if ('scrollRestoration' in history) {
+        history.scrollRestoration = 'manual';
+    }
+
+    document.addEventListener('DOMContentLoaded', scrollTiendaAlInicio);
+    window.addEventListener('pageshow', scrollTiendaAlInicio);
+    window.addEventListener('load', function () {
+        setTimeout(scrollTiendaAlInicio, 0);
+    });
+})();
+
 // ============================================================
 // FUNCIÓN PARA BUSCAR DESDE EL SIDEBAR
 // ============================================================

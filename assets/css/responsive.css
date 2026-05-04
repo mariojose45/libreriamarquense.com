@@ -983,4 +983,28 @@
   .offer-soon-content #timer div span {
     font-size: 14px;
   }
-}/*# sourceMappingURL=responsive.css.map */
+}
+
+/* Home circular slider responsive safeguards */
+@media only screen and (max-width: 991px) {
+  .main-slider-area.slider-circular-home .main-slider-item-box:nth-child(n + 3) {
+    position: absolute;
+    padding: 0;
+    border-radius: 50%;
+  }
+}
+
+@media only screen and (max-width: 767px) {
+  .main-slider-area.slider-circular-home {
+    overflow: hidden;
+  }
+
+  .main-slider-area.slider-circular-home .main-slider-item-box:nth-child(n + 3) {
+    border-width: 3px;
+  }
+
+  .main-slider-area.slider-circular-home .main-slider-content {
+    z-index: 8;
+  }
+}
+/*# sourceMappingURL=responsive.css.map */

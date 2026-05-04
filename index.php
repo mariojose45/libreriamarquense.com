@@ -145,11 +145,11 @@ if ($ch !== false) {
 
     @media only screen and (max-width: 767px) {
 
-        .main-slider-area {
+        .main-slider-area:not(.slider-circular-home) {
             height: 540px;
         }
 
-        .main-slider-area .main-slider-item-box {
+        .main-slider-area:not(.slider-circular-home) .main-slider-item-box {
 
             width: 140px;
             height: 205px;
@@ -161,20 +161,20 @@ if ($ch !== false) {
 
         }
 
-        .main-slider-area .main-slider-item-box:nth-child(3) {
+        .main-slider-area:not(.slider-circular-home) .main-slider-item-box:nth-child(3) {
 
             left: 50%;
             right: auto;
 
         }
 
-        .main-slider-area .main-slider-item-box:nth-child(n + 4) {
+        .main-slider-area:not(.slider-circular-home) .main-slider-item-box:nth-child(n + 4) {
 
             display: none !important;
 
         }
 
-        .main-slider-area .main-slider-content {
+        .main-slider-area:not(.slider-circular-home) .main-slider-content {
 
             top: 36px;
             bottom: auto;
@@ -184,13 +184,13 @@ if ($ch !== false) {
 
         }
 
-        .main-slider-area .main-slider-content h1 {
+        .main-slider-area:not(.slider-circular-home) .main-slider-content h1 {
 
             font-size: 30px;
 
         }
 
-        .main-slider-area .main-slider-content p {
+        .main-slider-area:not(.slider-circular-home) .main-slider-content p {
 
             max-width: 100%;
 
@@ -200,35 +200,35 @@ if ($ch !== false) {
 
     @media only screen and (max-width: 359px) {
 
-        .main-slider-area {
+        .main-slider-area:not(.slider-circular-home) {
             height: 520px;
         }
 
-        .main-slider-area .main-slider-item-box {
+        .main-slider-area:not(.slider-circular-home) .main-slider-item-box {
             width: 118px;
             height: 170px;
             bottom: 74px;
         }
 
-        .main-slider-area .main-slider-content {
+        .main-slider-area:not(.slider-circular-home) .main-slider-content {
             top: 30px;
             left: 14px;
             right: 14px;
         }
 
-        .main-slider-area .main-slider-content b {
+        .main-slider-area:not(.slider-circular-home) .main-slider-content b {
             font-size: 12px;
         }
 
-        .main-slider-area .main-slider-content h1 {
+        .main-slider-area:not(.slider-circular-home) .main-slider-content h1 {
             font-size: 24px;
         }
 
-        .main-slider-area .main-slider-content p {
+        .main-slider-area:not(.slider-circular-home) .main-slider-content p {
             font-size: 12px;
         }
 
-        .main-slider-area .main-slider-content .default-btn {
+        .main-slider-area:not(.slider-circular-home) .main-slider-content .default-btn {
             padding: 9px 16px;
             font-size: 13px;
         }
@@ -277,7 +277,7 @@ if ($slider) {
 }
 ?>
 
-<div class="main-slider-area">
+<div class="main-slider-area slider-circular-home">
     <div class="home-slides-two slider-stack">
         <?php if (!empty($sliderItems)): ?>
             <?php for ($r = 0; $r < 2; $r++): ?>
@@ -320,10 +320,10 @@ Dirigite a Nosotros
     </div>
 
     <div class="slider-stack-buttons">
-        <button type="button" class="slider-stack-prev">
+        <button type="button" class="slider-stack-prev" aria-label="Slide anterior">
             <i class="flaticon-left-arrow"></i>
         </button>
-        <button type="button" class="slider-stack-next">
+        <button type="button" class="slider-stack-next" aria-label="Slide siguiente">
             <i class="flaticon-right-arrow"></i>
         </button>
     </div>
@@ -1258,7 +1258,7 @@ $categoriasInicio = isset($categorias) && is_array($categorias)
 <style>
     .home-categories-area {
         background: #F7F8FC;
-        padding: 10px 0 78px;
+        padding: 22px 0 30px;
     }
 
     .home-categories-shell {
@@ -1266,38 +1266,36 @@ $categoriasInicio = isset($categorias) && is_array($categorias)
         width: calc(100% - 24px);
         max-width: 1360px;
         margin: 0 auto;
-        padding: 30px 28px 28px;
-        background: #ffffff;
-        border: 1px solid rgba(26, 38, 151, 0.08);
-        border-radius: 22px;
-        box-shadow: 0 18px 45px rgba(16, 26, 92, 0.08);
-        overflow: hidden;
+        padding: 0 12px;
+        background: transparent;
+        border: 0;
+        border-radius: 0;
+        box-shadow: none;
+        overflow: visible;
     }
 
     .home-categories-shell::before {
-        content: "";
-        position: absolute;
-        inset: 0 0 auto;
-        height: 6px;
-        background: linear-gradient(112deg, #101A5C 0%, #1A2697 49%, #466934 49.25%, #355329 100%);
+        display: none;
     }
 
     .home-categories-title {
-        margin: 0 0 24px;
+        margin: 0 0 12px;
         color: #1f2430;
-        font-size: 26px;
+        font-size: 23px;
         font-weight: 800;
         line-height: 1.2;
     }
 
     .home-categories-viewport {
-        margin: 0 -8px;
+        margin: 0 -4px;
         overflow-x: auto;
         overflow-y: hidden;
         scroll-behavior: smooth;
         scroll-snap-type: x proximity;
         -webkit-overflow-scrolling: touch;
         scrollbar-width: none;
+        padding-top: 6px;
+        padding-bottom: 4px;
     }
 
     .home-categories-viewport::-webkit-scrollbar {
@@ -1307,14 +1305,14 @@ $categoriasInicio = isset($categorias) && is_array($categorias)
     .home-categories-track {
         display: flex;
         align-items: flex-start;
-        gap: 18px;
+        gap: 8px;
         min-width: max-content;
-        padding: 4px 8px 12px;
+        padding: 2px 4px 4px;
     }
 
     .home-category-card {
-        width: 148px;
-        flex: 0 0 148px;
+        width: 112px;
+        flex: 0 0 112px;
         text-align: center;
         color: #292929;
         text-decoration: none;
@@ -1323,7 +1321,7 @@ $categoriasInicio = isset($categorias) && is_array($categorias)
 
     .home-category-card:hover,
     .home-category-card:focus {
-        color: #1A2697;
+        color: #111111;
         text-decoration: none;
     }
 
@@ -1332,60 +1330,52 @@ $categoriasInicio = isset($categorias) && is_array($categorias)
         display: flex;
         align-items: center;
         justify-content: center;
-        width: 122px;
-        height: 122px;
-        margin: 0 auto 14px;
+        width: 78px;
+        height: 78px;
+        margin: 0 auto 7px;
         border-radius: 50%;
-        background:
-            radial-gradient(circle at 30% 28%, rgba(255, 255, 255, 0.95) 0 26%, rgba(255, 255, 255, 0) 27%),
-            linear-gradient(135deg, rgba(26, 38, 151, 0.1), rgba(70, 105, 52, 0.12));
-        border: 1px solid rgba(26, 38, 151, 0.08);
-        box-shadow: inset 0 0 0 10px rgba(255, 255, 255, 0.58), 0 14px 28px rgba(16, 26, 92, 0.1);
+        background: #ffffff;
+        border: 2px solid #050505;
+        box-shadow: none;
         transition: transform .22s ease, box-shadow .22s ease, border-color .22s ease;
     }
 
     .home-category-circle::after {
-        content: "";
-        position: absolute;
-        inset: 14px;
-        border-radius: 50%;
-        background: linear-gradient(112deg, rgba(26, 38, 151, 0.14) 0%, rgba(26, 38, 151, 0.14) 48%, rgba(70, 105, 52, 0.16) 48.5%, rgba(70, 105, 52, 0.16) 100%);
-        opacity: 0;
-        transition: opacity .22s ease;
+        display: none;
     }
 
     .home-category-circle i {
         position: relative;
         z-index: 2;
-        color: #1A2697;
-        font-size: 52px;
+        color: #050505;
+        font-size: 32px;
         line-height: 1;
         transition: color .22s ease, transform .22s ease;
     }
 
     .home-category-card:hover .home-category-circle,
     .home-category-card:focus .home-category-circle {
-        border-color: rgba(70, 105, 52, 0.28);
-        box-shadow: inset 0 0 0 10px rgba(255, 255, 255, 0.62), 0 18px 34px rgba(70, 105, 52, 0.16);
-        transform: translateY(-4px);
+        border-color: #050505;
+        box-shadow: none;
+        transform: translateY(-2px);
     }
 
     .home-category-card:hover .home-category-circle::after,
     .home-category-card:focus .home-category-circle::after {
-        opacity: 1;
+        opacity: .72;
     }
 
     .home-category-card:hover .home-category-circle i,
     .home-category-card:focus .home-category-circle i {
-        color: #466934;
+        color: #050505;
         transform: scale(1.06);
     }
 
     .home-category-label {
         display: block;
-        min-height: 42px;
+        min-height: 30px;
         color: #333333;
-        font-size: 17px;
+        font-size: 14px;
         font-weight: 700;
         line-height: 1.22;
         overflow-wrap: anywhere;
@@ -1394,44 +1384,47 @@ $categoriasInicio = isset($categorias) && is_array($categorias)
     .home-categories-controls {
         display: flex;
         justify-content: center;
-        gap: 14px;
-        margin-top: 18px;
+        gap: 8px;
+        margin-top: 0;
     }
 
     .home-categories-arrow {
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        width: 48px;
-        height: 48px;
-        border: 0;
+        width: 36px;
+        height: 36px;
+        border: 3px solid #ffffff;
+        outline: 1px solid #050505;
         border-radius: 50%;
-        background: #466934;
+        background: #050505;
         color: #ffffff;
-        box-shadow: 0 12px 25px rgba(70, 105, 52, 0.24);
+        box-shadow: none;
         cursor: pointer;
         transition: transform .2s ease, background .2s ease, box-shadow .2s ease;
     }
 
     .home-categories-arrow:first-child {
-        background: #1A2697;
-        box-shadow: 0 12px 25px rgba(26, 38, 151, 0.22);
+        background: #050505;
+        box-shadow: none;
     }
 
     .home-categories-arrow:hover,
     .home-categories-arrow:focus {
         transform: translateY(-2px);
-        background: #355329;
+        background: #171717;
         color: #ffffff;
+        box-shadow: none;
     }
 
     .home-categories-arrow:first-child:hover,
     .home-categories-arrow:first-child:focus {
-        background: #101A5C;
+        background: #171717;
     }
 
     .home-categories-arrow i {
-        font-size: 30px;
+        color: #ffffff;
+        font-size: 24px;
         line-height: 1;
     }
 
@@ -1443,41 +1436,43 @@ $categoriasInicio = isset($categorias) && is_array($categorias)
 
     @media (max-width: 991px) {
         .home-categories-area {
-            padding: 6px 0 58px;
+            padding: 20px 0 28px;
         }
 
         .home-categories-shell {
             width: calc(100% - 18px);
-            padding: 26px 18px 24px;
-            border-radius: 18px;
+            padding: 0 10px;
         }
 
         .home-categories-title {
-            margin-bottom: 20px;
-            font-size: 23px;
+            margin-bottom: 11px;
+            font-size: 20px;
         }
 
         .home-categories-track {
-            gap: 14px;
+            gap: 8px;
+            padding-top: 2px;
+            padding-bottom: 4px;
         }
 
         .home-category-card {
-            width: 124px;
-            flex-basis: 124px;
+            width: 96px;
+            flex-basis: 96px;
         }
 
         .home-category-circle {
-            width: 104px;
-            height: 104px;
-            margin-bottom: 12px;
+            width: 70px;
+            height: 70px;
+            margin-bottom: 6px;
         }
 
         .home-category-circle i {
-            font-size: 44px;
+            font-size: 28px;
         }
 
         .home-category-label {
-            font-size: 15px;
+            min-height: 30px;
+            font-size: 12.5px;
         }
     }
 
@@ -1488,18 +1483,18 @@ $categoriasInicio = isset($categorias) && is_array($categorias)
         }
 
         .home-categories-title {
-            font-size: 21px;
+            font-size: 19px;
         }
 
         .home-category-card {
-            width: 112px;
-            flex-basis: 112px;
+            width: 86px;
+            flex-basis: 86px;
         }
 
         .home-category-circle {
-            width: 92px;
-            height: 92px;
-            box-shadow: inset 0 0 0 8px rgba(255, 255, 255, 0.58), 0 12px 22px rgba(16, 26, 92, 0.1);
+            width: 62px;
+            height: 62px;
+            box-shadow: none;
         }
 
         .home-category-circle::after {
@@ -1507,16 +1502,17 @@ $categoriasInicio = isset($categorias) && is_array($categorias)
         }
 
         .home-category-circle i {
-            font-size: 38px;
+            font-size: 25px;
         }
 
         .home-category-label {
-            font-size: 14px;
+            min-height: 28px;
+            font-size: 12px;
         }
 
         .home-categories-arrow {
-            width: 44px;
-            height: 44px;
+            width: 34px;
+            height: 34px;
         }
     }
 </style>

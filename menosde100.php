@@ -413,7 +413,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
 <div class="exclusive-offers-banner banner-main">
     <div class="container">
         <div class="banner-content">
-            <span class="banner-text">OFERTAS ESPECIALES</span>
+            <span class="banner-text">TODO POR MENOS DE Q100</span>
             <a href="tienda.php" class="banner-btn">VER PRODUCTOS</a>
         </div>
     </div>
