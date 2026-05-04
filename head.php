@@ -419,7 +419,7 @@ $categorias = $data["data"] ?? [];
             display: none;
         }
 
-        /* FIX: selector categorías encima del botón hamburguesa */
+        /* Mobile menu layer: always above banners, videos and page content. */
         @media (max-width: 991px) {
 
             .middle-header-search {
@@ -432,8 +432,44 @@ $categorias = $data["data"] ?? [];
                 z-index: 999999;
             }
 
+            .navbar-area,
+            .navbar-area.is-sticky,
+            .main-responsive-nav,
+            .main-responsive-menu.mean-container {
+                position: relative;
+                z-index: 1000000 !important;
+                overflow: visible !important;
+                isolation: isolate;
+            }
+
             .mean-container .mean-bar {
-                z-index: 5 !important;
+                position: absolute !important;
+                left: 0;
+                right: 0;
+                z-index: 1000001 !important;
+                overflow: visible !important;
+                background: transparent !important;
+            }
+
+            .mean-container a.meanmenu-reveal {
+                z-index: 1000003 !important;
+            }
+
+            .mean-container .mean-nav {
+                position: relative;
+                z-index: 1000002 !important;
+                background: #ffffff !important;
+                box-shadow: 0 18px 35px rgba(0, 0, 0, 0.14);
+            }
+
+            .mean-container .mean-nav ul,
+            .mean-container .mean-nav ul li,
+            .mean-container .mean-nav ul li a {
+                background: #ffffff !important;
+            }
+
+            .mean-container .mean-nav ul li a {
+                border-color: #dbeefd !important;
             }
 
         }

@@ -7194,9 +7194,18 @@ Buy Now Btn
 }
 
 .main-slider-area .slider-stack-buttons button:hover,
-.main-slider-area .slider-stack-buttons button:focus {
+.main-slider-area .slider-stack-buttons button:active {
   background: #355329;
   color: #ffffff;
+}
+
+.main-slider-area .slider-stack-buttons button:focus {
+  outline: none;
+}
+
+.main-slider-area .slider-stack-buttons button:focus-visible {
+  outline: 2px solid rgba(70, 105, 52, 0.72);
+  outline-offset: 2px;
 }
 
 /* Global surface overrides */
@@ -7593,10 +7602,19 @@ Home Circular Hero Slider
 }
 
 .main-slider-area.slider-circular-home .slider-stack-buttons button:hover,
-.main-slider-area.slider-circular-home .slider-stack-buttons button:focus {
+.main-slider-area.slider-circular-home .slider-stack-buttons button:active {
   background: #466934;
   border-color: #466934;
   color: #ffffff;
+}
+
+.main-slider-area.slider-circular-home .slider-stack-buttons button:focus {
+  outline: none;
+}
+
+.main-slider-area.slider-circular-home .slider-stack-buttons button:focus-visible {
+  outline: 2px solid rgba(70, 105, 52, 0.72);
+  outline-offset: 2px;
 }
 
 .main-slider-area.slider-circular-home .slider-stack-buttons button i {
@@ -7605,117 +7623,243 @@ Home Circular Hero Slider
 }
 
 @media only screen and (max-width: 991px) {
+  .main-slider-area.slider-circular-home {
+    max-width: calc(100% - 28px);
+    height: clamp(330px, 48vw, 430px);
+    margin: 18px auto 32px;
+    box-shadow: 0 18px 38px rgba(0, 0, 0, 0.16);
+  }
+
+  .main-slider-area.slider-circular-home .main-slider-overlay {
+    background: linear-gradient(
+      90deg,
+      rgba(0, 0, 0, 0.50) 0%,
+      rgba(0, 0, 0, 0.24) 42%,
+      rgba(0, 0, 0, 0.10) 100%
+    );
+  }
+
+  .main-slider-area.slider-circular-home .main-slider-content {
+    top: 50%;
+    left: 7%;
+    right: auto;
+    width: 38%;
+    transform: translateY(-50%);
+    text-align: left;
+  }
+
+  .main-slider-area.slider-circular-home .main-slider-content b {
+    font-size: clamp(10.5px, 1.55vw, 13px);
+    margin-bottom: 7px;
+  }
+
+  .main-slider-area.slider-circular-home .main-slider-content h1 {
+    font-size: clamp(25px, 3.9vw, 34px);
+    line-height: 1.06;
+    margin-bottom: 8px;
+  }
+
+  .main-slider-area.slider-circular-home .main-slider-content p {
+    font-size: clamp(11.5px, 1.55vw, 13px);
+    line-height: 1.38;
+    margin-bottom: 13px;
+    max-width: 100%;
+  }
+
+  .main-slider-area.slider-circular-home .main-slider-content .default-btn {
+    padding: 8px 14px;
+    font-size: 11.5px;
+  }
+
   .main-slider-area.slider-circular-home .slider-stack-buttons {
-    right: 42px;
-    bottom: 34px;
+    right: 4%;
+    bottom: 16px;
+    gap: 7px;
   }
 
   .main-slider-area.slider-circular-home .main-slider-item-box:nth-child(3) {
-    top: 51%;
-    right: 52px;
-    width: clamp(170px, 25vw, 205px);
-    height: clamp(170px, 25vw, 205px);
+    top: 49%;
+    right: 17%;
+    width: clamp(92px, 13vw, 112px);
+    height: clamp(92px, 13vw, 112px);
     transform: translateY(-50%);
   }
 
   .main-slider-area.slider-circular-home .main-slider-item-box:nth-child(4),
   .main-slider-area.slider-circular-home .main-slider-item-box:nth-child(5) {
-    display: block;
+    display: block !important;
+    border-width: 3px;
   }
 
   .main-slider-area.slider-circular-home .main-slider-item-box:nth-child(4) {
-    top: 18%;
-    right: 8px;
-    width: clamp(70px, 10.5vw, 84px);
-    height: clamp(70px, 10.5vw, 84px);
+    top: 25%;
+    right: 5%;
+    width: clamp(56px, 7.2vw, 68px);
+    height: clamp(56px, 7.2vw, 68px);
   }
 
   .main-slider-area.slider-circular-home .main-slider-item-box:nth-child(5) {
-    right: 230px;
-    bottom: 54px;
-    width: clamp(72px, 10.5vw, 84px);
-    height: clamp(72px, 10.5vw, 84px);
+    right: 31%;
+    bottom: 18%;
+    width: clamp(58px, 7.5vw, 70px);
+    height: clamp(58px, 7.5vw, 70px);
+  }
+
+  .main-slider-area.slider-circular-home .slider-stack-buttons button {
+    width: 34px;
+    height: 32px;
+    border-radius: 7px;
+  }
+
+  .main-slider-area.slider-circular-home .slider-stack-buttons button i {
+    font-size: 14px;
   }
 }
 
 @media only screen and (max-width: 767px) {
   .main-slider-area.slider-circular-home {
-    height: 560px;
+    max-width: calc(100% - 16px);
+    height: clamp(178px, 54vw, 214px);
+    margin: 10px auto 24px;
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.14);
+  }
+
+  .main-slider-area.slider-circular-home .main-slider-content {
+    top: 50%;
+    left: 20px;
+    right: auto;
+    width: 54%;
+    transform: translateY(-50%);
+  }
+
+  .main-slider-area.slider-circular-home .main-slider-content b {
+    font-size: clamp(8px, 2.55vw, 9.5px);
+    line-height: 1.2;
+    letter-spacing: .4px;
+    margin-bottom: 5px;
+  }
+
+  .main-slider-area.slider-circular-home .main-slider-content h1 {
+    font-size: clamp(15px, 5vw, 19px);
+    line-height: 1.02;
+    margin-bottom: 5px;
+  }
+
+  .main-slider-area.slider-circular-home .main-slider-content p {
+    font-size: clamp(8px, 2.45vw, 9.5px);
+    line-height: 1.22;
+    margin-bottom: 8px;
+  }
+
+  .main-slider-area.slider-circular-home .main-slider-content .default-btn {
+    padding: 5px 8px;
+    font-size: 8.8px;
+    line-height: 1.1;
+  }
+
+  .main-slider-area.slider-circular-home .main-slider-content .default-btn i {
+    font-size: 11px;
+    margin-right: 4px;
   }
 
   .main-slider-area.slider-circular-home .main-slider-item-box:nth-child(3) {
-    top: auto;
-    right: auto;
-    bottom: 82px;
-    left: 50%;
-    width: clamp(132px, 42vw, 160px);
-    height: clamp(132px, 42vw, 160px);
-    transform: translateX(-50%);
+    top: 50%;
+    right: 19%;
+    bottom: auto;
+    left: auto;
+    width: clamp(62px, 21vw, 80px);
+    height: clamp(62px, 21vw, 80px);
+    transform: translateY(-50%);
+    border-width: 2px;
   }
 
   .main-slider-area.slider-circular-home .main-slider-item-box:nth-child(4),
   .main-slider-area.slider-circular-home .main-slider-item-box:nth-child(5) {
-    display: block;
-    width: clamp(62px, 19vw, 74px);
-    height: clamp(62px, 19vw, 74px);
+    display: block !important;
+    width: clamp(36px, 12.5vw, 48px);
+    height: clamp(36px, 12.5vw, 48px);
+    border-width: 2px;
   }
 
   .main-slider-area.slider-circular-home .main-slider-item-box:nth-child(4) {
-    top: auto;
-    right: 20px;
-    bottom: 226px;
+    top: 25%;
+    right: 6%;
+    bottom: auto;
     left: auto;
   }
 
   .main-slider-area.slider-circular-home .main-slider-item-box:nth-child(5) {
     top: auto;
-    right: auto;
-    bottom: 42px;
-    left: 40px;
+    right: 38%;
+    bottom: 17%;
+    left: auto;
   }
 
   .main-slider-area.slider-circular-home .slider-stack-buttons {
-    right: 18px;
-    bottom: 38px;
+    right: 9px;
+    bottom: 8px;
+    gap: 4px;
   }
 
   .main-slider-area.slider-circular-home .slider-stack-buttons button {
-    width: 42px;
-    height: 38px;
-    border-radius: 9px;
+    width: 24px;
+    height: 23px;
+    border-radius: 6px;
+  }
+
+  .main-slider-area.slider-circular-home .slider-stack-buttons button i {
+    font-size: 11px;
   }
 }
 
 @media only screen and (max-width: 359px) {
   .main-slider-area.slider-circular-home {
-    height: 530px;
+    height: 176px;
   }
 
   .main-slider-area.slider-circular-home .slider-stack-buttons {
-    right: 8px;
-    bottom: 30px;
+    right: 7px;
+    bottom: 7px;
   }
 
   .main-slider-area.slider-circular-home .main-slider-item-box:nth-child(3) {
-    width: 118px;
-    height: 118px;
-    bottom: 82px;
+    width: 60px;
+    height: 60px;
+    right: 19%;
   }
 
   .main-slider-area.slider-circular-home .main-slider-item-box:nth-child(4),
   .main-slider-area.slider-circular-home .main-slider-item-box:nth-child(5) {
-    width: 54px;
-    height: 54px;
+    width: 34px;
+    height: 34px;
   }
 
   .main-slider-area.slider-circular-home .main-slider-item-box:nth-child(4) {
-    right: 8px;
-    bottom: 200px;
+    right: 6%;
+    top: 25%;
   }
 
   .main-slider-area.slider-circular-home .main-slider-item-box:nth-child(5) {
-    left: 8px;
-    bottom: 52px;
+    right: 38%;
+    bottom: 15%;
+  }
+
+  .main-slider-area.slider-circular-home .main-slider-content {
+    left: 16px;
+    width: 52%;
+  }
+
+  .main-slider-area.slider-circular-home .main-slider-content h1 {
+    font-size: 14.5px;
+  }
+
+  .main-slider-area.slider-circular-home .main-slider-content p {
+    font-size: 7.8px;
+  }
+
+  .main-slider-area.slider-circular-home .main-slider-content .default-btn {
+    padding: 5px 8px;
+    font-size: 8.5px;
   }
 }
 

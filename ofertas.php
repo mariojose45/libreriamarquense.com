@@ -173,23 +173,60 @@ $current_page = basename($_SERVER['PHP_SELF']);
         background: linear-gradient(112deg, #101A5C 0%, #1A2697 49.35%, #466934 49.55%, #355329 100%) !important;
         background-color: #1A2697 !important;
         box-shadow: 0 18px 42px rgba(16, 26, 92, 0.16) !important;
+        isolation: isolate;
+    }
+
+    @property --lm-gold-border-angle {
+        syntax: "<angle>";
+        inherits: false;
+        initial-value: 0deg;
     }
 
     .exclusive-offers-banner::before {
-        content: '';
+        content: "";
         position: absolute;
-        top: 0;
-        left: -100%;
-        width: 60%;
-        height: 100%;
-        background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.3), transparent);
-        transform: skewX(-25deg);
-        animation: shimmer 2.5s infinite;
+        inset: 0;
+        padding: 4px;
+        border-radius: inherit;
+        background: conic-gradient(from var(--lm-gold-border-angle),
+                rgba(255, 255, 255, .08) 0deg,
+                rgba(226, 178, 70, .32) 34deg,
+                #f8df8a 72deg,
+                #fff4bd 96deg,
+                #c58b2b 132deg,
+                rgba(255, 255, 255, .10) 180deg,
+                rgba(181, 124, 38, .26) 232deg,
+                #f3d474 286deg,
+                rgba(255, 255, 255, .08) 360deg);
+        animation: goldenBorderOrbit 7s linear infinite;
+        filter: drop-shadow(0 0 8px rgba(238, 198, 87, .24));
+        mask:
+            linear-gradient(#000 0 0) content-box,
+            linear-gradient(#000 0 0);
+        mask-composite: exclude;
+        -webkit-mask:
+            linear-gradient(#000 0 0) content-box,
+            linear-gradient(#000 0 0);
+        -webkit-mask-composite: xor;
+        z-index: 2;
+        pointer-events: none;
     }
 
-    @keyframes shimmer {
-        100% {
-            left: 200%;
+    .exclusive-offers-banner::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        border-radius: inherit;
+        box-shadow:
+            inset 0 0 28px rgba(255, 236, 164, .08),
+            inset 0 0 70px rgba(0, 0, 0, .12);
+        z-index: 1;
+        pointer-events: none;
+    }
+
+    @keyframes goldenBorderOrbit {
+        to {
+            --lm-gold-border-angle: 360deg;
         }
     }
 
@@ -201,7 +238,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
         align-items: center !important;
         gap: 12px !important;
         position: relative;
-        z-index: 2;
+        z-index: 3;
         text-align: center !important;
     }
 

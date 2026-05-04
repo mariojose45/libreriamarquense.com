@@ -138,6 +138,10 @@ $categoria_actual = isset($_GET['categoria']) ? (string) $_GET['categoria'] : ''
             flex: 0 0 100% !important;
             max-width: 100% !important;
         }
+
+        .shop-area {
+            padding-top: 12px !important;
+        }
     }
 
     .single-arrivals-products {
@@ -337,18 +341,27 @@ $categoria_actual = isset($_GET['categoria']) ? (string) $_GET['categoria'] : ''
     }
 
     @media (max-width: 991px) {
+        .shop-area {
+            padding-top: 24px !important;
+        }
+
         .tienda-banner-section > .container {
             width: calc(100% - 18px);
         }
 
         .tienda-banner {
-            height: 290px;
-            min-height: 290px;
+            height: 158px;
+            min-height: 158px;
         }
 
         .tienda-banner__content {
-            height: 290px;
-            min-height: 290px;
+            height: 158px;
+            min-height: 158px;
+        }
+
+        .tienda-banner__video {
+            object-fit: cover;
+            transform: scale(1.12);
         }
     }
 
@@ -365,16 +378,16 @@ $categoria_actual = isset($_GET['categoria']) ? (string) $_GET['categoria'] : ''
         }
 
         .tienda-banner {
-            height: 220px !important;
-            min-height: 220px !important;
+            height: 100px !important;
+            min-height: 100px !important;
             overflow: hidden !important;
             position: relative !important;
             border-radius: 18px !important;
         }
 
         .tienda-banner__content {
-            height: 220px !important;
-            min-height: 220px !important;
+            height: 100px !important;
+            min-height: 100px !important;
             padding: 18px 12px !important;
             position: relative !important;
             z-index: 2 !important;
@@ -382,13 +395,14 @@ $categoria_actual = isset($_GET['categoria']) ? (string) $_GET['categoria'] : ''
 
         .tienda-banner__video {
             position: absolute !important;
-            top: 50% !important;
-            left: 50% !important;
-            min-width: 185% !important;
-            min-height: 185% !important;
+            inset: 0 !important;
+            width: 100% !important;
+            height: 100% !important;
+            min-width: 0 !important;
+            min-height: 0 !important;
             object-fit: cover !important;
             object-position: center center !important;
-            transform: translate(-50%, -50%) scale(1.08) !important;
+            transform: scale(1.12) !important;
             transform-origin: center center !important;
         }
 
