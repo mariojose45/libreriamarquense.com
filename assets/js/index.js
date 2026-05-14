@@ -8,7 +8,7 @@ document.addEventListener("DOMContentLoaded", function () {
     cargarProductosMasVendidos();
 });
 
-const PRODUCTO_IMG_BASE = "https://ssl.sol.sistemasolgt.com/ticel/files/articulos/";
+const PRODUCTO_IMG_BASE = "https://ssl.sol.sistemasolgt.com/libremarquenseDos/files/articulos/";
 const PRODUCTO_IMG_PLACEHOLDER = "assets/img/404.png";
 const INICIO_PRODUCTOS_POR_SECCION = 9;
 const INICIO_PRODUCTOS_COMPLEMENTO_ENDPOINT = "assets/php/productos_paginados.php";
@@ -99,7 +99,7 @@ async function completarProductosInicio(productosBase) {
 ============================================================ */
 function cargarProductosPromociones() {
 
-    fetch("https://ssl.sol.sistemasolgt.com/ticel/api/api_tienda_articulos_listarProductospromociones.php", {
+    fetch("https://ssl.sol.sistemasolgt.com/libremarquenseDos/api/api_tienda_articulos_listarProductospromociones.php", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
@@ -216,7 +216,7 @@ function cargarProductosPromociones() {
 ============================================================ */
 function cargarProductosNuevos() {
 
-    fetch("https://ssl.sol.sistemasolgt.com/ticel/api/api_tienda_articulos_listarProductosnuevos.php", {
+    fetch("https://ssl.sol.sistemasolgt.com/libremarquenseDos/api/api_tienda_articulos_listarProductosnuevos.php", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
@@ -551,7 +551,7 @@ window.compartirWhatsApp = function (e) {
 // ===========================================================
 function cargarProductosMasVendidos() {
 
-    fetch("https://ssl.sol.sistemasolgt.com/ticel/api/api_tienda_articulos_listarProductosnuevos_lomasvendido.php", {
+    fetch("https://ssl.sol.sistemasolgt.com/libremarquenseDos/api/api_tienda_articulos_listarProductosnuevos_lomasvendido.php", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({})

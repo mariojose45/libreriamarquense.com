@@ -7,7 +7,7 @@ $seo_keywords = "TI-CELL, celulares Guatemala, accesorios para celulares, repues
 include 'head.php';
 $current_page = basename($_SERVER['PHP_SELF']);
 
-$apiUrl = "https://ssl.sol.sistemasolgt.com/ticel/api/api_tienda_inicio.php";
+$apiUrl = "https://ssl.sol.sistemasolgt.com/libremarquenseDos/api/api_tienda_inicio.php";
 $slider = null;
 
 $ch = curl_init($apiUrl);
@@ -286,7 +286,7 @@ if ($slider) {
                     $i = $item['index'];
                     $b = $item['data'];
 
-                    $rutaImagenes = "https://ssl.sol.sistemasolgt.com/ticel/files/articulos/";
+                    $rutaImagenes = "https://ssl.sol.sistemasolgt.com/libremarquenseDos/files/articulos/";
                     $imagenUrl = !empty($b['imagen']) ? $rutaImagenes . $b['imagen'] : '';
                     ?>
                     <div class="main-slider-item-box" <?= !empty($imagenUrl) ? 'style="background-image: url(\'' . htmlspecialchars($imagenUrl, ENT_QUOTES) . '\');"' : '' ?>>

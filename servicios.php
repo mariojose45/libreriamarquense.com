@@ -7,7 +7,7 @@ $paginas_servicios = [
 ];
 
 // Obtener datos de la API de servicios
-$apiUrl = "https://ssl.sol.sistemasolgt.com/ticel/api/api_tienda_servicios.php";
+$apiUrl = "https://ssl.sol.sistemasolgt.com/libremarquenseDos/api/api_tienda_servicios.php";
 $servicios = [];
 $testimonios = [];
 
@@ -44,7 +44,7 @@ if ($ch !== false) {
     }
 }
 
-$rutaImagenes = "https://ssl.sol.sistemasolgt.com/ticel/files/articulos/";
+$rutaImagenes = "https://ssl.sol.sistemasolgt.com/libremarquenseDos/files/articulos/";
 ?>
 
 <!-- Start Page Banner -->

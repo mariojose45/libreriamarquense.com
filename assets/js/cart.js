@@ -785,7 +785,7 @@ function procesarPedido(event) {
     }
 
     // Enviar datos a la API
-    fetch('https://ssl.sol.sistemasolgt.com/ticel/api/api_cotizacion_insertar.php', {
+    fetch('https://ssl.sol.sistemasolgt.com/libremarquenseDos/api/api_cotizacion_insertar.php', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'

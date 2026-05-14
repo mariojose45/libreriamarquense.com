@@ -81,7 +81,7 @@ $config = array(
     ),
 
     'external_order_api' => array(
-        'url' => 'https://ssl.sol.sistemasolgt.com/ticel/api/api_cotizacion_insertar.php',
+        'url' => 'https://ssl.sol.sistemasolgt.com/libremarquenseDos/api/api_cotizacion_insertar.php',
         'timeout_seconds' => 25,
     ),
 

@@ -25,7 +25,7 @@ if (isset($_GET['id'])) {
         }
 
         // Verificar que el producto existe en la API antes de mostrar la pagina
-        $api_url = "https://ssl.sol.sistemasolgt.com/ticel/api/api_tienda_articulos_listarid.php";
+        $api_url = "https://ssl.sol.sistemasolgt.com/libremarquenseDos/api/api_tienda_articulos_listarid.php";
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $api_url);
         curl_setopt($ch, CURLOPT_POST, true);
@@ -576,7 +576,7 @@ include 'head.php';
     // ============================================================
     // 🔒 VALIDAR ID DEL PRODUCTO
     // ============================================================
-    const IMAGEN_PRODUCTO_BASE = "https://ssl.sol.sistemasolgt.com/ticel/files/articulos/";
+    const IMAGEN_PRODUCTO_BASE = "https://ssl.sol.sistemasolgt.com/libremarquenseDos/files/articulos/";
     const IMAGEN_PRODUCTO_PLACEHOLDER = "assets/img/404.png";
 
     function construirUrlImagenProducto(nombreArchivo) {
@@ -647,7 +647,7 @@ include 'head.php';
         // Sanitizar ID para la petición
         const idSanitizado = parseInt(idarticulo, 10);
 
-        fetch("https://ssl.sol.sistemasolgt.com/ticel/api/api_tienda_articulos_listarid.php", {
+        fetch("https://ssl.sol.sistemasolgt.com/libremarquenseDos/api/api_tienda_articulos_listarid.php", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -710,7 +710,7 @@ include 'head.php';
         console.log('🖼️ Imagen principal:', imagenPrincipal);
 
         // Cargar fotos desde la API
-        fetch("https://ssl.sol.sistemasolgt.com/ticel/api/api_tienda_mostrarfotosproducto.php", {
+        fetch("https://ssl.sol.sistemasolgt.com/libremarquenseDos/api/api_tienda_mostrarfotosproducto.php", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ idarticulo: idSanitizado })
@@ -744,7 +744,7 @@ include 'head.php';
                             else {
                                 // Asegurar que no tenga barra inicial
                                 ruta = ruta.replace(/^\//, '');
-                                url = "https://ssl.sol.sistemasolgt.com/ticel/" + ruta;
+                                url = "https://ssl.sol.sistemasolgt.com/libremarquenseDos/" + ruta;
                             }
 
                             // Codificar espacios y caracteres especiales en la URL

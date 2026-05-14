@@ -4,7 +4,7 @@
 let todosLosProductos = []; // Almacenar todos los productos cargados
 let precioMinimo = 0;
 let precioMaximo = 0;
-const PRODUCTO_IMG_BASE = "https://ssl.sol.sistemasolgt.com/ticel/files/articulos/";
+const PRODUCTO_IMG_BASE = "https://ssl.sol.sistemasolgt.com/libremarquenseDos/files/articulos/";
 const PRODUCTO_IMG_PLACEHOLDER = "assets/img/404.png";
 
 function construirUrlImagenProducto(nombreArchivo) {
@@ -61,7 +61,7 @@ document.addEventListener("DOMContentLoaded", function () {
 ============================================================ */
 function cargarProductosNuevos() {
 
-    fetch("https://ssl.sol.sistemasolgt.com/ticel/api/api_tienda_articulos_listarProductosnuevos.php", {
+    fetch("https://ssl.sol.sistemasolgt.com/libremarquenseDos/api/api_tienda_articulos_listarProductosnuevos.php", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
@@ -472,7 +472,7 @@ window.compartirWhatsApp = function (e) {
 ============================================================ */
 function cargarProductosPorCategoria(idcategoria) {
 
-    fetch("https://ssl.sol.sistemasolgt.com/ticel/api/api_tienda_articulos_listarProductosxCategoria.php", {
+    fetch("https://ssl.sol.sistemasolgt.com/libremarquenseDos/api/api_tienda_articulos_listarProductosxCategoria.php", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
@@ -765,7 +765,7 @@ function aplicarFiltroPrecio() {
 ============================================================ */
 function cargarProductosPorBusqueda(termino) {
 
-    fetch("https://ssl.sol.sistemasolgt.com/ticel/api/api_tienda_articulos_listarProductosxSearch.php", {
+    fetch("https://ssl.sol.sistemasolgt.com/libremarquenseDos/api/api_tienda_articulos_listarProductosxSearch.php", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"

@@ -6,7 +6,7 @@ document.addEventListener("DOMContentLoaded", function () {
     cargarProductosPromociones();
 });
 
-const PRODUCTO_IMG_BASE = "https://ssl.sol.sistemasolgt.com/ticel/files/articulos/";
+const PRODUCTO_IMG_BASE = "https://ssl.sol.sistemasolgt.com/libremarquenseDos/files/articulos/";
 const PRODUCTO_IMG_PLACEHOLDER = "assets/img/404.png";
 
 function escaparTextoProducto(valor) {
@@ -33,7 +33,7 @@ function cargarProductosPromociones() {
         return;
     }
 
-    fetch("https://ssl.sol.sistemasolgt.com/ticel/api/api_tienda_ofertas.php", {
+    fetch("https://ssl.sol.sistemasolgt.com/libremarquenseDos/api/api_tienda_ofertas.php", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
