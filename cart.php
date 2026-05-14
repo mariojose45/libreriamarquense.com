@@ -103,7 +103,6 @@ $current_page = basename($_SERVER['PHP_SELF']);
                                    placeholder="12345678" pattern="[0-9]{8,15}" inputmode="numeric" maxlength="15" minlength="8"
                                    autocomplete="tel-national" title="Ingrese solo numeros, entre 8 y 15 digitos."
                                    oninput="this.value = this.value.replace(/[^0-9]/g, '')" required>
-                            <small class="form-text text-muted">Solo números, mínimo 8 dígitos (obligatorio para contactarte)</small>
                         </div>
 
                         <div class="mp-form-group">
@@ -111,7 +110,6 @@ $current_page = basename($_SERVER['PHP_SELF']);
                             <input type="email" id="correo" name="correo" class="form-control" 
                                    inputmode="email" maxlength="120" autocomplete="email"
                                    placeholder="ejemplo@correo.com">
-                            <small class="form-text text-muted">Opcional si no necesita factura</small>
                         </div>
 
                         <div class="mp-form-group">
@@ -138,13 +136,21 @@ $current_page = basename($_SERVER['PHP_SELF']);
                             <small class="form-text text-muted" id="documentoHelp"></small>
                         </div>
 
-                        <div class="mp-form-group">
-                            <label for="formaPago">Forma de Pago</label>
+                        <div class="mp-form-group mp-payment-method-group">
+                            <label for="formaPago">M&eacute;todos de Pago</label>
                             <select id="formaPago" name="formaPago" class="form-control" autocomplete="off">
-                                <option value="Efectivo" selected>Efectivo</option>
-                                <option value="Tarjeta">Tarjeta de Crédito/Débito</option>
+                                <option value="Pago Contra Entrega" selected>Pago Contra Entrega</option>
+                                <option value="Tarjeta">Tarjeta de Cr&eacute;dito/D&eacute;bito</option>
                                 <option value="Transferencia">Transferencia Bancaria</option>
                             </select>
+                        </div>
+
+                        <div class="mp-card-gateway" id="pasarelaTarjetaInfo" hidden>
+                            <div class="mp-card-gateway-header">
+                                <strong>Pago seguro con tarjeta</strong>
+                                <span>Seras redirigido al portal seguro de Neonet.</span>
+                            </div>
+                            <p>No ingreses datos de tarjeta en este sitio. La autorizacion se realiza en la pagina segura del proveedor.</p>
                         </div>
 
                         <div class="mp-form-buttons">
@@ -178,8 +184,8 @@ $current_page = basename($_SERVER['PHP_SELF']);
                 width: 90%;
                 max-width: 900px;
                 background: #fff;
-                border-radius: 12px;
-                padding: 25px;
+                border-radius: 10px;
+                padding: 20px 22px;
                 position: relative;
                 box-shadow: 0 10px 35px rgba(0,0,0,0.25);
                 animation: fadeIn .25s ease-out;
@@ -194,11 +200,11 @@ $current_page = basename($_SERVER['PHP_SELF']);
 
             .mp-close {
                 position: absolute;
-                top: 12px; 
-                right: 15px;
+                top: 10px; 
+                right: 12px;
                 background: none;
                 border: none;
-                font-size: 26px;
+                font-size: 24px;
                 cursor: pointer;
                 color: #333;
                 z-index: 10;
@@ -212,35 +218,39 @@ $current_page = basename($_SERVER['PHP_SELF']);
                 MODAL FORMULARIO
             =========================== */
             .mp-modal-form {
-                max-width: 600px !important;
+                max-width: 560px !important;
             }
 
             .mp-form-content {
-                padding: 10px;
+                padding: 4px;
             }
 
             .mp-form-content h2 {
-                margin-bottom: 10px;
+                margin-bottom: 6px;
                 color: #1A2697;
-                font-size: 24px;
+                font-size: 22px;
             }
 
             .mp-form-subtitle {
-                margin-bottom: 25px;
+                margin-bottom: 18px;
                 color: #666;
-                font-size: 14px;
+                font-size: 13px;
             }
 
             .mp-form-group {
-                margin-bottom: 20px;
+                margin-bottom: 16px;
+            }
+
+            .mp-payment-method-group {
+                margin-top: 18px;
             }
 
             .mp-form-group label {
                 display: block;
-                margin-bottom: 8px;
+                margin-bottom: 6px;
                 font-weight: 600;
                 color: #333;
-                font-size: 14px;
+                font-size: 13px;
             }
 
             .mp-form-group label input[type="checkbox"] {
@@ -254,10 +264,11 @@ $current_page = basename($_SERVER['PHP_SELF']);
 
             .mp-form-group .form-control {
                 width: 100%;
-                padding: 12px 15px;
+                padding: 9px 13px;
                 border: 1px solid #ddd;
                 border-radius: 6px;
                 font-size: 14px;
+                min-height: 42px;
                 transition: border-color 0.3s;
             }
 
@@ -270,37 +281,114 @@ $current_page = basename($_SERVER['PHP_SELF']);
             .mp-form-group select.form-control {
                 cursor: pointer;
 
-                text-align: center;
-                text-align-last: center;
+                text-align: left;
+                text-align-last: left;
 
-                padding-top: 10px;
-                padding-bottom: 10px;
+                padding-top: 8px;
+                padding-bottom: 8px;
+                padding-left: 14px;
 
-                height: 48px;
+                height: 44px;
             }
 
             .mp-form-group select.form-control option {
-                text-align: center;
+                text-align: left;
+                padding: 10px 14px;
+            }
+
+            .mp-form-group .nice-select {
+                width: 100%;
+                float: none;
+                height: 44px;
+                line-height: 42px;
+                padding-left: 14px;
+                padding-right: 34px;
+                border-radius: 8px;
+                border-color: #ddd;
+                font-size: 14px;
+                color: #222;
+                margin-top: 0;
+                margin-bottom: 0;
+            }
+
+            .mp-form-group .nice-select.open,
+            .mp-form-group .nice-select:focus {
+                border-color: #1A2697;
+                box-shadow: 0 0 0 2px rgba(26, 38, 151, 0.1);
+            }
+
+            .mp-form-group .nice-select .list {
+                width: 100%;
+                margin-top: 6px;
+                border-radius: 8px;
+                box-shadow: 0 10px 30px rgba(15, 23, 42, 0.14);
+            }
+
+            .mp-form-group .nice-select .option {
+                min-height: 44px;
+                line-height: 1.35;
+                padding: 11px 16px;
+                display: flex;
+                align-items: center;
+            }
+
+            .mp-card-gateway {
+                margin-top: -4px;
+                margin-bottom: 16px;
+                padding: 12px;
+                border: 1px solid rgba(26, 38, 151, 0.18);
+                border-radius: 10px;
+                background: #F7F8FF;
+            }
+
+            .mp-card-gateway[hidden] {
+                display: none !important;
+            }
+
+            .mp-card-gateway-header {
+                display: flex;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 4px;
+                margin-bottom: 10px;
+            }
+
+            .mp-card-gateway strong {
+                display: block;
+                color: #1A2697;
+                font-size: 15px;
+                line-height: 1.3;
+            }
+
+            .mp-card-gateway span,
+            .mp-card-gateway p {
+                color: #555;
+                font-size: 13px;
+                line-height: 1.45;
+            }
+
+            .mp-card-gateway p {
+                margin: 0;
             }
 
             .mp-form-buttons {
                 display: flex;
-                gap: 18px;
+                gap: 14px;
                 justify-content: flex-end;
                 align-items: stretch;
-                margin-top: 30px;
-                padding-top: 20px;
+                margin-top: 20px;
+                padding-top: 16px;
                 border-top: 1px solid #eee;
             }
 
             .mp-btn-cancelar,
             .mp-btn-enviar {
-                min-width: 190px;
-                min-height: 74px;
-                padding: 16px 28px;
+                min-width: 150px;
+                min-height: 50px;
+                padding: 11px 20px;
                 border: none;
                 border-radius: 10px;
-                font-size: 18px;
+                font-size: 15px;
                 font-weight: 700;
                 cursor: pointer;
                 transition: all 0.3s;
@@ -339,8 +427,8 @@ $current_page = basename($_SERVER['PHP_SELF']);
                 .mp-modal {
                     width: calc(100% - 24px);
                     max-width: 100%;
-                    padding: 18px 16px;
-                    border-radius: 12px;
+                    padding: 16px 14px;
+                    border-radius: 10px;
                 }
 
                 .mp-form-content {
@@ -351,20 +439,20 @@ $current_page = basename($_SERVER['PHP_SELF']);
                 .mp-form-buttons {
                     display: flex;
                     flex-wrap: wrap;
-                    gap: 14px;
+                    gap: 12px;
                     justify-content: space-between;
                     align-items: stretch;
-                    margin-top: 35px !important;
-                    padding-top: 18px;
+                    margin-top: 24px !important;
+                    padding-top: 14px;
                 }
 
                 .mp-btn-cancelar,
                 .mp-btn-enviar {
                     flex: 1 1 calc(50% - 7px);
                     min-width: 0;
-                    min-height: 64px;
-                    padding: 14px 12px;
-                    font-size: 16px;
+                    min-height: 48px;
+                    padding: 10px 12px;
+                    font-size: 14px;
                     line-height: 1.2;
                     white-space: normal;
                     word-break: break-word;
@@ -372,9 +460,20 @@ $current_page = basename($_SERVER['PHP_SELF']);
 
                 .mp-form-group select.form-control{
                         height: 42px;
-                        padding-top: 6px;
-                        padding-bottom: 6px;
+                        padding-top: 7px;
+                        padding-bottom: 7px;
                         font-size: 14px;
+                    }
+
+                    .mp-form-group .nice-select {
+                        height: 42px;
+                        line-height: 40px;
+                        font-size: 14px;
+                    }
+
+                    .mp-form-group .nice-select .option {
+                        min-height: 44px;
+                        padding: 11px 16px;
                     }
 
                     .mp-modal{
@@ -383,7 +482,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
 
                     .mp-btn-cancelar,
                     .mp-btn-enviar{
-                        min-height: 52px;
+                        min-height: 48px;
                     }
 
             }
@@ -497,10 +596,8 @@ $current_page = basename($_SERVER['PHP_SELF']);
                 }
             }
 
-            /* ===== ESPACIO ENTRE FORMA DE PAGO Y BOTONES ===== */
-
             .mp-form-buttons{
-                margin-top: 40px !important; /* espacio superior uniforme */
+                margin-top: 20px !important;
             }
 
             /* Ajuste fino en celular */
@@ -508,7 +605,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
             @media (max-width:768px){
 
                 .mp-form-buttons{
-                    margin-top: 35px !important;
+                    margin-top: 22px !important;
                 }
 
             }

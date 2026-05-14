@@ -3,6 +3,7 @@
 # Este archivo NO fuerza HTTPS en localhost
 # ===============================
 RewriteEngine On
+Options -Indexes
 
 # Redirigir HTTPS a HTTP SOLO en localhost (para desarrollo)
 RewriteCond %{HTTPS} on
@@ -12,7 +13,11 @@ RewriteRule ^(.*)$ http://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 # ===============================
 # PREVENIR ACCESO A ARCHIVOS SENSIBLES
 # ===============================
-<FilesMatch "\.(htaccess|htpasswd|ini|log|sh|sql|bak)$">
+<FilesMatch "\.(htaccess|htpasswd|ini|log|sh|sql|bak|backup|old|env|pem|key|p12|pfx|crt|csr)$">
+    Require all denied
+</FilesMatch>
+
+<FilesMatch "(private|secret|credential|credentials).*\.(php|json|txt|xml|yml|yaml)$">
     Require all denied
 </FilesMatch>
 

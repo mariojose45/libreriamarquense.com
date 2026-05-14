@@ -1,0 +1,22 @@
+# Local secrets and environment overrides
+/.env
+/.env.*
+!/.env.example
+/config/*.private.php
+/config/*secret*.php
+/config/*credential*.php
+
+# Runtime logs and payment sessions
+/logs/*.log
+/storage/cybersource/*.json
+
+# Credential/key material and local backups
+*.pem
+*.key
+*.p12
+*.pfx
+*.crt
+*.csr
+*.sql
+*.bak
+*.backup

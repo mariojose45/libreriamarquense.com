@@ -6,6 +6,7 @@ document.addEventListener("DOMContentLoaded", function () {
     cargarCarrito();
     inicializarEventos();
     inicializarRestriccionesFormularioPedido();
+    actualizarVistaPagoTarjeta();
 });
 
 // ============================================================
@@ -175,7 +176,7 @@ const VALIDACION_PEDIDO = {
     EMAIL_REGEX: /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,24}$/,
     NIT_REGEX: /^\d{1,12}$/,
     DPI_REGEX: /^\d{13}$/,
-    FORMAS_PAGO_PERMITIDAS: ['Efectivo', 'Tarjeta', 'Transferencia'],
+    FORMAS_PAGO_PERMITIDAS: ['Pago Contra Entrega', 'Tarjeta', 'Transferencia'],
     TIPOS_DOCUMENTO_PERMITIDOS: ['nit', 'dpi']
 };
 
@@ -320,6 +321,27 @@ function mostrarErrorFormulario(mensaje, inputId = '') {
     }
 }
 
+function actualizarVistaPagoTarjeta() {
+    const formaPagoInput = document.getElementById('formaPago');
+    const pasarelaInfo = document.getElementById('pasarelaTarjetaInfo');
+    const btnEnviar = document.querySelector('.mp-btn-enviar');
+    const esTarjeta = formaPagoInput && formaPagoInput.value === 'Tarjeta';
+
+    if (pasarelaInfo) {
+        pasarelaInfo.hidden = !esTarjeta;
+    }
+
+    if (btnEnviar) {
+        btnEnviar.textContent = esTarjeta ? 'Continuar a pago seguro' : 'Enviar Pedido';
+    }
+}
+
+function refrescarSelectorVisual(selectElement) {
+    if (selectElement && window.jQuery && typeof window.jQuery.fn.niceSelect === 'function') {
+        window.jQuery(selectElement).niceSelect('update');
+    }
+}
+
 function inicializarRestriccionesFormularioPedido() {
     const nombreInput = document.getElementById('nombreCompleto');
     const direccionInput = document.getElementById('direccion');
@@ -360,8 +382,10 @@ function inicializarRestriccionesFormularioPedido() {
     if (formaPagoInput) {
         formaPagoInput.addEventListener('change', function () {
             if (!VALIDACION_PEDIDO.FORMAS_PAGO_PERMITIDAS.includes(this.value)) {
-                this.value = 'Efectivo';
+                this.value = 'Pago Contra Entrega';
+                refrescarSelectorVisual(this);
             }
+            actualizarVistaPagoTarjeta();
         });
     }
 
@@ -417,8 +441,10 @@ function abrirModalPedido() {
     aplicarEstadoValidacion(document.getElementById('tipoDocumento'), '');
     aplicarEstadoValidacion(document.getElementById('numeroDocumento'), '');
 
-    // Establecer forma de pago por defecto a Efectivo
-    document.getElementById('formaPago').value = 'Efectivo';
+    // Establecer metodo de pago por defecto a Pago Contra Entrega
+    document.getElementById('formaPago').value = 'Pago Contra Entrega';
+    refrescarSelectorVisual(document.getElementById('formaPago'));
+    actualizarVistaPagoTarjeta();
 
     // Mostrar modal
     document.getElementById('modalPedido').classList.add('show');
@@ -580,7 +606,7 @@ function procesarPedido(event) {
     const necesitaFactura = document.getElementById('necesitaFactura').checked;
     const tipoDocumento = tipoDocumentoInput.value;
     const numeroDocumento = limpiarDocumentoInput(numeroDocumentoInput.value, tipoDocumento);
-    const formaPago = formaPagoInput.value || 'Efectivo';
+    const formaPago = formaPagoInput.value || 'Pago Contra Entrega';
 
     nombreInput.value = nombreCompleto;
     direccionInput.value = direccion;
@@ -621,7 +647,7 @@ function procesarPedido(event) {
     aplicarEstadoValidacion(correoInput, '');
 
     if (!VALIDACION_PEDIDO.FORMAS_PAGO_PERMITIDAS.includes(formaPago)) {
-        mostrarErrorFormulario('La forma de pago seleccionada no es valida', 'formaPago');
+        mostrarErrorFormulario('El metodo de pago seleccionado no es valido', 'formaPago');
         return;
     }
 
@@ -753,6 +779,11 @@ function procesarPedido(event) {
     // 3. Verificar que las cantidades son válidas
     // 4. Recalcular el total basándose en los precios del servidor, no del cliente
 
+    if (formData.formaPago === 'Tarjeta') {
+        iniciarPagoTarjeta(apiData, btnEnviar);
+        return;
+    }
+
     // Enviar datos a la API
     fetch('https://ssl.sol.sistemasolgt.com/ticel/api/api_cotizacion_insertar.php', {
         method: 'POST',
@@ -871,4 +902,60 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 });
+
+function iniciarPagoTarjeta(apiData, btnEnviar) {
+    fetch('api/cybersource/create_checkout.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(apiData)
+    })
+        .then(response => {
+            return response.text().then(text => {
+                let data;
+                try {
+                    data = JSON.parse(text);
+                } catch (e) {
+                    throw new Error('La respuesta de la pasarela no es valida');
+                }
+
+                if (!response.ok || !data.success) {
+                    throw new Error(data.message || `Error HTTP: ${response.status}`);
+                }
+
+                return data;
+            });
+        })
+        .then(data => {
+            if (!data.redirect_url) {
+                throw new Error('La pasarela no devolvio una URL de pago segura.');
+            }
+
+            window.location.href = data.redirect_url;
+        })
+        .catch(error => {
+            console.error('Error iniciando pago:', error);
+
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'No se pudo iniciar el pago',
+                    text: error.message || 'Intenta nuevamente o selecciona otro metodo de pago.',
+                    confirmButtonText: 'Aceptar'
+                }).then(() => {
+                    if (btnEnviar) {
+                        btnEnviar.disabled = false;
+                        actualizarVistaPagoTarjeta();
+                    }
+                });
+            } else {
+                alert(error.message || 'No se pudo iniciar el pago.');
+                if (btnEnviar) {
+                    btnEnviar.disabled = false;
+                    actualizarVistaPagoTarjeta();
+                }
+            }
+        });
+}
 
