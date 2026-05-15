@@ -82,19 +82,19 @@ $current_page = basename($_SERVER['PHP_SELF']);
                         <div class="mp-form-group">
                             <label for="nombreCompleto">Nombre Completo <span class="required">*</span></label>
                             <input type="text" id="nombreCompleto" name="nombreCompleto" class="form-control"
-                                   autocomplete="name" minlength="3" maxlength="120"
-                                   pattern="[A-Za-zÀ-ÖØ-öø-ÿÑñ\s.'-]{3,120}"
-                                   title="Ingrese solo letras, espacios y signos permitidos como apostrofe, punto o guion."
-                                   required>
+                                autocomplete="name" minlength="3" maxlength="120"
+                                pattern="[\p{L}\p{M} .'\-]{3,120}"
+                                title="Ingrese solo letras, espacios, punto, apostrofe o guion."
+                                required>
                         </div>
 
                         <div class="mp-form-group">
                             <label for="direccion">Dirección <span class="required">*</span></label>
                             <input type="text" id="direccion" name="direccion" class="form-control"
-                                   autocomplete="street-address" minlength="8" maxlength="180"
-                                   pattern="[A-Za-z0-9À-ÖØ-öø-ÿÑñ\s#.,/-]{8,180}"
-                                   title="Use letras, numeros, espacios y signos de direccion como #, punto, coma, diagonal o guion."
-                                   required>
+                                autocomplete="street-address" minlength="8" maxlength="180"
+                                pattern="[\p{L}\p{M}0-9 #.,\/\-]{8,180}"
+                                title="Use letras, numeros, espacios y signos de direccion como #, punto, coma, diagonal o guion."
+                                required>
                         </div>
 
                         <div class="mp-form-group">
