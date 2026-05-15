@@ -48,8 +48,6 @@ if ($ch !== false) {
         ;
     }
 
-    }
-
     /* Evita que aparezcan miniaturas circulares generadas por scripts antiguos del slider de inicio. */
     .main-slider-area .inicio-circular-carousel,
     .main-slider-area .lm-final-circular-thumbs,
@@ -330,181 +328,210 @@ Dirigite a Nosotros
 </div>
 <!-- End Main Slider Area -->
 
-
-<!-- End Overview Area -->
+<!-- Start Support Area -->
 <style>
-    .support-cards {
-        padding: 30px 0 20px;
+   
+    .support-area.support-cards .container {
+        max-width: 1040px !important;
     }
 
-    .support-cards .col-lg-3,
-    .support-cards .col-md-6 {
+    .lm-feature-banners-row {
+        display: grid !important;
+        grid-template-columns: repeat(3, minmax(230px, 1fr)) !important;
+        column-gap: 42px !important;
+        row-gap: 28px !important;
+        align-items: center !important;
+        justify-content: center !important;
+        max-width: 1040px !important;
+        width: 100% !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+    }
+
+    .lm-feature-banner-col {
+        width: auto !important;
+        max-width: none !important;
+        flex: none !important;
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+    }
+
+    .lm-feature-banner {
+        position: relative;
         display: flex;
+        align-items: center;
+        min-height: 132px;
+        width: 100%;
+        text-decoration: none !important;
+        color: inherit;
     }
 
-    .support-card {
+    .lm-feature-banner__image {
+        position: absolute;
+        left: 0;
+        top: 50%;
+        width: 124px;
+        height: 124px;
+        transform: translateY(-50%);
+        object-fit: contain;
+        border: 4px solid #111;
+        border-radius: 50%;
         background: #fff;
-        width: 100%;
-        padding: 30px 20px;
-        border-radius: 16px;
-        text-align: center;
-        box-shadow: none;
-        border: 2px solid #B73639;
-        transition: all .3s ease;
+        padding: 10px;
+        box-shadow: 0 12px 24px rgba(0, 0, 0, .18);
+        z-index: 2;
+        pointer-events: none;
+    }
 
+    .lm-feature-banner__content {
+        width: 100%;
+        min-height: 92px;
+        margin-left: 62px;
+        padding: 19px 24px 19px 82px;
+        border: 1px solid rgba(183, 54, 57, .75);
+        border-radius: 0 50px 50px 0;
+        background: linear-gradient(90deg, #171717 0%, #111 100%);
+        box-shadow: 0 12px 26px rgba(0, 0, 0, .14);
         display: flex;
         flex-direction: column;
         justify-content: center;
-        align-items: center;
-
-        min-height: 190px;
+        align-items: flex-start;
     }
 
-    .support-card:hover {
-        transform: translateY(-6px);
-        border-color: #B73639;
-        box-shadow: 0 10px 25px rgba(183, 54, 57, 0.12);
-    }
-
-    .support-card i {
-        font-size: 46px;
-        color: #B73639;
-        margin-bottom: 14px;
-        line-height: 1;
-    }
-
-    .support-card h4 {
-        font-size: 16px;
-        font-weight: 700;
-        margin-bottom: 6px;
-        line-height: 1.25;
-
-        min-height: 40px;
-
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .support-card p {
-        font-size: 14px;
-        color: #666;
+    .lm-feature-banner__title {
         margin: 0;
-        line-height: 1.35;
-
-        min-height: 38px;
-
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        color: #fff;
+        font-size: 18px;
+        font-weight: 700;
+        line-height: 1.15;
     }
 
-    /* RESPONSIVE SUPPORT CARDS */
-    @media (max-width: 767px) {
+    .lm-feature-banner__subtitle {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: 8px;
+        padding: 3px 13px;
+        border: 1px solid rgba(255, 255, 255, .86);
+        border-radius: 18px;
+        color: #fff;
+        font-size: 12px;
+        font-weight: 600;
+        line-height: 1.2;
+    }
 
-        .support-cards {
-            padding: 20px 0 10px;
+    @media (max-width: 991px) {
+        .support-area.support-cards {
+            padding: 34px 0 0 !important;
         }
 
-        .support-cards .row {
-            display: flex;
-            flex-wrap: wrap;
-            margin-left: -8px;
-            margin-right: -8px;
-            row-gap: 16px;
+        .lm-feature-banners-row {
+            grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+            column-gap: 30px !important;
+            row-gap: 18px !important;
+            max-width: 680px !important;
         }
 
-        .support-cards .col-lg-3,
-        .support-cards .col-md-6 {
-            flex: 0 0 50%;
-            max-width: 50%;
-            padding-left: 8px;
-            padding-right: 8px;
-            margin-bottom: 0;
-            display: flex;
+        .lm-feature-banner {
+            min-height: 116px !important;
         }
 
-        .support-card {
-            padding: 16px 10px;
-            border-radius: 14px;
-            min-height: 135px;
+        .lm-feature-banner__content {
+            min-height: 78px !important;
+            padding: 15px 18px 15px 76px !important;
         }
 
-        .support-card i {
-            font-size: 30px;
-            margin-bottom: 8px;
+        .lm-feature-banner__title {
+            font-size: 17px !important;
         }
 
-        .support-card h4 {
-            font-size: 14px;
-            line-height: 1.2;
-            margin-bottom: 4px;
-            min-height: 34px;
+        .lm-feature-banner__subtitle {
+            margin-top: 6px !important;
+            padding: 3px 12px !important;
+            font-size: 11px !important;
+        }
+    }
+
+    @media (max-width: 575px) {
+        .support-area.support-cards {
+            padding: 24px 0 0 !important;
         }
 
-        .support-card p {
-            font-size: 12px;
-            line-height: 1.25;
-            min-height: 30px;
+        .lm-feature-banners-row {
+            grid-template-columns: 1fr !important;
+            width: calc(100% - 32px) !important;
+            max-width: 326px !important;
+            row-gap: 16px !important;
         }
 
-        .exclusive-offers-banner {
-            margin-bottom: 35px;
+        .lm-feature-banner {
+            min-height: 108px !important;
         }
 
-        .section-header-soft {
-            margin-bottom: 35px;
+        .lm-feature-banner__image {
+            width: 108px !important;
+            height: 108px !important;
+            padding: 8px !important;
         }
 
-        .products-after-banner {
-            padding-top: 0 !important;
+        .lm-feature-banner__content {
+            min-height: 72px !important;
+            margin-left: 54px !important;
+            padding: 12px 16px 12px 66px !important;
+            border-radius: 0 40px 40px 0 !important;
+        }
+
+        .lm-feature-banner__title {
+            font-size: 18px !important;
+        }
+
+        .lm-feature-banner__subtitle {
+            margin-top: 5px !important;
+            padding: 3px 10px !important;
+            font-size: 10.5px !important;
         }
     }
 </style>
-<!-- Start Support Area -->
+
 <section class="support-area support-cards">
     <div class="container">
-        <div class="row">
+        <div class="lm-feature-banners-row">
 
-            <div class="col-lg-3 col-md-6">
-                <div class="support-card">
-                    <i class="bx bx-store-alt"></i>
-                    <h4>Celulares y Accesorios</h4>
-                    <p>Disponibles</p>
-                </div>
+            <div class="lm-feature-banner-col">
+                <a class="lm-feature-banner" href="tienda.php">
+                    <img class="lm-feature-banner__image" src="assets/img/UtilesEscolares.png" alt="Útiles Escolares">
+                    <div class="lm-feature-banner__content">
+                        <h3 class="lm-feature-banner__title">Útiles Escolares</h3>
+                        <span class="lm-feature-banner__subtitle">Disponibles</span>
+                    </div>
+                </a>
             </div>
 
-            <div class="col-lg-3 col-md-6">
-                <div class="support-card">
-                    <i class="bx bx-calendar-check"></i>
-                    <h4>Reparaciones</h4>
-                    <p>y Diagnostico</p>
-                </div>
+            <div class="lm-feature-banner-col">
+                <a class="lm-feature-banner" href="tienda.php">
+                    <img class="lm-feature-banner__image" src="assets/img/EnviosaDomicilio.png" alt="Envíos">
+                    <div class="lm-feature-banner__content">
+                        <h3 class="lm-feature-banner__title">Envíos</h3>
+                        <span class="lm-feature-banner__subtitle">a Domicilio</span>
+                    </div>
+                </a>
             </div>
 
-            <div class="col-lg-3 col-md-6">
-                <div class="support-card">
-                    <i class="bx bx-package"></i>
-                    <h4>Env&iacute;os</h4>
-                    <p>a Domicilio</p>
-                </div>
-            </div>
-
-            <div class="col-lg-3 col-md-6">
-                <div class="support-card">
-                    <i class="bx bx-user-voice"></i>
-                    <h4>Asesoria Tecnica</h4>
-                    <p>Personalizada</p>
-                </div>
+            <div class="lm-feature-banner-col">
+                <a class="lm-feature-banner" href="contact.php">
+                    <img class="lm-feature-banner__image" src="assets/img/AsesoriaTecnica.png" alt="Asesoría Técnica">
+                    <div class="lm-feature-banner__content">
+                        <h3 class="lm-feature-banner__title">Asesoría Técnica</h3>
+                        <span class="lm-feature-banner__subtitle">Personalizada</span>
+                    </div>
+                </a>
             </div>
 
         </div>
     </div>
 </section>
-
-
-
 <!-- End Support Area -->
+
 <style>
     .arrivals-products-image {
         width: 100%;
@@ -537,9 +564,9 @@ Dirigite a Nosotros
     /* Banner Ofertas Exclusivas */
     .exclusive-offers-banner {
         position: relative;
-        background: linear-gradient(90deg, #1A2697 0%, #B73639 58%, #466934 100%);
+        background: linear-gradient(90deg, #1A2697 0%, #B73639 58%, #166B38 100%);
         padding: 25px 0;
-        margin-top: 50px;
+        margin-top: 46px;
         margin-bottom: 60px;
         overflow: hidden;
         z-index: 5;
@@ -621,7 +648,7 @@ Dirigite a Nosotros
     }
 
     .banner-btn {
-        background: #466934;
+        background: #166B38;
         color: #fff;
         font-weight: 700;
         padding: 12px 35px;
@@ -676,13 +703,13 @@ Dirigite a Nosotros
         border-radius: 22px !important;
         overflow: hidden !important;
         box-sizing: border-box !important;
-        background: linear-gradient(112deg, #101A5C 0%, #1A2697 49.35%, #466934 49.55%, #355329 100%) !important;
+        background: linear-gradient(112deg, #101A5C 0%, #1A2697 49.35%, #166B38 49.55%, #355329 100%) !important;
         background-color: #1A2697 !important;
         box-shadow: 0 18px 42px rgba(16, 26, 92, 0.16) !important;
     }
 
     .section-header-soft .wave {
-        background: linear-gradient(112deg, #101A5C 0%, #1A2697 49.35%, #466934 49.55%, #355329 100%) !important;
+        background: linear-gradient(112deg, #101A5C 0%, #1A2697 49.35%, #166B38 49.55%, #355329 100%) !important;
     }
 
     .exclusive-offers-banner .container,
@@ -865,11 +892,11 @@ Dirigite a Nosotros
         --bs-gutter-y: 0;
         display: grid !important;
         grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-        gap: 30px 24px !important;
+        gap: 42px 80px !important;
         align-items: stretch;
         justify-content: center;
         width: 100%;
-        max-width: 930px;
+        max-width: 1120px;
         margin-left: auto !important;
         margin-right: auto !important;
     }
@@ -1048,7 +1075,7 @@ Dirigite a Nosotros
         top: 0;
         width: 100%;
         height: 100%;
-        background: linear-gradient(90deg, #1A2697 0%, #B73639 58%, #466934 100%);
+        background: linear-gradient(90deg, #1A2697 0%, #B73639 58%, #166B38 100%);
         /* Fondo gradiente Marquense */
         box-shadow: inset 0 0 50px rgba(0, 0, 0, 0.1);
         z-index: 0;
@@ -1075,7 +1102,7 @@ Dirigite a Nosotros
     }
 
     .section-header-soft .btn-soft {
-        background: #466934;
+        background: #166B38;
         color: #fff;
         padding: 12px 35px;
         /* Botón un poco más compacto */
@@ -1654,9 +1681,9 @@ $categoriasInicio = isset($categorias) && is_array($categorias)
     }
 
     .mp-close:hover {
-        background: #B73639;
+        background: #B42A27;
         color: #fff;
-        border-color: #B73639;
+        border-color: #B42A27;
         transform: scale(1.1);
     }
 
@@ -1850,11 +1877,11 @@ $categoriasInicio = isset($categorias) && is_array($categorias)
     }
 
     .mp-whatsapp {
-        background: #466934;
+        background: #166B38;
     }
 
     .mp-whatsapp:hover {
-        background: #466934;
+        background: #166B38;
         transform: translateY(-2px);
         box-shadow: 0 4px 12px rgba(37, 211, 102, 0.4);
     }
@@ -2060,1810 +2087,8 @@ $categoriasInicio = isset($categorias) && is_array($categorias)
     </div>
 </div>
 
-
-
-
-
-
-
-
-
-<!-- Start Footer Area -->
-
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    function normalizeText(text) {
-        return text.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-    }
-
-    document.querySelectorAll('a').forEach(function (link) {
-        if (link.textContent.trim() === 'Dirigite a Nosotros') {
-            link.setAttribute('href', 'contact.php');
-        }
-    });
-
-    document.querySelectorAll('h1, h2, h3, h4, h5, h6, p, span, strong').forEach(function (element) {
-        if (normalizeText(element.textContent) === 'reparaciones') {
-            var item = element.closest('[class*="col-"]') || element.closest('.single-feature, .feature-box, .single-service, .service-box') || element.parentElement;
-            if (item) {
-                item.remove();
-            }
-        }
-    });
-
-    var featureTitles = ['celulares y accesorios', 'envios', 'asesoria tecnica'];
-    var featureItems = [];
-    document.querySelectorAll('h1, h2, h3, h4, h5, h6, p, span, strong').forEach(function (element) {
-        if (featureTitles.indexOf(normalizeText(element.textContent)) !== -1) {
-            var item = element.closest('[class*="col-"]') || element.closest('.single-feature, .feature-box, .single-service, .service-box') || element.parentElement;
-            if (item && featureItems.indexOf(item) === -1) {
-                featureItems.push(item);
-            }
-        }
-    });
-
-    if (featureItems.length === 3 && featureItems[0].parentElement) {
-        var featuresRow = featureItems[0].parentElement;
-        var slider = document.querySelector('.slider-area, .home-slider, .hero-slider, .main-slider, .owl-carousel, .swiper, #slider, .slider');
-        var sliderWidth = slider ? slider.getBoundingClientRect().width : 0;
-
-        if (!sliderWidth) {
-            document.querySelectorAll('section, div').forEach(function (element) {
-                var box = element.getBoundingClientRect();
-                var firstBox = featureItems[0].getBoundingClientRect();
-                if (box.bottom <= firstBox.top && box.width > sliderWidth && box.width < window.innerWidth * 0.95) {
-                    sliderWidth = box.width;
-                }
-            });
-        }
-
-        featuresRow.style.display = 'flex';
-        featuresRow.style.justifyContent = 'center';
-        featuresRow.style.flexWrap = 'wrap';
-        featuresRow.style.marginLeft = 'auto';
-        featuresRow.style.marginRight = 'auto';
-        if (sliderWidth) {
-            featuresRow.style.maxWidth = sliderWidth + 'px';
-        }
-
-        featureItems.forEach(function (item) {
-            item.style.float = 'none';
-        });
-    }
-
-    return;
-
-    function addCircularSliderStyle() {
-        if (document.getElementById('inicio-circular-slider-style')) {
-            return;
-        }
-
-        var style = document.createElement('style');
-        style.id = 'inicio-circular-slider-style';
-        style.textContent = `
-            .inicio-circular-slider {
-                position: relative;
-                overflow: hidden;
-            }
-
-            .inicio-circular-slider .inicio-circular-carousel {
-                position: absolute;
-                top: 50%;
-                right: clamp(34px, 7vw, 105px);
-                width: clamp(210px, 24vw, 300px);
-                height: clamp(210px, 24vw, 300px);
-                transform: translateY(-50%);
-                z-index: 5;
-                pointer-events: none;
-            }
-
-            .inicio-circular-slider .inicio-circular-carousel__item {
-                position: absolute;
-                display: block;
-                width: clamp(66px, 7vw, 92px);
-                height: clamp(66px, 7vw, 92px);
-                padding: 0;
-                border: 3px solid rgba(255, 255, 255, 0.92);
-                border-radius: 50%;
-                background: rgba(255, 255, 255, 0.16);
-                box-shadow: 0 12px 26px rgba(0, 0, 0, 0.24);
-                overflow: hidden;
-                pointer-events: auto;
-            }
-
-            .inicio-circular-slider .inicio-circular-carousel__item img {
-                display: block;
-                width: 100%;
-                height: 100%;
-                border-radius: 50%;
-                object-fit: cover;
-            }
-
-            .inicio-circular-slider .inicio-circular-carousel__item.is-main {
-                top: 50%;
-                left: 40%;
-                width: clamp(108px, 11vw, 148px);
-                height: clamp(108px, 11vw, 148px);
-                transform: translate(-50%, -50%);
-                z-index: 3;
-            }
-
-            .inicio-circular-slider .inicio-circular-carousel__item.is-top {
-                top: 14%;
-                right: 3%;
-                z-index: 2;
-            }
-
-            .inicio-circular-slider .inicio-circular-carousel__item.is-bottom {
-                right: 18%;
-                bottom: 8%;
-                z-index: 2;
-            }
-
-            .inicio-circular-slider-side-preview {
-                opacity: 0 !important;
-                pointer-events: none !important;
-            }
-
-            .inicio-circular-slider .owl-nav,
-            .inicio-circular-slider-nav-scope .owl-nav {
-                position: absolute !important;
-                right: clamp(84px, 12vw, 175px) !important;
-                bottom: clamp(28px, 6vw, 56px) !important;
-                left: auto !important;
-                top: auto !important;
-                display: flex !important;
-                gap: 10px !important;
-                align-items: center !important;
-                justify-content: center !important;
-                z-index: 8 !important;
-            }
-
-            .inicio-circular-slider .owl-nav button,
-            .inicio-circular-slider .owl-nav div,
-            .inicio-circular-slider-nav-scope .owl-nav button,
-            .inicio-circular-slider-nav-scope .owl-nav div {
-                position: static !important;
-                transform: none !important;
-                margin: 0 !important;
-            }
-
-            .inicio-circular-slider .slick-prev,
-            .inicio-circular-slider .slick-next,
-            .inicio-circular-slider .swiper-button-prev,
-            .inicio-circular-slider .swiper-button-next,
-            .inicio-circular-slider-nav-scope .slick-prev,
-            .inicio-circular-slider-nav-scope .slick-next,
-            .inicio-circular-slider-nav-scope .swiper-button-prev,
-            .inicio-circular-slider-nav-scope .swiper-button-next {
-                top: auto !important;
-                bottom: clamp(28px, 6vw, 56px) !important;
-                z-index: 8 !important;
-                transform: none !important;
-            }
-
-            .inicio-circular-slider .slick-prev,
-            .inicio-circular-slider .swiper-button-prev,
-            .inicio-circular-slider-nav-scope .slick-prev,
-            .inicio-circular-slider-nav-scope .swiper-button-prev {
-                left: auto !important;
-                right: clamp(128px, 15vw, 220px) !important;
-            }
-
-            .inicio-circular-slider .slick-next,
-            .inicio-circular-slider .swiper-button-next,
-            .inicio-circular-slider-nav-scope .slick-next,
-            .inicio-circular-slider-nav-scope .swiper-button-next {
-                right: clamp(86px, 12vw, 172px) !important;
-            }
-
-            @media (max-width: 767px) {
-                .inicio-circular-slider .inicio-circular-carousel {
-                    display: none;
-                }
-
-                .inicio-circular-slider .owl-nav,
-                .inicio-circular-slider-nav-scope .owl-nav {
-                    right: 24px !important;
-                    bottom: 22px !important;
-                }
-            }
-        `;
-        document.head.appendChild(style);
-    }
-
-    function getImageUrl(value) {
-        if (!value || value === 'none') {
-            return '';
-        }
-
-        var match = value.match(/url\\([\"']?([^\"')]+)[\"']?\\)/);
-        return match ? match[1] : '';
-    }
-
-    function getSliderImages(slider) {
-        var images = [];
-
-        slider.querySelectorAll('img').forEach(function (image) {
-            if (image.currentSrc || image.src) {
-                images.push(image.currentSrc || image.src);
-            }
-        });
-
-        slider.querySelectorAll('*').forEach(function (element) {
-            var image = getImageUrl(window.getComputedStyle(element).backgroundImage);
-            if (image) {
-                images.push(image);
-            }
-        });
-
-        var sliderBackground = getImageUrl(window.getComputedStyle(slider).backgroundImage);
-        if (sliderBackground) {
-            images.push(sliderBackground);
-        }
-
-        return images.filter(function (image, index, list) {
-            return image && list.indexOf(image) === index && image.indexOf('logo') === -1;
-        });
-    }
-
-    function findInicioSlider() {
-        var actionButton = Array.from(document.querySelectorAll('a')).find(function (link) {
-            var text = normalizeText(link.textContent);
-            return text === 'cotizar ahora' || text === 'comprar ahora' || text === 'dirigite a nosotros';
-        });
-
-        if (!actionButton) {
-            return null;
-        }
-
-        var current = actionButton.parentElement;
-        while (current && current !== document.body) {
-            var box = current.getBoundingClientRect();
-            if (box.width > 520 && box.height > 180) {
-                return current;
-            }
-            current = current.parentElement;
-        }
-
-        return null;
-    }
-
-    function buildCircularSlider() {
-        var slider = findInicioSlider();
-        if (!slider || slider.classList.contains('inicio-circular-slider')) {
-            return;
-        }
-
-        var images = getSliderImages(slider);
-        if (!images.length) {
-            return;
-        }
-
-        while (images.length < 3) {
-            images = images.concat(images);
-        }
-
-        addCircularSliderStyle();
-        slider.classList.add('inicio-circular-slider');
-
-        var navScope = slider;
-        var parent = slider;
-        while (parent && parent !== document.body) {
-            if (parent.querySelector('.owl-nav, .slick-prev, .slick-next, .swiper-button-prev, .swiper-button-next')) {
-                navScope = parent;
-                break;
-            }
-            parent = parent.parentElement;
-        }
-        navScope.classList.add('inicio-circular-slider-nav-scope');
-
-        var carousel = document.createElement('div');
-        carousel.className = 'inicio-circular-carousel';
-        slider.appendChild(carousel);
-
-        var positions = ['is-main', 'is-top', 'is-bottom'];
-        var active = 0;
-
-        function renderCircularItems() {
-            carousel.innerHTML = '';
-            positions.forEach(function (position, index) {
-                var button = document.createElement('button');
-                var image = document.createElement('img');
-
-                button.type = 'button';
-                button.className = 'inicio-circular-carousel__item ' + position;
-                image.src = images[(active + index) % images.length];
-                image.alt = '';
-
-                button.appendChild(image);
-                button.addEventListener('click', function () {
-                    active = (active + index) % images.length;
-                    renderCircularItems();
-                });
-
-                carousel.appendChild(button);
-            });
-        }
-
-        renderCircularItems();
-
-        slider.querySelectorAll('.owl-next, .slick-next, .swiper-button-next').forEach(function (button) {
-            button.addEventListener('click', function () {
-                active = (active + 1) % images.length;
-                renderCircularItems();
-                setTimeout(hideRectangularSidePreviews, 80);
-            });
-        });
-
-        slider.querySelectorAll('.owl-prev, .slick-prev, .swiper-button-prev').forEach(function (button) {
-            button.addEventListener('click', function () {
-                active = (active - 1 + images.length) % images.length;
-                renderCircularItems();
-                setTimeout(hideRectangularSidePreviews, 80);
-            });
-        });
-
-        function hideRectangularSidePreviews() {
-            var sliderBox = slider.getBoundingClientRect();
-            navScope.querySelectorAll('.owl-item, .slick-slide').forEach(function (slide) {
-                var slideBox = slide.getBoundingClientRect();
-                var isSidePreview = slideBox.left > sliderBox.left + (sliderBox.width * 0.55) || slideBox.right < sliderBox.left + (sliderBox.width * 0.45);
-
-                if (isSidePreview && !slide.contains(slider)) {
-                    slide.classList.add('inicio-circular-slider-side-preview');
-                } else {
-                    slide.classList.remove('inicio-circular-slider-side-preview');
-                }
-            });
-        }
-
-        hideRectangularSidePreviews();
-        window.addEventListener('resize', hideRectangularSidePreviews);
-        if (window.MutationObserver) {
-            new MutationObserver(hideRectangularSidePreviews).observe(navScope, {
-                attributes: true,
-                childList: true,
-                subtree: true
-            });
-        }
-    }
-
-    buildCircularSlider();
-});
-</script>
-
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    setTimeout(function () {
-        return;
-
-        function cleanSliderText(text) {
-            return text.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-        }
-
-        function imageFromBackground(value) {
-            var match = value && value.match(/url\(["']?([^"')]+)["']?\)/);
-            return match ? match[1] : '';
-        }
-
-        function collectSliderImages(scope) {
-            var images = [];
-
-            scope.querySelectorAll('img').forEach(function (image) {
-                if (image.currentSrc || image.src) {
-                    images.push(image.currentSrc || image.src);
-                }
-            });
-
-            scope.querySelectorAll('*').forEach(function (element) {
-                var background = imageFromBackground(window.getComputedStyle(element).backgroundImage);
-                if (background) {
-                    images.push(background);
-                }
-            });
-
-            return images.filter(function (image, index, list) {
-                return image && list.indexOf(image) === index && image.toLowerCase().indexOf('logo') === -1;
-            });
-        }
-
-        function addFinalSliderStyle() {
-            if (document.getElementById('lm-final-circular-slider-style')) {
-                return;
-            }
-
-            var style = document.createElement('style');
-            style.id = 'lm-final-circular-slider-style';
-            style.textContent = `
-                .lm-final-circular-slider {
-                    position: relative !important;
-                    overflow: hidden !important;
-                }
-
-                .lm-final-circular-slider .owl-stage {
-                    width: 100% !important;
-                    transform: none !important;
-                }
-
-                .lm-final-circular-slider .owl-item {
-                    float: none !important;
-                }
-
-                .lm-final-circular-slider .owl-item.lm-final-main-slide {
-                    display: block !important;
-                    width: 100% !important;
-                    opacity: 1 !important;
-                    position: relative !important;
-                    z-index: 2 !important;
-                }
-
-                .lm-final-circular-slider .owl-item:not(.lm-final-main-slide) {
-                    display: none !important;
-                }
-
-                .lm-final-circular-thumbs {
-                    position: absolute;
-                    top: 50%;
-                    right: clamp(40px, 8vw, 118px);
-                    width: clamp(205px, 24vw, 310px);
-                    height: clamp(205px, 24vw, 310px);
-                    transform: translateY(-50%);
-                    z-index: 7;
-                    pointer-events: none;
-                }
-
-                .lm-final-circular-thumb {
-                    position: absolute;
-                    display: block;
-                    padding: 0;
-                    border: 3px solid rgba(255, 255, 255, 0.95);
-                    border-radius: 50% !important;
-                    background: rgba(255, 255, 255, 0.16);
-                    box-shadow: 0 12px 26px rgba(0, 0, 0, 0.24);
-                    overflow: hidden;
-                    pointer-events: auto;
-                }
-
-                .lm-final-circular-thumb img {
-                    display: block;
-                    width: 100%;
-                    height: 100%;
-                    border-radius: 50% !important;
-                    object-fit: cover;
-                }
-
-                .lm-final-circular-thumb.is-main {
-                    top: 50%;
-                    left: 35%;
-                    width: clamp(112px, 11vw, 152px);
-                    height: clamp(112px, 11vw, 152px);
-                    transform: translate(-50%, -50%);
-                    z-index: 3;
-                }
-
-                .lm-final-circular-thumb.is-top {
-                    top: 13%;
-                    right: 4%;
-                    width: clamp(70px, 7vw, 96px);
-                    height: clamp(70px, 7vw, 96px);
-                    z-index: 2;
-                }
-
-                .lm-final-circular-thumb.is-bottom {
-                    right: 18%;
-                    bottom: 7%;
-                    width: clamp(70px, 7vw, 96px);
-                    height: clamp(70px, 7vw, 96px);
-                    z-index: 2;
-                }
-
-                .lm-final-circular-slider .owl-nav {
-                    position: absolute !important;
-                    left: auto !important;
-                    top: auto !important;
-                    right: clamp(95px, 13vw, 188px) !important;
-                    bottom: clamp(30px, 6vw, 58px) !important;
-                    display: flex !important;
-                    gap: 10px !important;
-                    align-items: center !important;
-                    justify-content: center !important;
-                    z-index: 9 !important;
-                }
-
-                .lm-final-circular-slider .owl-nav button,
-                .lm-final-circular-slider .owl-nav div {
-                    position: static !important;
-                    transform: none !important;
-                    margin: 0 !important;
-                }
-
-                @media (max-width: 767px) {
-                    .lm-final-circular-thumbs {
-                        display: none;
-                    }
-
-                    .lm-final-circular-slider .owl-nav {
-                        right: 24px !important;
-                        bottom: 22px !important;
-                    }
-                }
-            `;
-            document.head.appendChild(style);
-        }
-
-        document.querySelectorAll('.inicio-circular-carousel').forEach(function (element) {
-            element.remove();
-        });
-
-        document.querySelectorAll('.inicio-circular-slider, .inicio-circular-slider-nav-scope, .inicio-circular-slider-side-preview').forEach(function (element) {
-            element.classList.remove('inicio-circular-slider', 'inicio-circular-slider-nav-scope', 'inicio-circular-slider-side-preview');
-        });
-
-        var actionButton = Array.from(document.querySelectorAll('a')).find(function (link) {
-            var text = cleanSliderText(link.textContent);
-            return text === 'cotizar ahora' || text === 'comprar ahora' || text === 'dirigite a nosotros';
-        });
-
-        if (!actionButton) {
-            return;
-        }
-
-        var mainSlide = actionButton.closest('.owl-item');
-        var slider = mainSlide ? mainSlide.closest('.owl-carousel') : null;
-
-        if (!slider) {
-            var current = actionButton.parentElement;
-            while (current && current !== document.body) {
-                var box = current.getBoundingClientRect();
-                if (box.width > 520 && box.height > 190) {
-                    slider = current;
-                }
-                current = current.parentElement;
-            }
-        }
-
-        if (!slider || slider.classList.contains('lm-final-circular-slider')) {
-            return;
-        }
-
-        addFinalSliderStyle();
-        slider.classList.add('lm-final-circular-slider');
-
-        if (mainSlide) {
-            slider.querySelectorAll('.owl-item').forEach(function (item) {
-                item.classList.remove('lm-final-main-slide');
-            });
-            mainSlide.classList.add('lm-final-main-slide');
-        }
-
-        var images = collectSliderImages(slider);
-        if (!images.length && mainSlide) {
-            images = collectSliderImages(mainSlide);
-        }
-
-        while (images.length < 3 && images.length > 0) {
-            images = images.concat(images);
-        }
-
-        if (!images.length) {
-            return;
-        }
-
-        var thumbs = document.createElement('div');
-        thumbs.className = 'lm-final-circular-thumbs';
-        slider.appendChild(thumbs);
-
-        ['is-main', 'is-top', 'is-bottom'].forEach(function (position, index) {
-            var thumb = document.createElement('button');
-            var image = document.createElement('img');
-
-            thumb.type = 'button';
-            thumb.className = 'lm-final-circular-thumb ' + position;
-            image.src = images[index];
-            image.alt = '';
-
-            thumb.appendChild(image);
-            thumbs.appendChild(thumb);
-        });
-    }, 120);
-});
-</script>
-
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    setTimeout(function () {
-        return;
-
-        function plain(text) {
-            return (text || '').trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-        }
-
-        function bgImage(value) {
-            var match = value && value.match(/url\(["']?([^"')]+)["']?\)/);
-            return match ? match[1] : '';
-        }
-
-        function hasSliderButton(element) {
-            return Array.from(element.querySelectorAll('a, button')).some(function (button) {
-                var text = plain(button.textContent);
-                return text === 'cotizar ahora' || text === 'comprar ahora' || text === 'dirigite a nosotros';
-            });
-        }
-
-        function getImages(element) {
-            var images = [];
-
-            element.querySelectorAll('img').forEach(function (image) {
-                var src = image.currentSrc || image.src;
-                if (src) {
-                    images.push(src);
-                }
-            });
-
-            element.querySelectorAll('*').forEach(function (node) {
-                var image = bgImage(window.getComputedStyle(node).backgroundImage);
-                if (image) {
-                    images.push(image);
-                }
-            });
-
-            var ownBackground = bgImage(window.getComputedStyle(element).backgroundImage);
-            if (ownBackground) {
-                images.push(ownBackground);
-            }
-
-            return images.filter(function (image, index, list) {
-                var clean = image.toLowerCase();
-                return image && list.indexOf(image) === index && clean.indexOf('logo') === -1 && clean.indexOf('whatsapp') === -1;
-            });
-        }
-
-        function addStyle() {
-            if (document.getElementById('lm-professional-circular-slider-style')) {
-                return;
-            }
-
-            var style = document.createElement('style');
-            style.id = 'lm-professional-circular-slider-style';
-            style.textContent = `
-                #inicio-circular-slider-style,
-                #lm-final-circular-slider-style {
-                    display: none !important;
-                }
-
-                .inicio-circular-carousel,
-                .lm-final-circular-thumbs {
-                    display: none !important;
-                }
-
-                .lm-professional-circular-slider {
-                    position: relative !important;
-                    overflow: hidden !important;
-                }
-
-                .lm-professional-circular-slider .owl-stage-outer,
-                .lm-professional-circular-slider .carousel-inner {
-                    overflow: hidden !important;
-                }
-
-                .lm-professional-circular-slider .owl-stage {
-                    width: 100% !important;
-                    transform: none !important;
-                    transition: none !important;
-                }
-
-                .lm-professional-circular-slider .owl-item {
-                    position: absolute !important;
-                    inset: 0 !important;
-                    width: 100% !important;
-                    opacity: 0 !important;
-                    visibility: hidden !important;
-                    pointer-events: none !important;
-                }
-
-                .lm-professional-circular-slider .owl-item.lm-professional-main-slide {
-                    position: relative !important;
-                    opacity: 1 !important;
-                    visibility: visible !important;
-                    pointer-events: auto !important;
-                    z-index: 2 !important;
-                }
-
-                .lm-professional-circular-slider .carousel-item:not(.lm-professional-main-slide) {
-                    opacity: 0 !important;
-                    visibility: hidden !important;
-                    pointer-events: none !important;
-                }
-
-                .lm-professional-circular-slider .carousel-item.lm-professional-main-slide {
-                    display: block !important;
-                    opacity: 1 !important;
-                    visibility: visible !important;
-                }
-
-                .lm-professional-circle-nav {
-                    position: absolute;
-                    top: 50%;
-                    right: clamp(42px, 8vw, 115px);
-                    width: clamp(210px, 23vw, 300px);
-                    height: clamp(210px, 23vw, 300px);
-                    transform: translateY(-50%);
-                    z-index: 8;
-                    pointer-events: none;
-                }
-
-                .lm-professional-circle-nav__item {
-                    position: absolute;
-                    display: block;
-                    padding: 0;
-                    border: 3px solid rgba(255, 255, 255, 0.96);
-                    border-radius: 50% !important;
-                    background: rgba(255, 255, 255, 0.22);
-                    box-shadow: 0 13px 28px rgba(0, 0, 0, 0.28);
-                    overflow: hidden;
-                    pointer-events: auto;
-                }
-
-                .lm-professional-circle-nav__item img {
-                    display: block;
-                    width: 100%;
-                    height: 100%;
-                    border-radius: 50% !important;
-                    object-fit: cover;
-                }
-
-                .lm-professional-circle-nav__item.is-active {
-                    top: 50%;
-                    left: 36%;
-                    width: clamp(116px, 11vw, 150px);
-                    height: clamp(116px, 11vw, 150px);
-                    transform: translate(-50%, -50%);
-                    z-index: 3;
-                }
-
-                .lm-professional-circle-nav__item.is-next {
-                    top: 13%;
-                    right: 4%;
-                    width: clamp(72px, 7vw, 96px);
-                    height: clamp(72px, 7vw, 96px);
-                    z-index: 2;
-                }
-
-                .lm-professional-circle-nav__item.is-prev {
-                    right: 18%;
-                    bottom: 7%;
-                    width: clamp(72px, 7vw, 96px);
-                    height: clamp(72px, 7vw, 96px);
-                    z-index: 2;
-                }
-
-                .lm-professional-circular-slider .owl-nav,
-                .lm-professional-circular-slider .carousel-control-prev,
-                .lm-professional-circular-slider .carousel-control-next {
-                    z-index: 10 !important;
-                }
-
-                .lm-professional-circular-slider .owl-nav {
-                    position: absolute !important;
-                    top: auto !important;
-                    left: auto !important;
-                    right: clamp(96px, 13vw, 182px) !important;
-                    bottom: clamp(30px, 6vw, 58px) !important;
-                    display: flex !important;
-                    gap: 10px !important;
-                    align-items: center !important;
-                    justify-content: center !important;
-                }
-
-                .lm-professional-circular-slider .owl-nav button,
-                .lm-professional-circular-slider .owl-nav div {
-                    position: static !important;
-                    margin: 0 !important;
-                    transform: none !important;
-                }
-
-                .lm-professional-circular-slider .carousel-control-prev,
-                .lm-professional-circular-slider .carousel-control-next {
-                    top: auto !important;
-                    bottom: clamp(30px, 6vw, 58px) !important;
-                    width: auto !important;
-                    height: auto !important;
-                    opacity: 1 !important;
-                    transform: none !important;
-                }
-
-                .lm-professional-circular-slider .carousel-control-prev {
-                    left: auto !important;
-                    right: clamp(140px, 16vw, 225px) !important;
-                }
-
-                .lm-professional-circular-slider .carousel-control-next {
-                    right: clamp(96px, 13vw, 182px) !important;
-                }
-
-                @media (max-width: 767px) {
-                    .lm-professional-circle-nav {
-                        display: none !important;
-                    }
-
-                    .lm-professional-circular-slider .owl-nav {
-                        right: 24px !important;
-                        bottom: 22px !important;
-                    }
-                }
-            `;
-            document.head.appendChild(style);
-        }
-
-        function chooseSlider() {
-            var candidates = Array.from(document.querySelectorAll('.owl-carousel, .carousel, [class*="slider"]')).filter(function (element) {
-                var box = element.getBoundingClientRect();
-                return box.width > 520 && box.height > 180 && hasSliderButton(element);
-            });
-
-            if (candidates.length) {
-                return candidates[0];
-            }
-
-            var button = Array.from(document.querySelectorAll('a, button')).find(function (element) {
-                var text = plain(element.textContent);
-                return text === 'cotizar ahora' || text === 'comprar ahora' || text === 'dirigite a nosotros';
-            });
-
-            var current = button ? button.parentElement : null;
-            while (current && current !== document.body) {
-                var box = current.getBoundingClientRect();
-                if (box.width > 520 && box.height > 180) {
-                    return current;
-                }
-                current = current.parentElement;
-            }
-
-            return null;
-        }
-
-        function markMainSlide(slider) {
-            var main = Array.from(slider.querySelectorAll('.owl-item, .carousel-item')).find(function (slide) {
-                return hasSliderButton(slide) && slide.getBoundingClientRect().width > 0;
-            }) || Array.from(slider.querySelectorAll('.owl-item.active, .carousel-item.active'))[0] || Array.from(slider.querySelectorAll('.owl-item, .carousel-item'))[0];
-
-            slider.querySelectorAll('.owl-item, .carousel-item').forEach(function (slide) {
-                slide.classList.remove('lm-professional-main-slide');
-            });
-
-            if (main) {
-                main.classList.add('lm-professional-main-slide');
-            }
-        }
-
-        function buildCircleNavigation(slider) {
-            slider.querySelectorAll('.inicio-circular-carousel, .lm-final-circular-thumbs, .lm-professional-circle-nav').forEach(function (element) {
-                element.remove();
-            });
-
-            var images = getImages(slider);
-            while (images.length > 0 && images.length < 3) {
-                images = images.concat(images);
-            }
-
-            if (!images.length) {
-                return;
-            }
-
-            var active = 0;
-            var nav = document.createElement('div');
-            nav.className = 'lm-professional-circle-nav';
-            slider.appendChild(nav);
-
-            function render() {
-                nav.innerHTML = '';
-
-                [
-                    { className: 'is-active', image: images[active % images.length] },
-                    { className: 'is-next', image: images[(active + 1) % images.length] },
-                    { className: 'is-prev', image: images[(active + 2) % images.length] }
-                ].forEach(function (item, index) {
-                    var button = document.createElement('button');
-                    var image = document.createElement('img');
-
-                    button.type = 'button';
-                    button.className = 'lm-professional-circle-nav__item ' + item.className;
-                    image.src = item.image;
-                    image.alt = '';
-                    button.appendChild(image);
-
-                    button.addEventListener('click', function () {
-                        active = (active + index) % images.length;
-                        render();
-                    });
-
-                    nav.appendChild(button);
-                });
-            }
-
-            render();
-
-            slider.querySelectorAll('.owl-next, .carousel-control-next').forEach(function (button) {
-                button.addEventListener('click', function () {
-                    active = (active + 1) % images.length;
-                    render();
-                    setTimeout(function () {
-                        markMainSlide(slider);
-                    }, 80);
-                });
-            });
-
-            slider.querySelectorAll('.owl-prev, .carousel-control-prev').forEach(function (button) {
-                button.addEventListener('click', function () {
-                    active = (active - 1 + images.length) % images.length;
-                    render();
-                    setTimeout(function () {
-                        markMainSlide(slider);
-                    }, 80);
-                });
-            });
-        }
-
-        document.querySelectorAll('#inicio-circular-slider-style, #lm-final-circular-slider-style').forEach(function (element) {
-            element.remove();
-        });
-
-        document.querySelectorAll('.inicio-circular-carousel, .lm-final-circular-thumbs').forEach(function (element) {
-            element.remove();
-        });
-
-        document.querySelectorAll('.inicio-circular-slider, .inicio-circular-slider-nav-scope, .inicio-circular-slider-side-preview, .lm-final-circular-slider').forEach(function (element) {
-            element.classList.remove('inicio-circular-slider', 'inicio-circular-slider-nav-scope', 'inicio-circular-slider-side-preview', 'lm-final-circular-slider');
-        });
-
-        var slider = chooseSlider();
-        if (!slider) {
-            return;
-        }
-
-        addStyle();
-        slider.classList.add('lm-professional-circular-slider');
-        markMainSlide(slider);
-        buildCircleNavigation(slider);
-
-        if (window.MutationObserver) {
-            new MutationObserver(function () {
-                markMainSlide(slider);
-            }).observe(slider, {
-                attributes: true,
-                subtree: true,
-                attributeFilter: ['class', 'style']
-            });
-        }
-    }, 650);
-});
-</script>
-
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    setTimeout(function () {
-        return;
-
-        function lmText(value) {
-            return (value || '').trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-        }
-
-        function lmButtonText(element) {
-            return Array.from(element.querySelectorAll('a, button')).some(function (button) {
-                var text = lmText(button.textContent);
-                return text === 'cotizar ahora' || text === 'comprar ahora' || text === 'dirigite a nosotros';
-            });
-        }
-
-        function lmBackground(value) {
-            var match = value && value.match(/url\(["']?([^"')]+)["']?\)/);
-            return match ? match[1] : '';
-        }
-
-        function lmSlideImage(slide) {
-            var image = slide.querySelector('img');
-            if (image && (image.currentSrc || image.src)) {
-                return image.currentSrc || image.src;
-            }
-
-            var dataImage = slide.querySelector('[data-setbg], [data-bg], [data-background]');
-            if (dataImage) {
-                return dataImage.getAttribute('data-setbg') || dataImage.getAttribute('data-bg') || dataImage.getAttribute('data-background') || '';
-            }
-
-            var nodes = [slide].concat(Array.from(slide.querySelectorAll('*')));
-            for (var i = 0; i < nodes.length; i++) {
-                var found = lmBackground(window.getComputedStyle(nodes[i]).backgroundImage);
-                if (found) {
-                    return found;
-                }
-            }
-
-            return '';
-        }
-
-        function lmAddRootStyle() {
-            if (document.getElementById('lm-root-circular-slider-style')) {
-                return;
-            }
-
-            var style = document.createElement('style');
-            style.id = 'lm-root-circular-slider-style';
-            style.textContent = `
-                #inicio-circular-slider-style,
-                #lm-final-circular-slider-style,
-                #lm-professional-circular-slider-style,
-                .inicio-circular-carousel,
-                .lm-final-circular-thumbs,
-                .lm-professional-circle-nav {
-                    display: none !important;
-                }
-
-                [data-lm-root-circular="true"] {
-                    position: relative !important;
-                    overflow: hidden !important;
-                }
-
-                [data-lm-root-circular="true"] .owl-stage-outer {
-                    overflow: hidden !important;
-                }
-
-                [data-lm-root-circular="true"] .owl-stage {
-                    width: 100% !important;
-                    transform: none !important;
-                    transition: none !important;
-                    display: block !important;
-                }
-
-                [data-lm-root-circular="true"] .owl-item {
-                    float: none !important;
-                    width: 100% !important;
-                    transform: none !important;
-                    transition: opacity .35s ease !important;
-                }
-
-                [data-lm-root-circular="true"] .owl-item:not(.lm-root-slide-active) {
-                    display: none !important;
-                    opacity: 0 !important;
-                    visibility: hidden !important;
-                    pointer-events: none !important;
-                }
-
-                [data-lm-root-circular="true"] .owl-item.lm-root-slide-active {
-                    display: block !important;
-                    opacity: 1 !important;
-                    visibility: visible !important;
-                    pointer-events: auto !important;
-                }
-
-                .lm-root-circular-nav {
-                    position: absolute;
-                    top: 50%;
-                    right: clamp(42px, 8vw, 118px);
-                    width: clamp(215px, 24vw, 315px);
-                    height: clamp(215px, 24vw, 315px);
-                    transform: translateY(-50%);
-                    z-index: 12;
-                    pointer-events: none;
-                }
-
-                .lm-root-circular-nav__button {
-                    position: absolute;
-                    display: block;
-                    padding: 0;
-                    border: 3px solid rgba(255, 255, 255, .96);
-                    border-radius: 50% !important;
-                    background: rgba(255, 255, 255, .18);
-                    box-shadow: 0 13px 28px rgba(0, 0, 0, .28);
-                    overflow: hidden;
-                    pointer-events: auto;
-                }
-
-                .lm-root-circular-nav__button img {
-                    display: block;
-                    width: 100%;
-                    height: 100%;
-                    border-radius: 50% !important;
-                    object-fit: cover;
-                }
-
-                .lm-root-circular-nav__button.is-current {
-                    top: 50%;
-                    left: 35%;
-                    width: clamp(118px, 11vw, 152px);
-                    height: clamp(118px, 11vw, 152px);
-                    transform: translate(-50%, -50%);
-                    z-index: 3;
-                }
-
-                .lm-root-circular-nav__button.is-next {
-                    top: 13%;
-                    right: 4%;
-                    width: clamp(72px, 7vw, 98px);
-                    height: clamp(72px, 7vw, 98px);
-                    z-index: 2;
-                }
-
-                .lm-root-circular-nav__button.is-prev {
-                    right: 18%;
-                    bottom: 7%;
-                    width: clamp(72px, 7vw, 98px);
-                    height: clamp(72px, 7vw, 98px);
-                    z-index: 2;
-                }
-
-                [data-lm-root-circular="true"] .owl-nav {
-                    position: absolute !important;
-                    left: auto !important;
-                    top: auto !important;
-                    right: clamp(96px, 13vw, 184px) !important;
-                    bottom: clamp(30px, 6vw, 58px) !important;
-                    display: flex !important;
-                    align-items: center !important;
-                    justify-content: center !important;
-                    gap: 10px !important;
-                    z-index: 13 !important;
-                }
-
-                [data-lm-root-circular="true"] .owl-nav button,
-                [data-lm-root-circular="true"] .owl-nav div {
-                    position: static !important;
-                    margin: 0 !important;
-                    transform: none !important;
-                }
-
-                @media (max-width: 767px) {
-                    .lm-root-circular-nav {
-                        display: none !important;
-                    }
-
-                    [data-lm-root-circular="true"] .owl-nav {
-                        right: 24px !important;
-                        bottom: 22px !important;
-                    }
-                }
-            `;
-            document.head.appendChild(style);
-        }
-
-        document.querySelectorAll('.inicio-circular-carousel, .lm-final-circular-thumbs, .lm-professional-circle-nav, .lm-root-circular-nav').forEach(function (element) {
-            element.remove();
-        });
-
-        document.querySelectorAll('#inicio-circular-slider-style, #lm-final-circular-slider-style, #lm-professional-circular-slider-style').forEach(function (element) {
-            element.remove();
-        });
-
-        var actionButton = Array.from(document.querySelectorAll('a, button')).find(function (button) {
-            var text = lmText(button.textContent);
-            return text === 'cotizar ahora' || text === 'comprar ahora' || text === 'dirigite a nosotros';
-        });
-
-        if (!actionButton) {
-            return;
-        }
-
-        var slider = actionButton.closest('.owl-carousel') || actionButton.closest('[class*="slider"]');
-        if (!slider) {
-            return;
-        }
-
-        var stage = slider.querySelector('.owl-stage');
-        var slides = Array.from(slider.querySelectorAll('.owl-item:not(.cloned)')).filter(function (slide) {
-            return lmSlideImage(slide) || lmButtonText(slide);
-        });
-
-        if (!slides.length) {
-            slides = Array.from(slider.children).filter(function (slide) {
-                return lmSlideImage(slide) || lmButtonText(slide);
-            });
-        }
-
-        if (!slides.length) {
-            return;
-        }
-
-        var nav = slider.querySelector('.owl-nav');
-        if (!nav && slider.parentElement) {
-            nav = slider.parentElement.querySelector('.owl-nav');
-        }
-
-        if (nav && nav.parentElement !== slider) {
-            slider.appendChild(nav);
-        }
-
-        lmAddRootStyle();
-        slider.setAttribute('data-lm-root-circular', 'true');
-
-        if (stage) {
-            stage.style.width = '100%';
-            stage.style.transform = 'none';
-        }
-
-        var activeIndex = Math.max(0, slides.findIndex(function (slide) {
-            return slide.classList.contains('active') || lmButtonText(slide);
-        }));
-
-        var images = slides.map(lmSlideImage).filter(function (image) {
-            return image;
-        });
-
-        while (images.length > 0 && images.length < 3) {
-            images = images.concat(images);
-        }
-
-        var circleNav = document.createElement('div');
-        circleNav.className = 'lm-root-circular-nav';
-        slider.appendChild(circleNav);
-
-        function showSlide(index) {
-            activeIndex = (index + slides.length) % slides.length;
-
-            slides.forEach(function (slide, slideIndex) {
-                slide.classList.toggle('lm-root-slide-active', slideIndex === activeIndex);
-                slide.classList.toggle('active', slideIndex === activeIndex);
-                slide.style.display = slideIndex === activeIndex ? 'block' : 'none';
-                slide.style.opacity = slideIndex === activeIndex ? '1' : '0';
-                slide.style.visibility = slideIndex === activeIndex ? 'visible' : 'hidden';
-                slide.style.width = '100%';
-            });
-
-            if (stage) {
-                stage.style.width = '100%';
-                stage.style.transform = 'none';
-            }
-
-            renderCircleNav();
-        }
-
-        function circleImage(offset) {
-            if (!images.length) {
-                return '';
-            }
-
-            return images[(activeIndex + offset + images.length) % images.length];
-        }
-
-        function renderCircleNav() {
-            circleNav.innerHTML = '';
-
-            [
-                { className: 'is-current', offset: 0, target: activeIndex },
-                { className: 'is-next', offset: 1, target: activeIndex + 1 },
-                { className: 'is-prev', offset: -1, target: activeIndex - 1 }
-            ].forEach(function (item) {
-                var src = circleImage(item.offset);
-                if (!src) {
-                    return;
-                }
-
-                var button = document.createElement('button');
-                var image = document.createElement('img');
-
-                button.type = 'button';
-                button.className = 'lm-root-circular-nav__button ' + item.className;
-                image.src = src;
-                image.alt = '';
-
-                button.appendChild(image);
-                button.addEventListener('click', function (event) {
-                    event.preventDefault();
-                    showSlide(item.target);
-                });
-
-                circleNav.appendChild(button);
-            });
-        }
-
-        if (nav) {
-            nav.querySelectorAll('.owl-prev, .prev, [class*="prev"]').forEach(function (button) {
-                button.addEventListener('click', function (event) {
-                    event.preventDefault();
-                    event.stopImmediatePropagation();
-                    showSlide(activeIndex - 1);
-                }, true);
-            });
-
-            nav.querySelectorAll('.owl-next, .next, [class*="next"]').forEach(function (button) {
-                button.addEventListener('click', function (event) {
-                    event.preventDefault();
-                    event.stopImmediatePropagation();
-                    showSlide(activeIndex + 1);
-                }, true);
-            });
-        }
-
-        showSlide(activeIndex);
-    }, 1200);
-});
-</script>
-
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    setTimeout(function () {
-        return;
-
-        function normalText(value) {
-            return (value || '').trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-        }
-
-        function isSliderAction(element) {
-            var text = normalText(element.textContent);
-            return text === 'cotizar ahora' || text === 'comprar ahora' || text === 'dirigite a nosotros';
-        }
-
-        function hasSliderAction(scope) {
-            return Array.from(scope.querySelectorAll('a, button')).some(isSliderAction);
-        }
-
-        function imageUrl(value) {
-            var match = value && value.match(/url\(["']?([^"')]+)["']?\)/);
-            return match ? match[1] : '';
-        }
-
-        function findImage(scope) {
-            var image = scope.querySelector('img');
-            if (image && (image.currentSrc || image.src)) {
-                return image.currentSrc || image.src;
-            }
-
-            var dataImage = scope.querySelector('[data-setbg], [data-bg], [data-background]');
-            if (dataImage) {
-                return dataImage.getAttribute('data-setbg') || dataImage.getAttribute('data-bg') || dataImage.getAttribute('data-background') || '';
-            }
-
-            var nodes = [scope].concat(Array.from(scope.querySelectorAll('*')));
-            for (var i = 0; i < nodes.length; i++) {
-                var bg = imageUrl(window.getComputedStyle(nodes[i]).backgroundImage);
-                if (bg) {
-                    return bg;
-                }
-            }
-
-            return '';
-        }
-
-        function resetGeneratedWork() {
-            document.querySelectorAll(
-                '#inicio-circular-slider-style, #lm-final-circular-slider-style, #lm-professional-circular-slider-style, #lm-root-circular-slider-style, #lm-clean-real-slider-style, .inicio-circular-carousel, .lm-final-circular-thumbs, .lm-professional-circle-nav, .lm-root-circular-nav, .lm-clean-real-slider'
-            ).forEach(function (element) {
-                element.remove();
-            });
-
-            document.querySelectorAll(
-                '.inicio-circular-slider, .inicio-circular-slider-nav-scope, .inicio-circular-slider-side-preview, .lm-final-circular-slider, .lm-professional-circular-slider, .lm-root-slide-active'
-            ).forEach(function (element) {
-                element.classList.remove(
-                    'inicio-circular-slider',
-                    'inicio-circular-slider-nav-scope',
-                    'inicio-circular-slider-side-preview',
-                    'lm-final-circular-slider',
-                    'lm-professional-circular-slider',
-                    'lm-root-slide-active'
-                );
-                element.removeAttribute('data-lm-root-circular');
-            });
-        }
-
-        function addCleanStyle() {
-            if (document.getElementById('lm-clean-real-slider-style')) {
-                return;
-            }
-
-            var style = document.createElement('style');
-            style.id = 'lm-clean-real-slider-style';
-            style.textContent = `
-                .lm-clean-real-slider {
-                    position: relative;
-                    width: 100%;
-                    overflow: hidden;
-                }
-
-                .lm-clean-real-slider__viewport {
-                    position: relative;
-                    width: 100%;
-                    height: 100%;
-                    overflow: hidden;
-                }
-
-                .lm-clean-real-slider__slide {
-                    position: absolute;
-                    inset: 0;
-                    opacity: 0;
-                    visibility: hidden;
-                    pointer-events: none;
-                    transition: opacity .35s ease;
-                }
-
-                .lm-clean-real-slider__slide.is-active {
-                    opacity: 1;
-                    visibility: visible;
-                    pointer-events: auto;
-                    z-index: 2;
-                }
-
-                .lm-clean-real-slider__slide > * {
-                    width: 100% !important;
-                    height: 100% !important;
-                    min-height: 100% !important;
-                    margin: 0 !important;
-                }
-
-                .lm-clean-real-slider__circle {
-                    position: absolute;
-                    top: 50%;
-                    right: clamp(38px, 8vw, 115px);
-                    width: clamp(215px, 24vw, 315px);
-                    height: clamp(215px, 24vw, 315px);
-                    transform: translateY(-50%);
-                    z-index: 5;
-                    pointer-events: none;
-                }
-
-                .lm-clean-real-slider__thumb {
-                    position: absolute;
-                    display: block;
-                    padding: 0;
-                    border: 3px solid rgba(255, 255, 255, .96);
-                    border-radius: 50%;
-                    background: rgba(255, 255, 255, .18);
-                    box-shadow: 0 13px 28px rgba(0, 0, 0, .28);
-                    overflow: hidden;
-                    pointer-events: auto;
-                }
-
-                .lm-clean-real-slider__thumb img {
-                    display: block;
-                    width: 100%;
-                    height: 100%;
-                    border-radius: 50%;
-                    object-fit: cover;
-                }
-
-                .lm-clean-real-slider__thumb.is-current {
-                    top: 50%;
-                    left: 35%;
-                    width: clamp(118px, 11vw, 152px);
-                    height: clamp(118px, 11vw, 152px);
-                    transform: translate(-50%, -50%);
-                    z-index: 3;
-                }
-
-                .lm-clean-real-slider__thumb.is-next {
-                    top: 13%;
-                    right: 4%;
-                    width: clamp(72px, 7vw, 98px);
-                    height: clamp(72px, 7vw, 98px);
-                    z-index: 2;
-                }
-
-                .lm-clean-real-slider__thumb.is-prev {
-                    right: 18%;
-                    bottom: 7%;
-                    width: clamp(72px, 7vw, 98px);
-                    height: clamp(72px, 7vw, 98px);
-                    z-index: 2;
-                }
-
-                .lm-clean-real-slider__arrows {
-                    position: absolute;
-                    right: clamp(98px, 13vw, 186px);
-                    bottom: clamp(30px, 6vw, 58px);
-                    display: flex;
-                    gap: 10px;
-                    align-items: center;
-                    justify-content: center;
-                    z-index: 6;
-                }
-
-                .lm-clean-real-slider__arrow {
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    width: 32px;
-                    height: 32px;
-                    border: 0;
-                    border-radius: 4px;
-                    background: #3f6b2f;
-                    color: #fff;
-                    font-size: 18px;
-                    line-height: 1;
-                    cursor: pointer;
-                }
-
-                @media (max-width: 767px) {
-                    .lm-clean-real-slider__circle {
-                        display: none;
-                    }
-
-                    .lm-clean-real-slider__arrows {
-                        right: 24px;
-                        bottom: 22px;
-                    }
-                }
-            `;
-            document.head.appendChild(style);
-        }
-
-        function findOriginalSlider() {
-            var slider = Array.from(document.querySelectorAll('.owl-carousel')).find(function (element) {
-                return hasSliderAction(element);
-            });
-
-            if (slider) {
-                return slider;
-            }
-
-            var button = Array.from(document.querySelectorAll('a, button')).find(isSliderAction);
-            var current = button ? button.parentElement : null;
-
-            while (current && current !== document.body) {
-                var box = current.getBoundingClientRect();
-                if (box.width > 520 && box.height > 180) {
-                    return current;
-                }
-                current = current.parentElement;
-            }
-
-            return null;
-        }
-
-        function cleanClone(node) {
-            node.querySelectorAll('.owl-nav, .owl-dots, .lm-clean-real-slider__circle, .lm-clean-real-slider__arrows').forEach(function (element) {
-                element.remove();
-            });
-
-            node.querySelectorAll('*').forEach(function (element) {
-                element.style.display = '';
-                element.style.opacity = '';
-                element.style.visibility = '';
-                element.classList.remove('cloned', 'active', 'center', 'lm-root-slide-active');
-            });
-        }
-
-        resetGeneratedWork();
-
-        var original = findOriginalSlider();
-        if (!original || original.dataset.lmCleanReplaced === 'true') {
-            return;
-        }
-
-        var originalBox = original.getBoundingClientRect();
-        var rawSlides = Array.from(original.querySelectorAll('.owl-item:not(.cloned)')).map(function (item) {
-            return item.firstElementChild || item;
-        }).filter(function (slide, index, list) {
-            return slide && list.indexOf(slide) === index && (findImage(slide) || hasSliderAction(slide));
-        });
-
-        if (!rawSlides.length) {
-            rawSlides = Array.from(original.children).filter(function (slide) {
-                return findImage(slide) || hasSliderAction(slide);
-            });
-        }
-
-        if (!rawSlides.length) {
-            return;
-        }
-
-        addCleanStyle();
-
-        var slider = document.createElement('div');
-        var viewport = document.createElement('div');
-        var circle = document.createElement('div');
-        var arrows = document.createElement('div');
-        var activeIndex = Math.max(0, rawSlides.findIndex(hasSliderAction));
-
-        slider.className = 'lm-clean-real-slider';
-        viewport.className = 'lm-clean-real-slider__viewport';
-        circle.className = 'lm-clean-real-slider__circle';
-        arrows.className = 'lm-clean-real-slider__arrows';
-
-        slider.style.height = Math.max(260, Math.round(originalBox.height)) + 'px';
-        slider.style.minHeight = Math.max(260, Math.round(originalBox.height)) + 'px';
-
-        var slides = rawSlides.map(function (slide, index) {
-            var wrapper = document.createElement('div');
-            var clone = slide.cloneNode(true);
-
-            cleanClone(clone);
-            wrapper.className = 'lm-clean-real-slider__slide';
-            if (index === activeIndex) {
-                wrapper.classList.add('is-active');
-            }
-            wrapper.appendChild(clone);
-            viewport.appendChild(wrapper);
-
-            return {
-                element: wrapper,
-                image: findImage(slide)
-            };
-        });
-
-        function slideImage(index) {
-            var slide = slides[(index + slides.length) % slides.length];
-            return slide && slide.image ? slide.image : slides[0].image;
-        }
-
-        function renderCircle() {
-            circle.innerHTML = '';
-
-            [
-                { className: 'is-current', index: activeIndex },
-                { className: 'is-next', index: activeIndex + 1 },
-                { className: 'is-prev', index: activeIndex - 1 }
-            ].forEach(function (item) {
-                var src = slideImage(item.index);
-                if (!src) {
-                    return;
-                }
-
-                var button = document.createElement('button');
-                var image = document.createElement('img');
-
-                button.type = 'button';
-                button.className = 'lm-clean-real-slider__thumb ' + item.className;
-                image.src = src;
-                image.alt = '';
-
-                button.appendChild(image);
-                button.addEventListener('click', function () {
-                    setActive(item.index);
-                });
-
-                circle.appendChild(button);
-            });
-        }
-
-        function setActive(index) {
-            activeIndex = (index + slides.length) % slides.length;
-            slides.forEach(function (slide, slideIndex) {
-                slide.element.classList.toggle('is-active', slideIndex === activeIndex);
-            });
-            renderCircle();
-        }
-
-        ['‹', '›'].forEach(function (label, index) {
-            var button = document.createElement('button');
-            button.type = 'button';
-            button.className = 'lm-clean-real-slider__arrow';
-            button.textContent = label;
-            button.addEventListener('click', function () {
-                setActive(activeIndex + (index === 0 ? -1 : 1));
-            });
-            arrows.appendChild(button);
-        });
-
-        slider.appendChild(viewport);
-        slider.appendChild(circle);
-        slider.appendChild(arrows);
-        renderCircle();
-
-        original.dataset.lmCleanReplaced = 'true';
-        original.style.display = 'none';
-        original.parentNode.insertBefore(slider, original);
-    }, 2200);
-});
-</script>
-
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    return;
-
-    function restoreOriginalSlider() {
-        document.querySelectorAll(
-            '#inicio-circular-slider-style, #lm-final-circular-slider-style, #lm-professional-circular-slider-style, #lm-root-circular-slider-style, #lm-clean-real-slider-style, .inicio-circular-carousel, .lm-final-circular-thumbs, .lm-professional-circle-nav, .lm-root-circular-nav, .lm-clean-real-slider'
-        ).forEach(function (element) {
-            element.remove();
-        });
-
-        document.querySelectorAll('[data-lm-clean-replaced="true"]').forEach(function (element) {
-            element.style.display = '';
-            element.removeAttribute('data-lm-clean-replaced');
-        });
-
-        document.querySelectorAll('[data-lm-root-circular="true"]').forEach(function (element) {
-            element.removeAttribute('data-lm-root-circular');
-        });
-
-        document.querySelectorAll(
-            '.inicio-circular-slider, .inicio-circular-slider-nav-scope, .inicio-circular-slider-side-preview, .lm-final-circular-slider, .lm-professional-circular-slider, .lm-root-slide-active, .lm-professional-main-slide'
-        ).forEach(function (element) {
-            element.classList.remove(
-                'inicio-circular-slider',
-                'inicio-circular-slider-nav-scope',
-                'inicio-circular-slider-side-preview',
-                'lm-final-circular-slider',
-                'lm-professional-circular-slider',
-                'lm-root-slide-active',
-                'lm-professional-main-slide'
-            );
-        });
-
-        document.querySelectorAll('.owl-stage, .owl-item').forEach(function (element) {
-            element.style.display = '';
-            element.style.opacity = '';
-            element.style.visibility = '';
-            element.style.width = '';
-            element.style.transform = '';
-            element.style.transition = '';
-            element.style.position = '';
-            element.style.inset = '';
-            element.style.pointerEvents = '';
-            element.style.zIndex = '';
-        });
-    }
-
-    restoreOriginalSlider();
-    setTimeout(restoreOriginalSlider, 300);
-    setTimeout(restoreOriginalSlider, 900);
-    setTimeout(restoreOriginalSlider, 1500);
-    setTimeout(restoreOriginalSlider, 2600);
-    var restoreTimer = setInterval(restoreOriginalSlider, 100);
-    setTimeout(function () {
-        clearInterval(restoreTimer);
-        restoreOriginalSlider();
-    }, 4200);
-});
-</script>
-
 <?php include 'footer.php'; ?>
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    return;
 
-    function cleanCircularSliderArtifacts() {
-        document.querySelectorAll(
-            '#inicio-circular-slider-style, #lm-final-circular-slider-style, #lm-professional-circular-slider-style, #lm-root-circular-slider-style, #lm-clean-real-slider-style, .inicio-circular-carousel, .lm-final-circular-thumbs, .lm-professional-circle-nav, .lm-root-circular-nav, .lm-clean-real-slider'
-        ).forEach(function (element) {
-            element.remove();
-        });
-
-        document.querySelectorAll('[data-lm-clean-replaced="true"]').forEach(function (element) {
-            element.style.display = '';
-            element.removeAttribute('data-lm-clean-replaced');
-        });
-
-        document.querySelectorAll('[data-lm-root-circular="true"]').forEach(function (element) {
-            element.removeAttribute('data-lm-root-circular');
-        });
-
-        document.querySelectorAll(
-            '.inicio-circular-slider, .inicio-circular-slider-nav-scope, .inicio-circular-slider-side-preview, .lm-final-circular-slider, .lm-professional-circular-slider, .lm-root-slide-active, .lm-professional-main-slide'
-        ).forEach(function (element) {
-            element.classList.remove(
-                'inicio-circular-slider',
-                'inicio-circular-slider-nav-scope',
-                'inicio-circular-slider-side-preview',
-                'lm-final-circular-slider',
-                'lm-professional-circular-slider',
-                'lm-root-slide-active',
-                'lm-professional-main-slide'
-            );
-        });
-
-        document.querySelectorAll('.owl-stage, .owl-item').forEach(function (element) {
-            element.style.display = '';
-            element.style.opacity = '';
-            element.style.visibility = '';
-            element.style.width = '';
-            element.style.transform = '';
-            element.style.transition = '';
-            element.style.position = '';
-            element.style.inset = '';
-            element.style.pointerEvents = '';
-            element.style.zIndex = '';
-        });
-    }
-
-    cleanCircularSliderArtifacts();
-    var cleanSliderTimer = setInterval(cleanCircularSliderArtifacts, 80);
-    setTimeout(function () {
-        clearInterval(cleanSliderTimer);
-        cleanCircularSliderArtifacts();
-    }, 5000);
-});
-</script>
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     setTimeout(function () {
@@ -3882,9 +2107,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 .lm-products-nine-layout {
                     display: grid !important;
                     grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-                    gap: 28px 24px !important;
+                    gap: 42px 80px !important;
                     align-items: stretch !important;
-                    max-width: 900px !important;
+                    max-width: 1040px !important;
                     width: 100% !important;
                     margin-left: auto !important;
                     margin-right: auto !important;
@@ -4162,11 +2387,11 @@ document.addEventListener('DOMContentLoaded', function () {
                 fillFromPage('nuevos productos', nuevosContainer).then(function () {
                 applyNineProductLayout('nuevos productos', nuevosContainer);
                 nuevosContainer.style.display = 'grid';
-                nuevosContainer.style.maxWidth = '900px';
+                nuevosContainer.style.maxWidth = '1120px';
                 nuevosContainer.style.width = '100%';
                 nuevosContainer.style.marginLeft = 'auto';
                 nuevosContainer.style.marginRight = 'auto';
-                nuevosContainer.style.gap = '28px 24px';
+                nuevosContainer.style.gap = '42px 80px';
 
                 directProductItems(nuevosContainer).forEach(function (item, index) {
                     item.style.width = 'auto';
@@ -4192,335 +2417,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }, 900);
 });
 </script>
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    setTimeout(function () {
-        function featureText(value) {
-            return (value || '').trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-        }
 
-        function ensureFeatureStyle() {
-            if (document.getElementById('lm-feature-banners-style')) {
-                return;
-            }
-
-            var style = document.createElement('style');
-            style.id = 'lm-feature-banners-style';
-            style.textContent = `
-                .lm-feature-banners-row {
-                    display: grid !important;
-                    grid-template-columns: repeat(3, minmax(230px, 1fr)) !important;
-                    column-gap: 64px !important;
-                    row-gap: 28px !important;
-                    align-items: center !important;
-                    justify-content: center !important;
-                    max-width: 1120px !important;
-                    margin-left: auto !important;
-                    margin-right: auto !important;
-                }
-
-                .lm-feature-banner-col {
-                    width: auto !important;
-                    max-width: none !important;
-                    flex: none !important;
-                    padding-left: 0 !important;
-                    padding-right: 0 !important;
-                }
-
-                .lm-feature-banner {
-                    position: relative;
-                    display: flex;
-                    align-items: center;
-                    min-height: 132px;
-                    width: 100%;
-                    text-decoration: none !important;
-                    color: inherit;
-                }
-
-                .lm-feature-banner__image {
-                    position: absolute;
-                    left: 0;
-                    top: 50%;
-                    width: 124px;
-                    height: 124px;
-                    transform: translateY(-50%);
-                    object-fit: contain;
-                    border: 4px solid #111;
-                    border-radius: 50%;
-                    background: #fff;
-                    padding: 10px;
-                    box-shadow: 0 12px 24px rgba(0, 0, 0, .18);
-                    z-index: 2;
-                    pointer-events: none;
-                }
-
-                .lm-feature-banner__content {
-                    width: 100%;
-                    min-height: 92px;
-                    margin-left: 62px;
-                    padding: 19px 24px 19px 82px;
-                    border: 1px solid rgba(202, 51, 61, .75);
-                    border-radius: 0 50px 50px 0;
-                    background: linear-gradient(90deg, #171717 0%, #111 100%);
-                    box-shadow: 0 12px 26px rgba(0, 0, 0, .14);
-                    display: flex;
-                    flex-direction: column;
-                    justify-content: center;
-                    align-items: flex-start;
-                }
-
-                .lm-feature-banner__title {
-                    margin: 0;
-                    color: #fff;
-                    font-size: 18px;
-                    font-weight: 700;
-                    line-height: 1.15;
-                }
-
-                .lm-feature-banner__subtitle {
-                    display: inline-flex;
-                    align-items: center;
-                    justify-content: center;
-                    margin-top: 8px;
-                    padding: 3px 13px;
-                    border: 1px solid rgba(255, 255, 255, .86);
-                    border-radius: 18px;
-                    color: #fff;
-                    font-size: 12px;
-                    font-weight: 600;
-                    line-height: 1.2;
-                }
-
-                @media (max-width: 991px) {
-                    .lm-feature-banners-row {
-                        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-                        column-gap: 30px !important;
-                        row-gap: 18px !important;
-                        max-width: 680px !important;
-                    }
-
-                    .lm-feature-banner {
-                        min-height: 116px !important;
-                    }
-
-                    .lm-feature-banner__content {
-                        width: calc(100% - 62px) !important;
-                        min-height: 78px !important;
-                        padding: 15px 18px 15px 76px !important;
-                    }
-
-                    .lm-feature-banner__title {
-                        font-size: 17px !important;
-                    }
-
-                    .lm-feature-banner__subtitle {
-                        margin-top: 6px !important;
-                        padding: 3px 12px !important;
-                        font-size: 11px !important;
-                    }
-                }
-
-                @media (max-width: 575px) {
-                    .lm-feature-banners-row {
-                        grid-template-columns: 1fr !important;
-                        width: calc(100% - 32px) !important;
-                        max-width: 326px !important;
-                        row-gap: 16px !important;
-                    }
-
-                    .lm-feature-banner {
-                        min-height: 108px !important;
-                    }
-
-                    .lm-feature-banner__image {
-                        width: 108px !important;
-                        height: 108px !important;
-                        padding: 8px !important;
-                    }
-
-                    .lm-feature-banner__content {
-                        width: calc(100% - 54px) !important;
-                        min-height: 72px !important;
-                        margin-left: 54px !important;
-                        padding: 12px 16px 12px 66px !important;
-                        border-radius: 0 40px 40px 0 !important;
-                    }
-
-                    .lm-feature-banner__title {
-                        font-size: 18px !important;
-                    }
-
-                    .lm-feature-banner__subtitle {
-                        margin-top: 5px !important;
-                        padding: 3px 10px !important;
-                        font-size: 10.5px !important;
-                    }
-                }
-
-                @media (max-width: 359px) {
-                    .lm-feature-banners-row {
-                        width: calc(100% - 30px) !important;
-                        max-width: 286px !important;
-                        row-gap: 14px !important;
-                    }
-
-                    .lm-feature-banner {
-                        min-height: 92px !important;
-                    }
-
-                    .lm-feature-banner__image {
-                        width: 86px !important;
-                        height: 86px !important;
-                        border-width: 3px !important;
-                    }
-
-                    .lm-feature-banner__content {
-                        width: calc(100% - 43px) !important;
-                        min-height: 62px !important;
-                        margin-left: 43px !important;
-                        padding: 10px 12px 10px 52px !important;
-                        border-radius: 0 32px 32px 0 !important;
-                    }
-
-                    .lm-feature-banner__title {
-                        font-size: 14.5px !important;
-                    }
-
-                    .lm-feature-banner__subtitle {
-                        margin-top: 4px !important;
-                        padding: 2px 8px !important;
-                        font-size: 9px !important;
-                    }
-                }
-            `;
-            document.head.appendChild(style);
-        }
-
-        function setImageSource(image, fileName, alternatives) {
-            var projectPath = window.location.pathname.replace(/[^\/]*$/, '');
-            var fileNames = [fileName].concat(alternatives || []);
-            var folders = [
-                projectPath + 'assets/img/',
-                '/libreriamarquense.com/assets/img/',
-                'assets/img/',
-                'assets/img/banner/',
-                'assets/img/banners/',
-                'assets/images/',
-                'assets/images/banner/',
-                'assets/images/banners/',
-                'img/',
-                ''
-            ];
-            var candidates = [];
-            var index = 0;
-
-            fileNames.forEach(function (name) {
-                folders.forEach(function (folder) {
-                    candidates.push(folder + name);
-                });
-            });
-
-            image.onerror = function () {
-                index += 1;
-                if (index < candidates.length) {
-                    image.src = candidates[index];
-                }
-            };
-
-            image.src = candidates[index];
-        }
-
-        var items = [
-            {
-                matches: ['celulares y accesorios', 'utiles escolares', 'útiles escolares'],
-                title: 'Útiles Escolares',
-                subtitle: 'Disponibles',
-                image: 'UtilesEscolares.png'
-            },
-            {
-                matches: ['envios', 'envíos'],
-                title: 'Envíos',
-                subtitle: 'a Domicilio',
-                image: 'EnviosaDomicilio.png',
-                alternatives: ['EnviosDomicilio.png']
-            },
-            {
-                matches: ['asesoria tecnica', 'asesoría técnica'],
-                title: 'Asesoría Técnica',
-                subtitle: 'Personalizada',
-                image: 'AsesoriaTecnica.png'
-            }
-        ];
-
-        var transformed = [];
-
-        items.forEach(function (config) {
-            var titleNode = Array.from(document.querySelectorAll('h1, h2, h3, h4, h5, h6, p, span, strong')).find(function (element) {
-                return config.matches.indexOf(featureText(element.textContent)) !== -1;
-            });
-
-            if (!titleNode) {
-                return;
-            }
-
-            var card = titleNode.closest('[class*="col-"]') || titleNode.closest('.single-feature, .feature-box, .single-service, .service-box') || titleNode.parentElement;
-            if (!card || transformed.indexOf(card) !== -1) {
-                return;
-            }
-
-            var link = card.querySelector('a[href]');
-            var href = link ? link.getAttribute('href') : '';
-            var wrapper = href ? document.createElement('a') : document.createElement('div');
-            var image = document.createElement('img');
-            var content = document.createElement('div');
-            var title = document.createElement('h3');
-            var subtitle = document.createElement('span');
-
-            wrapper.className = 'lm-feature-banner';
-            if (href) {
-                wrapper.href = href;
-            }
-
-            image.className = 'lm-feature-banner__image';
-            image.alt = config.title;
-            setImageSource(image, config.image, config.alternatives);
-
-            content.className = 'lm-feature-banner__content';
-            title.className = 'lm-feature-banner__title';
-            subtitle.className = 'lm-feature-banner__subtitle';
-            title.textContent = config.title;
-            subtitle.textContent = config.subtitle;
-
-            content.appendChild(title);
-            content.appendChild(subtitle);
-            wrapper.appendChild(image);
-            wrapper.appendChild(content);
-
-            card.classList.add('lm-feature-banner-col');
-            card.innerHTML = '';
-            card.appendChild(wrapper);
-            transformed.push(card);
-        });
-
-        if (transformed.length) {
-            ensureFeatureStyle();
-            var row = transformed[0].parentElement;
-            if (row) {
-                row.classList.add('lm-feature-banners-row');
-                var slider = Array.from(document.querySelectorAll('.owl-carousel, [class*="slider"]')).find(function (element) {
-                    var box = element.getBoundingClientRect();
-                    return box.width > 520 && box.height > 180;
-                });
-
-                if (slider) {
-                    row.style.maxWidth = Math.round(slider.getBoundingClientRect().width) + 'px';
-                    row.style.width = '100%';
-                }
-            }
-        }
-    }, 500);
-});
-</script>
 <script type="text/javascript" src="assets/js/sweatlert.js"></script>
 <script type="text/javascript" src="assets/js/index.js"></script>
 <script>

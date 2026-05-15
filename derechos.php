@@ -109,7 +109,7 @@ $paginas_servicios = [
     }
 
     .copyright-legal-note i {
-        color: #466934;
+        color: #166B38;
         font-size: 24px;
     }
 

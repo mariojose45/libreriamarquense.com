@@ -159,11 +159,11 @@ Default CSS
 }
 .theme-dark .main-navbar .navbar .navbar-nav .nav-item a:hover, .theme-dark .main-navbar .navbar .navbar-nav .nav-item a:focus, .theme-dark .main-navbar .navbar .navbar-nav .nav-item a.active {
   color: #ffffff !important;
-  background-color: #466934;
+  background-color: #166B38;
 }
 .theme-dark .main-navbar .navbar .navbar-nav .nav-item:hover a, .theme-dark .main-navbar .navbar .navbar-nav .nav-item.active a {
   color: #ffffff;
-  background-color: #466934;
+  background-color: #166B38;
 }
 .theme-dark .main-navbar .navbar .navbar-nav .nav-item .dropdown-menu {
   background-color: #0e0e0e;
@@ -922,7 +922,7 @@ Default CSS
   border-bottom: 1px solid #0e0e0e;
 }
 .theme-dark .widget-area .widget .widget-title::before {
-  background: #B73639;
+  background: #B42A27;
 }
 .theme-dark .widget-area .widget_search form .search-field {
   background-color: #0e0e0e;
@@ -948,15 +948,15 @@ Default CSS
   color: #1A2697;
 }
 .theme-dark .widget-area .widget_price .price-range-bar {
-  background: #B73639;
+  background: #B42A27;
 }
 .theme-dark .widget-area .widget_price .price-range-bar .ui-slider-range {
-  background: #B73639;
+  background: #B42A27;
 }
 .theme-dark .widget-area .widget_price .price-range-bar .ui-slider-handle {
   background: #ffffff;
   border: 2px solid #ffffff;
-  background: #B73639;
+  background: #B42A27;
 }
 .theme-dark .widget-area .widget_price .price-range-filter-item h4 {
   color: #ffffff;
@@ -971,7 +971,7 @@ Default CSS
   border: 1px solid #ffffff;
 }
 .theme-dark .widget-area .widget_continents .continents-list-row li a:hover {
-  color: #B73639;
+  color: #B73B42A27639;
 }
 .theme-dark .widget-area .widget_continents .continents-list-row li a:hover::before {
   border-color: #B73639;
@@ -1046,7 +1046,7 @@ Default CSS
   border-bottom: 1px solid #0e0e0e;
 }
 .theme-dark .comments-area .comments-title::before {
-  background: #B73639;
+  background: #B42A27;
 }
 .theme-dark .comments-area .comment-body {
   border-bottom: 1px dashed #0e0e0e;
@@ -1056,7 +1056,7 @@ Default CSS
   color: #ffffff;
 }
 .theme-dark .comments-area .comment-body .reply a:hover {
-  color: #B73639;
+  color: #B42A27;
 }
 .theme-dark .comments-area .comment-metadata {
   color: #ffffff;
@@ -1190,7 +1190,7 @@ Default CSS
   border-bottom: 1px solid #0e0e0e;
 }
 .theme-dark .cart-totals h3::before {
-  background: #B73639;
+  background: #B42A27;
 }
 .theme-dark .cart-totals ul li {
   border-bottom: 1px solid #000000;
@@ -1497,24 +1497,24 @@ Default CSS
 .theme-dark .single-hot-featured:hover .featured-content .tag,
 .theme-dark .single-hot-products:hover .hot-products-image .tag,
 .theme-dark .single-shop-products:hover .shop-products-image .tag {
-  background: #D0C32B !important;
-  background-color: #D0C32B !important;
-  border-color: #D0C32B !important;
+  background: #F7D917 !important;
+  background-color: #F7D917 !important;
+  border-color: #F7D917 !important;
   color: #292929 !important;
 }
 
 .theme-dark .middle-header-area,
 .theme-dark .middle-header-area.bg-color {
-  background-color: #466934;
+  background-color: #166B38;
 }
 
 .theme-dark .middle-header-search form .form-group .nice-select {
-  background-color: #466934;
+  background-color: #166B38;
 }
 
 .theme-dark .middle-header-search form .form-group .nice-select .list .option:hover,
 .theme-dark .middle-header-search form .form-group .nice-select .list .option.selected {
-  background-color: #466934 !important;
+  background-color: #166B38 !important;
 }
 
 .theme-dark .middle-header-search form .search-box button {

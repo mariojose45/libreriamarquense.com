@@ -51,7 +51,7 @@ if (empty($_POST["message"])) {
 }
 
 
-$EmailTo = "servicioalcliente@gmail.com";
+$EmailTo = "servicioslcliente@libreriamarquense.com";
 
 $Subject = "Nuevo Mensaje para Librería Marquense";
 

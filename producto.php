@@ -152,7 +152,7 @@ include 'head.php';
         right: 45px;
         top: 50%;
         transform: translateY(-50%);
-        background: #B73639;
+        background: #B42A27;
         color: white;
         border: none;
         border-radius: 50%;
@@ -169,7 +169,7 @@ include 'head.php';
     }
 
     .btn-limpiar-busqueda:hover {
-        background: #8F1F24;
+        background: #9F211F;
         transform: translateY(-50%) scale(1.1);
     }
 
@@ -505,7 +505,7 @@ include 'head.php';
                                                     <button id="btn-compartir-whatsapp-producto"
                                                         class="mp-btn-compartir mp-whatsapp"
                                                         onclick="compartirWhatsAppProducto(event)"
-                                                        style="background: #466934; color: white; border: none; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer;"
+                                                        style="background: #166B38; color: white; border: none; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer;"
                                                         title="Compartir por WhatsApp">
                                                         <i class='bx bxl-whatsapp'></i>
                                                     </button>

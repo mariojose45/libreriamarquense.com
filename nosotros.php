@@ -255,7 +255,7 @@ if (!empty($nosotrosData) && is_array($nosotrosData)) {
     }
 
     .ticell-about-list li i {
-        color: #466934;
+        color: #166B38;
         font-size: 18px;
         left: 0;
         position: absolute;

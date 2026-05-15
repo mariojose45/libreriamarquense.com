@@ -556,7 +556,7 @@ function validarDocumento() {
             aplicarEstadoValidacion(numeroDocumentoInput, 'El DPI debe tener exactamente 13 caracteres');
         } else if (numeroDocumentoLimpiado.length === 13) {
             documentoHelp.textContent = 'DPI valido';
-            documentoHelp.style.color = '#466934';
+            documentoHelp.style.color = '#166B38';
             aplicarEstadoValidacion(numeroDocumentoInput, '');
         } else {
             documentoHelp.textContent = 'El DPI debe tener exactamente 13 caracteres';
@@ -574,7 +574,7 @@ function validarDocumento() {
             aplicarEstadoValidacion(numeroDocumentoInput, 'Por favor ingrese el NIT para la factura');
         } else {
             documentoHelp.textContent = 'NIT valido';
-            documentoHelp.style.color = '#466934';
+            documentoHelp.style.color = '#166B38';
             aplicarEstadoValidacion(numeroDocumentoInput, '');
         }
     }

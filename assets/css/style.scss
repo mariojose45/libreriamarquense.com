@@ -70,7 +70,7 @@ $optional-font-family: 'Poppins', sans-serif;
 $body-color: #F7F8FC;
 $main-color: #1A2697;
 $optional-color: #B73639;
-$accent-color: #466934;
+$accent-color: #166B38;
 $white-color: #ffffff;
 $black-color: #292929;
 $paragraph-color: #656565;
@@ -2056,7 +2056,7 @@ Arrivals Products Area CSS
                 list-style-type: none;
 
                 i {
-                    color: #D0C32B;
+                    color: #F7D917;
                 }
             }
         }
@@ -2172,7 +2172,7 @@ Offer Products Area CSS
                 list-style-type: none;
                 i {
                     font-size: $font-size;
-                    color: #D0C32B;
+                    color: #F7D917;
                 }
             }
         }
@@ -2304,7 +2304,7 @@ Offer Products Area CSS
                 list-style-type: none;
                 i {
                     font-size: $font-size;
-                    color: #D0C32B;
+                    color: #F7D917;
                 }
             }
         }
@@ -2585,7 +2585,7 @@ Bestsellers Area CSS
                 list-style-type: none;
 
                 i {
-                    color: #D0C32B;
+                    color: #F7D917;
                 }
             }
         }
@@ -2767,7 +2767,7 @@ Special Products Area CSS
                 list-style-type: none;
 
                 i {
-                    color: #D0C32B;
+                    color: #F7D917;
                 }
             }
         }
@@ -3027,7 +3027,7 @@ Testimonial Area CSS
             display: inline-block;
 
             i {
-                color: #D0C32B;
+                color: #F7D917;
             }
         }
     }
@@ -4861,7 +4861,7 @@ Shop Area CSS
                 list-style-type: none;
 
                 i {
-                    color: #D0C32B;
+                    color: #F7D917;
                 }
             }
         }
@@ -5651,7 +5651,7 @@ Products Details Area CSS
                 font-size: 20px;
 
                 i {
-                    color: #D0C32B;
+                    color: #F7D917;
                 }
             }
         }
@@ -6016,7 +6016,7 @@ Products Details Area CSS
                         display: inline-block;
 
                         .bx.bxs-star {
-                            color: #D0C32B;
+                            color: #F7D917;
                         }
                         i {
                             color: #ebebeb;
@@ -6048,7 +6048,7 @@ Products Details Area CSS
 
                         .rating {
                             .bx.bxs-star {
-                                color: #D0C32B;
+                                color: #F7D917;
                             }
                             i {
                                 font-size: $font-size;
@@ -6894,7 +6894,7 @@ Widget Sidebar CSS
                         display: inline-block;
 
                         i {
-                            color: #D0C32B;
+                            color: #F7D917;
                         }
                     }
                 }
@@ -7396,7 +7396,7 @@ Modal CSS
                     font-size: 30px;
     
                     i {
-                        color: #D0C32B;
+                        color: #F7D917;
                     }
                 }
             }
@@ -7594,7 +7594,7 @@ Buy Now Btn
     border-radius: 30px;
     display: inline-block;
     color: $white-color !important;
-    background-color: #466934;
+    background-color: #166B38;
     padding: 3.5px 10px 3.5px;
     font-size: 12px;
     font-weight: 500;
@@ -7630,12 +7630,12 @@ Buy Now Btn
 /* Header search palette */
 .middle-header-area,
 .middle-header-area.bg-color {
-    background-color: #466934;
+    background-color: #166B38;
 }
 
 .middle-header-area.bg-color {
     .middle-header-search {
-        border-color: #466934;
+        border-color: #166B38;
     }
 }
 
@@ -7643,13 +7643,13 @@ Buy Now Btn
     form {
         .form-group {
             .nice-select {
-                background-color: #466934;
+                background-color: #166B38;
 
                 .list {
                     .option {
                         &:hover,
                         &.selected {
-                            background-color: #466934 !important;
+                            background-color: #166B38 !important;
                         }
                     }
                 }
@@ -7732,8 +7732,8 @@ Buy Now Btn
         .default-btn,
         .default-btn:hover,
         .default-btn:focus {
-            background-color: #466934;
-            border-color: #466934;
+            background-color: #166B38;
+            border-color: #166B38;
             color: #ffffff !important;
         }
 
@@ -7752,7 +7752,7 @@ Buy Now Btn
 
     .slider-stack-buttons {
         button {
-            background: #466934;
+            background: #166B38;
             color: #ffffff;
             box-shadow: 0 10px 22px rgba(70, 105, 52, 0.22);
 
@@ -7825,7 +7825,7 @@ body {
 .banner-best {
     .banner-text {
         &::after {
-            background: linear-gradient(90deg, #D0C32B, #F1E86A) !important;
+            background: linear-gradient(90deg, #F7D917, #FFE45C) !important;
         }
     }
 }
@@ -7834,9 +7834,9 @@ body {
 .banner-soft .banner-btn,
 .banner-best .banner-btn,
 .section-header-soft .btn-soft {
-    background: #D0C32B !important;
-    background-color: #D0C32B !important;
-    border-color: #D0C32B !important;
+    background: #F7D917 !important;
+    background-color: #F7D917 !important;
+    border-color: #F7D917 !important;
     color: #292929 !important;
     box-shadow: 0 10px 24px rgba(208, 195, 43, 0.25) !important;
 }
@@ -7849,9 +7849,9 @@ body {
 .banner-best .banner-btn:focus,
 .section-header-soft .btn-soft:hover,
 .section-header-soft .btn-soft:focus {
-    background: #B8AD25 !important;
-    background-color: #B8AD25 !important;
-    border-color: #B8AD25 !important;
+    background: #D6B900 !important;
+    background-color: #D6B900 !important;
+    border-color: #D6B900 !important;
     color: #292929 !important;
     box-shadow: 0 12px 28px rgba(184, 173, 37, 0.34) !important;
 }

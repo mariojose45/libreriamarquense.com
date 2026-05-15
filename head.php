@@ -107,10 +107,10 @@ $categorias = $data["data"] ?? [];
     $seo_image = isset($seo_image) ? $seo_image : $site_url . "/assets/img/LogoLibreriaMarquense.jpeg";
     $browser_title = "Librería Marquense | Útiles escolares y papelería";
     $site_name = isset($site_name) ? $site_name : "Librería Marquense";
-    $site_phone_number = isset($site_phone_number) ? $site_phone_number : "+502 5591-0533";
+    $site_phone_number = isset($site_phone_number) ? $site_phone_number : "+502 2232-8537 / +502 2253-6302 / +502 2372-3286";
     $site_whatsapp_number = isset($site_whatsapp_number) ? $site_whatsapp_number : "+502 5591-0533";
     $site_whatsapp_url = isset($site_whatsapp_url) ? $site_whatsapp_url : "https://wa.me/50255910533";
-    $site_email = isset($site_email) ? $site_email : "servicioalcliente@gmail.com";
+    $site_email = isset($site_email) ? $site_email : "servicioslcliente@libreriamarquense.com";
     $site_business_description = isset($site_business_description) ? $site_business_description : "Venta de útiles escolares, papelería, libros, material didáctico y productos de oficina en Guatemala.";
     $site_social_links = isset($site_social_links) ? $site_social_links : [
         'facebook' => 'https://www.facebook.com/LibreriaMarquenseSA?locale=es_LA',

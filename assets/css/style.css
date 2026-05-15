@@ -676,7 +676,7 @@ Middle Header Area CSS
 }
 .middle-header-search form .search-box button {
   border: none;
-  background-color: #1A2697;
+  background-color: #166B38;
   color: #ffffff;
   height: 40px;
   width: 40px;
@@ -729,7 +729,7 @@ Middle Header Area CSS
   text-align: center;
   line-height: 15px;
   border-radius: 50%;
-  background: #B73639;
+  background: #B42A27;
   color: #ffffff;
   font-size: 10px;
   font-weight: 600;
@@ -741,7 +741,7 @@ Middle Header Area CSS
   transition: 0.5s;
 }
 .middle-header-optional li a i:hover {
-  color: #B73639;
+  color: #B42A27;
 }
 .middle-header-optional li a:hover span {
   background: #292929;
@@ -805,11 +805,11 @@ Navbar Area CSS
 }
 .main-navbar .navbar .navbar-nav .nav-item a:hover, .main-navbar .navbar .navbar-nav .nav-item a:focus, .main-navbar .navbar .navbar-nav .nav-item a.active {
   color: #ffffff;
-  background-color: #466934;
+  background-color: #1A2697;
 }
 .main-navbar .navbar .navbar-nav .nav-item:hover a, .main-navbar .navbar .navbar-nav .nav-item.active a {
   color: #ffffff;
-  background-color: #466934;
+  background-color: #1A2697;
 }
 .main-navbar .navbar .navbar-nav .nav-item .dropdown-menu {
   border: none;
@@ -1304,8 +1304,8 @@ Main Slider Area CSS
 .main-slider-area {
   position: relative;
   max-width: 1320px;
-  height: 620px;
-  margin: 30px auto 70px;
+  height: 820px;
+  margin: 30px auto 46px;
   overflow: hidden;
   background: #F7F8FC;
   box-shadow: 0 30px 50px rgba(0, 0, 0, 0.18);
@@ -1327,7 +1327,7 @@ Main Slider Area CSS
   border-radius: 26px;
   box-shadow: 0 30px 50px rgba(0, 0, 0, 0.30);
   background-position: center center;
-  background-size: cover;
+  background-size: 100% auto;
   background-repeat: no-repeat;
   display: block;
   transition: 0.5s;
@@ -1836,13 +1836,6 @@ RESPONSIVE CELULAR
   border-bottom: none;
 }
 
-.main-slider-area .main-slider-item-box {
-  padding-top: 150px;
-  padding-bottom: 150px;
-  padding-left: 75px;
-  padding-right: 75px;
-}
-
 /*================================================
 Overview Area CSS
 =================================================*/
@@ -2092,7 +2085,7 @@ Arrivals Products Area CSS
   list-style-type: none;
 }
 .single-arrivals-products .arrivals-products-content .rating li i {
-  color: #D0C32B;
+  color: #F7D917;
 }
 .single-arrivals-products .arrivals-products-content span {
   font-size: 16px;
@@ -2104,7 +2097,7 @@ Arrivals Products Area CSS
   transform: rotate(1deg) scale(1.1);
 }
 .single-arrivals-products:hover .arrivals-products-image .tag {
-  background: #B73639;
+  background: #B42A27;
 }
 .single-arrivals-products:hover .arrivals-products-image .arrivals-action {
   bottom: 10px;
@@ -2115,7 +2108,7 @@ Arrivals Products Area CSS
   color: #1A2697;
 }
 .single-arrivals-products:hover .arrivals-products-content span {
-  color: #B73639;
+  color: #B42A27;
 }
 
 .arrivals-products-area.bg-color {
@@ -2137,7 +2130,7 @@ Offer Products Area CSS
 }
 .single-offer-products .offer-products-image .tag {
   display: inline-block;
-  background: #B73639;
+  background: #B42A27;
   color: #ffffff;
   font-size: 20px;
   font-weight: 600;
@@ -2193,7 +2186,7 @@ Offer Products Area CSS
 }
 .single-offer-products .offer-products-content .rating li i {
   font-size: 16px;
-  color: #D0C32B;
+  color: #F7D917;
 }
 .single-offer-products:hover .offer-products-image .tag {
   background: #1A2697;
@@ -2208,7 +2201,7 @@ Offer Products Area CSS
 }
 .single-offer-products-box .offer-products-image .tag {
   display: inline-block;
-  background: #B73639;
+  background: #B42A27;
   color: #ffffff;
   font-size: 14px;
   font-weight: 600;
@@ -2310,7 +2303,7 @@ Offer Products Area CSS
 }
 .single-offer-products-box .offer-products-content .rating li i {
   font-size: 16px;
-  color: #D0C32B;
+  color: #F7D917;
 }
 .single-offer-products-box:hover .offer-products-image .tag {
   background: #1A2697;
@@ -2557,7 +2550,7 @@ Bestsellers Area CSS
   list-style-type: none;
 }
 .single-bestsellers-products .bestsellers-products-content .rating li i {
-  color: #D0C32B;
+  color: #F7D917;
 }
 .single-bestsellers-products .bestsellers-products-content span {
   font-size: 16px;
@@ -2566,7 +2559,7 @@ Bestsellers Area CSS
   transition: 0.5s;
 }
 .single-bestsellers-products:hover .bestsellers-products-image .tag {
-  background: #B73639;
+  background: #B42A27;
 }
 .single-bestsellers-products:hover .bestsellers-products-image img {
   transform: rotate(1deg) scale(1.1);
@@ -2714,7 +2707,7 @@ Special Products Area CSS
   list-style-type: none;
 }
 .single-special-products .special-products-content .rating li i {
-  color: #D0C32B;
+  color: #F7D917;
 }
 .single-special-products .special-products-content span {
   font-size: 16px;
@@ -2726,7 +2719,7 @@ Special Products Area CSS
   transform: rotate(1deg) scale(1.1);
 }
 .single-special-products:hover .special-products-image .tag {
-  background: #B73639;
+  background: #B42A27;
 }
 .single-special-products:hover .special-products-image .special-action {
   bottom: 10px;
@@ -2925,7 +2918,7 @@ Testimonial Area CSS
   display: inline-block;
 }
 .testimonial-item .rating li i {
-  color: #D0C32B;
+  color: #F7D917;
 }
 .testimonial-item .content p {
   font-size: 25px;
@@ -3083,7 +3076,7 @@ Hot Products Area CSS
   transform: rotate(1deg) scale(1.1);
 }
 .single-hot-products:hover .hot-products-image .tag {
-  background: #B73639;
+  background: #B42A27;
 }
 .single-hot-products:hover .hot-products-image .hot-action {
   bottom: 5px;
@@ -4582,7 +4575,7 @@ Shop Area CSS
   list-style-type: none;
 }
 .single-shop-products .shop-products-content .rating li i {
-  color: #D0C32B;
+  color: #F7D917;
 }
 .single-shop-products .shop-products-content span {
   font-size: 16px;
@@ -4594,7 +4587,7 @@ Shop Area CSS
   transform: rotate(1deg) scale(1.1);
 }
 .single-shop-products:hover .shop-products-image .tag {
-  background: #B73639;
+  background: #B42A27;
 }
 .single-shop-products:hover .shop-products-image .shop-action {
   bottom: 10px;
@@ -5265,7 +5258,7 @@ Products Details Area CSS
   font-size: 20px;
 }
 .products-details-desc .product-content .product-review .rating i {
-  color: #D0C32B;
+  color: #F7D917;
 }
 .products-details-desc .product-content .price {
   margin-bottom: 15px;
@@ -5598,7 +5591,7 @@ Products Details Area CSS
   display: inline-block;
 }
 .products-details-tabs .tab-content .tab-pane .products-review-form .review-title .rating .bx.bxs-star {
-  color: #D0C32B;
+  color: #F7D917;
 }
 .products-details-tabs .tab-content .tab-pane .products-review-form .review-title .rating i {
   color: #ebebeb;
@@ -5626,7 +5619,7 @@ Products Details Area CSS
   padding-top: 30px;
 }
 .products-details-tabs .tab-content .tab-pane .products-review-form .review-comments .review-item .rating .bx.bxs-star {
-  color: #D0C32B;
+  color: #F7D917;
 }
 .products-details-tabs .tab-content .tab-pane .products-review-form .review-comments .review-item .rating i {
   font-size: 16px;
@@ -6397,7 +6390,7 @@ Widget Sidebar CSS
   display: inline-block;
 }
 .widget-area .widget_best-seller-products .item .info .rating li i {
-  color: #D0C32B;
+  color: #F7D917;
 }
 .widget-area .widget_arrival .special-products-inner {
   background-image: url(../../assets/img/special-products/special-products-bg.jpg);
@@ -6843,7 +6836,7 @@ Modal CSS
   font-size: 30px;
 }
 .productsQuickView .modal-content .product-content .product-review .rating i {
-  color: #D0C32B;
+  color: #F7D917;
 }
 .productsQuickView .modal-content .product-content .price {
   margin-bottom: 15px;
@@ -7021,7 +7014,7 @@ Buy Now Btn
   border-radius: 30px;
   display: inline-block;
   color: #ffffff !important;
-  background-color: #466934;
+  background-color: #166B38;
   padding: 3.5px 10px 3.5px;
   font-size: 12px;
   font-weight: 500;
@@ -7057,8 +7050,8 @@ Buy Now Btn
 .default-btn,
 .buy-now-btn,
 .go-top {
-  background-color: #466934;
-  border-color: #466934;
+  background-color: #166B38;
+  border-color: #166B38;
   color: #ffffff;
 }
 
@@ -7080,24 +7073,24 @@ Buy Now Btn
 
 .middle-header-area,
 .middle-header-area.bg-color {
-  background-color: #466934;
+  background-color: #1A2697;
 }
 
 .middle-header-area.bg-color .middle-header-search {
-  border-color: #466934;
+  border-color: #166B38;
 }
 
 .middle-header-search form .form-group .nice-select {
-  background-color: #466934;
+  background-color: #1A2697;
 }
 
 .middle-header-search form .form-group .nice-select .list .option:hover,
 .middle-header-search form .form-group .nice-select .list .option.selected {
-  background-color: #466934 !important;
+  background-color: #1A2697 !important;
 }
 
 .middle-header-search form .search-box button {
-  background-color: #1A2697;
+  background-color: #166B38;
   border-color: #1A2697;
   color: #ffffff;
 }
@@ -7172,8 +7165,8 @@ Buy Now Btn
 .main-slider-area .main-slider-content .default-btn,
 .main-slider-area .main-slider-content .default-btn:hover,
 .main-slider-area .main-slider-content .default-btn:focus {
-  background-color: #466934;
-  border-color: #466934;
+  background-color: #166B38;
+  border-color: #166B38;
   color: #ffffff !important;
 }
 
@@ -7188,7 +7181,7 @@ Buy Now Btn
 }
 
 .main-slider-area .slider-stack-buttons button {
-  background: #466934;
+  background: #166B38;
   color: #ffffff;
   box-shadow: 0 10px 22px rgba(70, 105, 52, 0.22);
 }
@@ -7264,16 +7257,16 @@ body {
 }
 
 .banner-best .banner-text::after {
-  background: linear-gradient(90deg, #D0C32B, #F1E86A) !important;
+  background: linear-gradient(90deg, #F7D917, #FFE45C) !important;
 }
 
 .banner-btn,
 .banner-soft .banner-btn,
 .banner-best .banner-btn,
 .section-header-soft .btn-soft {
-  background: #D0C32B !important;
-  background-color: #D0C32B !important;
-  border-color: #D0C32B !important;
+  background: #F7D917 !important;
+  background-color: #F7D917 !important;
+  border-color: #F7D917 !important;
   color: #292929 !important;
   box-shadow: 0 10px 24px rgba(208, 195, 43, 0.25) !important;
 }
@@ -7286,9 +7279,9 @@ body {
 .banner-best .banner-btn:focus,
 .section-header-soft .btn-soft:hover,
 .section-header-soft .btn-soft:focus {
-  background: #B8AD25 !important;
-  background-color: #B8AD25 !important;
-  border-color: #B8AD25 !important;
+  background: #D6B900 !important;
+  background-color: #D6B900 !important;
+  border-color: #D6B900 !important;
   color: #292929 !important;
   box-shadow: 0 12px 28px rgba(184, 173, 37, 0.34) !important;
 }
@@ -7335,7 +7328,7 @@ body {
 .catalog-pagination__context {
   display: block;
   margin-top: 6px;
-  color: #D0C32B;
+  color: #F7D917;
   font-size: 16px;
   font-weight: 700;
 }
@@ -7415,8 +7408,8 @@ body {
 .catalog-pagination__button--next {
   min-width: 130px;
   color: #ffffff;
-  background-color: #466934;
-  border-color: #466934;
+  background-color: #166B38;
+  border-color: #166B38;
 }
 
 .catalog-pagination__button--next:hover,
@@ -7603,8 +7596,8 @@ Home Circular Hero Slider
 
 .main-slider-area.slider-circular-home .slider-stack-buttons button:hover,
 .main-slider-area.slider-circular-home .slider-stack-buttons button:active {
-  background: #466934;
-  border-color: #466934;
+  background: #166B38;
+  border-color: #166B38;
   color: #ffffff;
 }
 
@@ -7863,4 +7856,17 @@ Home Circular Hero Slider
   }
 }
 
-/*# sourceMappingURL=style.css.map */
+.footer-phone-detail {
+    color: #6f6f6f;
+    font-weight: 400;
+    line-height: 1.6;
+}
+
+.footer-phone-detail strong {
+    color: #222222;
+    font-weight: 600;
+}
+
+.footer-whatsapp-line {
+    margin-top: 8px;
+}

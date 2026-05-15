@@ -2172,9 +2172,9 @@ $optional-color: #B73639;
     .single-hot-featured:hover .featured-content .tag,
     .single-hot-products:hover .hot-products-image .tag,
     .single-shop-products:hover .shop-products-image .tag {
-        background: #D0C32B !important;
-        background-color: #D0C32B !important;
-        border-color: #D0C32B !important;
+        background: #F7D917 !important;
+        background-color: #F7D917 !important;
+        border-color: #F7D917 !important;
         color: #292929 !important;
     }
 }
@@ -2182,20 +2182,20 @@ $optional-color: #B73639;
 .theme-dark {
     .middle-header-area,
     .middle-header-area.bg-color {
-        background-color: #466934;
+        background-color: #166B38;
     }
 
     .middle-header-search {
         form {
             .form-group {
                 .nice-select {
-                    background-color: #466934;
+                    background-color: #166B38;
 
                     .list {
                         .option {
                             &:hover,
                             &.selected {
-                                background-color: #466934 !important;
+                                background-color: #166B38 !important;
                             }
                         }
                     }

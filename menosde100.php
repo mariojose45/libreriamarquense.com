@@ -169,7 +169,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
         z-index: 5;
         border-radius: 22px !important;
         box-sizing: border-box !important;
-        background: linear-gradient(112deg, #101A5C 0%, #1A2697 49.35%, #466934 49.55%, #355329 100%) !important;
+        background: linear-gradient(112deg, #101A5C 0%, #1A2697 49.35%, #166B38 49.55%, #355329 100%) !important;
         background-color: #1A2697 !important;
         box-shadow: 0 18px 42px rgba(16, 26, 92, 0.16) !important;
         isolation: isolate;
@@ -251,8 +251,8 @@ $current_page = basename($_SERVER['PHP_SELF']);
     }
 
     .banner-btn {
-        background: #D0C32B !important;
-        background-color: #D0C32B !important;
+        background: #F7D917 !important;
+        background-color: #F7D917 !important;
         color: #292929 !important;
         font-weight: 700;
         padding: 12px 35px;
@@ -265,8 +265,8 @@ $current_page = basename($_SERVER['PHP_SELF']);
 
     .banner-btn:hover {
         transform: translateY(-3px) scale(1.05);
-        background: #B8AD25 !important;
-        background-color: #B8AD25 !important;
+        background: #D6B900 !important;
+        background-color: #D6B900 !important;
         color: #292929 !important;
         box-shadow: 0 12px 28px rgba(184, 173, 37, 0.34) !important;
     }
@@ -519,7 +519,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
         top: 0;
         width: 100%;
         height: 100%;
-        background: linear-gradient(90deg, #1A2697 0%, #B73639 58%, #466934 100%);
+        background: linear-gradient(90deg, #1A2697 0%, #B73639 58%, #166B38 100%);
         /* Fondo gradiente Marquense */
         box-shadow: inset 0 0 50px rgba(0, 0, 0, 0.1);
         z-index: 0;
@@ -705,9 +705,9 @@ $current_page = basename($_SERVER['PHP_SELF']);
     }
 
     .mp-close:hover {
-        background: #B73639;
+        background: #B42A27;
         color: #fff;
-        border-color: #B73639;
+        border-color: #B42A27;
         transform: scale(1.1);
     }
 
@@ -901,11 +901,11 @@ $current_page = basename($_SERVER['PHP_SELF']);
     }
 
     .mp-whatsapp {
-        background: #466934;
+        background: #166B38;
     }
 
     .mp-whatsapp:hover {
-        background: #466934;
+        background: #166B38;
         transform: translateY(-2px);
         box-shadow: 0 4px 12px rgba(37, 211, 102, 0.4);
     }

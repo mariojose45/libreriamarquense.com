@@ -101,7 +101,7 @@ $categoria_actual = isset($_GET['categoria']) ? (string) $_GET['categoria'] : ''
         right: 45px;
         top: 50%;
         transform: translateY(-50%);
-        background: #B73639;
+        background: #B42A27;
         color: white;
         border: none;
         border-radius: 50%;
@@ -118,7 +118,7 @@ $categoria_actual = isset($_GET['categoria']) ? (string) $_GET['categoria'] : ''
     }
 
     .btn-limpiar-busqueda:hover {
-        background: #8F1F24;
+        background: #9F211F;
         transform: translateY(-50%) scale(1.1);
     }
 
@@ -253,8 +253,8 @@ $categoria_actual = isset($_GET['categoria']) ? (string) $_GET['categoria'] : ''
     .widget-area .widget_categories .categories li a:hover,
     .widget-area .widget_categories .categories li a:focus,
     .widget-area .widget_categories .categories li a.active {
-        background-color: #466934;
-        border-color: #466934;
+        background-color: #166B38;
+        border-color: #166B38;
         color: #ffffff;
     }
 
@@ -695,9 +695,9 @@ $categoria_actual = isset($_GET['categoria']) ? (string) $_GET['categoria'] : ''
     }
 
     .mp-close:hover {
-        background: #B73639;
+        background: #B42A27;
         color: #fff;
-        border-color: #B73639;
+        border-color: #B42A27s;
         transform: scale(1.1);
     }
 
@@ -886,11 +886,11 @@ $categoria_actual = isset($_GET['categoria']) ? (string) $_GET['categoria'] : ''
     }
 
     .mp-whatsapp {
-        background: #466934;
+        background: #166B38;
     }
 
     .mp-whatsapp:hover {
-        background: #466934;
+        background: #166B38;
         transform: translateY(-2px);
         box-shadow: 0 4px 12px rgba(37, 211, 102, 0.4);
     }

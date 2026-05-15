@@ -126,7 +126,7 @@ $rutaImagenes = "https://ssl.sol.sistemasolgt.com/libremarquenseDos/files/articu
     /* Banner Ofertas Exclusivas */
     .exclusive-offers-banner {
         position: relative;
-        background: linear-gradient(90deg, #1A2697 0%, #B73639 58%, #466934 100%);
+        background: linear-gradient(90deg, #1A2697 0%, #B73639 58%, #166B38 100%);
         padding: 25px 0;
         margin-top: 50px;
         margin-bottom: -50px;
@@ -172,7 +172,7 @@ $rutaImagenes = "https://ssl.sol.sistemasolgt.com/libremarquenseDos/files/articu
     }
 
     .banner-btn {
-        background: #466934;
+        background: #166B38;
         color: #fff;
         font-weight: 700;
         padding: 12px 35px;
@@ -639,7 +639,7 @@ $rutaImagenes = "https://ssl.sol.sistemasolgt.com/libremarquenseDos/files/articu
 
     .testimonial-carousel-card__date {
         margin-top: auto;
-        color: #466934;
+        color: #166B38s;
         font-size: 15px;
         font-weight: 700;
         line-height: 1.4;
