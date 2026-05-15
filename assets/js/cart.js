@@ -766,9 +766,12 @@ function procesarPedido(event) {
 
     // Deshabilitar botón de enviar
     const btnEnviar = document.querySelector('.mp-btn-enviar');
+
     if (btnEnviar) {
         btnEnviar.disabled = true;
-        btnEnviar.textContent = 'Enviando...';
+        btnEnviar.textContent = formData.formaPago === 'Tarjeta'
+            ? 'Redirigiendo...'
+            : 'Enviando...';
     }
 
     // ⚠️ IMPORTANTE: El servidor (API) DEBE validar los precios contra la base de datos
@@ -850,7 +853,7 @@ function procesarPedido(event) {
                         // Habilitar botón de enviar nuevamente
                         if (btnEnviar) {
                             btnEnviar.disabled = false;
-                            btnEnviar.textContent = 'Enviar Pedido';
+                            actualizarVistaPagoTarjeta();
                         }
                     });
                 } else {
@@ -858,7 +861,7 @@ function procesarPedido(event) {
                     // Habilitar botón de enviar nuevamente
                     if (btnEnviar) {
                         btnEnviar.disabled = false;
-                        btnEnviar.textContent = 'Enviar Pedido';
+                        actualizarVistaPagoTarjeta();
                     }
                 }
             }
@@ -877,7 +880,7 @@ function procesarPedido(event) {
                     // Habilitar botón de enviar nuevamente
                     if (btnEnviar) {
                         btnEnviar.disabled = false;
-                        btnEnviar.textContent = 'Enviar Pedido';
+                        actualizarVistaPagoTarjeta();
                     }
                 });
             } else {
@@ -885,7 +888,7 @@ function procesarPedido(event) {
                 // Habilitar botón de enviar nuevamente
                 if (btnEnviar) {
                     btnEnviar.disabled = false;
-                    btnEnviar.textContent = 'Enviar Pedido';
+                    actualizarVistaPagoTarjeta();
                 }
             }
         });
@@ -904,7 +907,7 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 function iniciarPagoTarjeta(apiData, btnEnviar) {
-    fetch('api/cybersource/create_checkout.php', {
+    fetch('/api/cybersource/create_checkout.php', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
