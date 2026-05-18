@@ -23,6 +23,8 @@ try {
     $secureAcceptance = new \LM\CyberSource\SecureAcceptanceService($config);
     $fields = $secureAcceptance->buildSignedFormFields($session);
     $endpoint = $config->getSecureAcceptanceEndpoint();
+    $siteBaseUrl = rtrim((string) $config->get('site.base_url'), '/');
+    $logoUrl = $siteBaseUrl . '/assets/img/LogoLibreriaMarquense.jpeg';
 
     $session['secure_acceptance_request'] = array(
         'endpoint' => $endpoint,
@@ -69,28 +71,72 @@ header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Redirigiendo al pago seguro</title>
+    <title>Conectando con la pasarela</title>
     <style>
-        body { margin: 0; min-height: 100vh; display: grid; place-items: center; font-family: Arial, sans-serif; background: #f5f7fb; color: #1f2937; }
-        .box { width: min(92vw, 500px); background: #fff; border-radius: 12px; padding: 26px; box-shadow: 0 18px 50px rgba(15, 23, 42, .16); text-align: center; }
-        h1 { margin: 0 0 10px; color: #1A2697; font-size: 25px; }
-        p { margin: 0; line-height: 1.5; }
-        button { margin-top: 20px; min-height: 42px; padding: 0 18px; border: 0; border-radius: 8px; background: #1A2697; color: #fff; font-weight: 700; cursor: pointer; }
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: grid;
+            place-items: center;
+            font-family: Arial, sans-serif;
+            background: #ffffff;
+            color: #1f2937;
+        }
+
+        .loader {
+            display: grid;
+            place-items: center;
+            gap: 18px;
+        }
+
+        .loader img {
+            width: min(280px, 70vw);
+            border-radius: 10px;
+        }
+
+        .spinner {
+            width: 44px;
+            height: 44px;
+            border: 4px solid #e5e7eb;
+            border-top-color: #1A2697;
+            border-radius: 50%;
+            animation: spin .8s linear infinite;
+        }
+
+        .manual-submit {
+            margin-top: 18px;
+            min-height: 42px;
+            padding: 0 18px;
+            border: 0;
+            border-radius: 8px;
+            background: #1A2697;
+            color: #fff;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body>
-    <main class="box">
-        <h1>Pago seguro</h1>
-        <p>Te estamos redirigiendo a la pagina segura de pago.</p>
+    <main class="loader" aria-label="Conectando con la pasarela de pago">
+        <img src="<?php echo htmlspecialchars($logoUrl, ENT_QUOTES, 'UTF-8'); ?>" alt="Libreria Marquense">
+        <span class="spinner" aria-hidden="true"></span>
         <form id="secure-acceptance-form" method="post" action="<?php echo htmlspecialchars($endpoint, ENT_QUOTES, 'UTF-8'); ?>">
             <?php foreach ($fields as $name => $value): ?>
                 <input type="hidden" name="<?php echo htmlspecialchars($name, ENT_QUOTES, 'UTF-8'); ?>" value="<?php echo htmlspecialchars($value, ENT_QUOTES, 'UTF-8'); ?>">
             <?php endforeach; ?>
-            <button type="submit">Continuar al pago</button>
+            <noscript>
+                <button class="manual-submit" type="submit">Continuar</button>
+            </noscript>
         </form>
     </main>
     <script>
-        document.getElementById('secure-acceptance-form').submit();
+        window.setTimeout(function () {
+            document.getElementById('secure-acceptance-form').submit();
+        }, 60);
     </script>
 </body>
 </html>

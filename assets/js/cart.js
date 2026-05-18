@@ -906,7 +906,141 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 });
 
+function obtenerConfiguracionVentanaPago() {
+    const width = Math.min(760, Math.max(420, window.screen.availWidth - 80));
+    const height = Math.min(820, Math.max(620, window.screen.availHeight - 80));
+    const left = Math.max(0, Math.round((window.screen.availWidth - width) / 2));
+    const top = Math.max(0, Math.round((window.screen.availHeight - height) / 2));
+
+    return [
+        `width=${width}`,
+        `height=${height}`,
+        `left=${left}`,
+        `top=${top}`,
+        'resizable=yes',
+        'scrollbars=yes',
+        'status=yes',
+        'menubar=no',
+        'toolbar=no',
+        'location=yes'
+    ].join(',');
+}
+
+function escribirCargaVentanaPago(ventanaPago) {
+    if (!ventanaPago || ventanaPago.closed) {
+        return;
+    }
+
+    const logoUrl = new URL('assets/img/LogoLibreriaMarquense.jpeg', window.location.href).href;
+
+    try {
+        ventanaPago.document.open();
+        ventanaPago.document.write(`
+            <!doctype html>
+            <html lang="es">
+            <head>
+                <meta charset="utf-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1">
+                <title>Conectando con la pasarela</title>
+                <style>
+                    body {
+                        margin: 0;
+                        min-height: 100vh;
+                        display: grid;
+                        place-items: center;
+                        background: #ffffff;
+                        font-family: Arial, sans-serif;
+                    }
+
+                    .payment-loader {
+                        display: grid;
+                        place-items: center;
+                        gap: 18px;
+                    }
+
+                    .payment-loader img {
+                        width: min(280px, 70vw);
+                        border-radius: 10px;
+                    }
+
+                    .payment-loader span {
+                        width: 44px;
+                        height: 44px;
+                        border: 4px solid #e5e7eb;
+                        border-top-color: #1A2697;
+                        border-radius: 50%;
+                        animation: spin .8s linear infinite;
+                    }
+
+                    @keyframes spin {
+                        to { transform: rotate(360deg); }
+                    }
+                </style>
+            </head>
+            <body>
+                <main class="payment-loader" aria-label="Cargando pasarela de pago">
+                    <img src="${logoUrl}" alt="Libreria Marquense">
+                    <span aria-hidden="true"></span>
+                </main>
+            </body>
+            </html>
+        `);
+        ventanaPago.document.close();
+        ventanaPago.focus();
+    } catch (error) {
+        console.warn('No se pudo escribir el cargador de pago:', error);
+    }
+}
+
+function abrirVentanaPagoExterna() {
+    const ventanaPago = window.open('', '_blank', obtenerConfiguracionVentanaPago());
+
+    if (!ventanaPago || ventanaPago.closed || typeof ventanaPago.closed === 'undefined') {
+        return null;
+    }
+
+    escribirCargaVentanaPago(ventanaPago);
+    return ventanaPago;
+}
+
+function cerrarVentanaPagoExterna(ventanaPago) {
+    try {
+        if (ventanaPago && !ventanaPago.closed) {
+            ventanaPago.close();
+        }
+    } catch (error) {
+        console.warn('No se pudo cerrar la ventana de pago:', error);
+    }
+}
+
+function restaurarBotonPagoTarjeta(btnEnviar) {
+    if (btnEnviar) {
+        btnEnviar.disabled = false;
+        actualizarVistaPagoTarjeta();
+    }
+}
+
 function iniciarPagoTarjeta(apiData, btnEnviar) {
+    const ventanaPago = abrirVentanaPagoExterna();
+
+    if (!ventanaPago) {
+        restaurarBotonPagoTarjeta(btnEnviar);
+
+        const mensaje = 'Chrome bloqueo la ventana externa de pago. Permite ventanas emergentes para libreriamarquense.com e intenta nuevamente.';
+        if (typeof Swal !== 'undefined') {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Ventana de pago bloqueada',
+                text: mensaje,
+                confirmButtonText: 'Aceptar'
+            });
+        } else {
+            alert(mensaje);
+        }
+
+        return;
+    }
+
     fetch('/api/cybersource/create_checkout.php', {
         method: 'POST',
         headers: {
@@ -935,10 +1069,14 @@ function iniciarPagoTarjeta(apiData, btnEnviar) {
                 throw new Error('La pasarela no devolvio una URL de pago segura.');
             }
 
-            window.location.href = data.redirect_url;
+            ventanaPago.location.replace(data.redirect_url);
+            ventanaPago.focus();
+            cerrarModalPedido();
+            restaurarBotonPagoTarjeta(btnEnviar);
         })
         .catch(error => {
             console.error('Error iniciando pago:', error);
+            cerrarVentanaPagoExterna(ventanaPago);
 
             if (typeof Swal !== 'undefined') {
                 Swal.fire({
@@ -947,17 +1085,11 @@ function iniciarPagoTarjeta(apiData, btnEnviar) {
                     text: error.message || 'Intenta nuevamente o selecciona otro metodo de pago.',
                     confirmButtonText: 'Aceptar'
                 }).then(() => {
-                    if (btnEnviar) {
-                        btnEnviar.disabled = false;
-                        actualizarVistaPagoTarjeta();
-                    }
+                    restaurarBotonPagoTarjeta(btnEnviar);
                 });
             } else {
                 alert(error.message || 'No se pudo iniciar el pago.');
-                if (btnEnviar) {
-                    btnEnviar.disabled = false;
-                    actualizarVistaPagoTarjeta();
-                }
+                restaurarBotonPagoTarjeta(btnEnviar);
             }
         });
 }

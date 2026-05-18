@@ -250,6 +250,17 @@ function filtrarProductosPorPrecio(array $productos, ?float $priceMin, ?float $p
     }));
 }
 
+function filtrarProductosPorIdArticulo(array $productos, string $idArticulo): array
+{
+    if ($idArticulo === '' || !preg_match('/^[0-9]+$/', $idArticulo)) {
+        return $productos;
+    }
+
+    return array_values(array_filter($productos, static function (array $producto) use ($idArticulo): bool {
+        return (string) ($producto['idarticulo'] ?? '') === $idArticulo;
+    }));
+}
+
 $input = leerEntradaJson();
 $sourceConfig = obtenerConfiguracionFuente($BASE_API, $input);
 $validationError = validarConfiguracionFuente($sourceConfig);
@@ -266,6 +277,7 @@ $requestedPage = normalizarEntero($input['page'] ?? 1, 1, 1, 5000);
 $perPage = normalizarEntero($input['per_page'] ?? PRODUCTOS_DEFAULT_PER_PAGE, PRODUCTOS_DEFAULT_PER_PAGE, 1, PRODUCTOS_MAX_PER_PAGE);
 $selectedPriceMin = normalizarFloatOpcional($input['price_min'] ?? null);
 $selectedPriceMax = normalizarFloatOpcional($input['price_max'] ?? null);
+$selectedIdArticulo = trim((string) ($input['idarticulo'] ?? ''));
 
 $cacheFile = obtenerRutaCache((string) $sourceConfig['mode'], (array) $sourceConfig['payload']);
 $apiData = obtenerDatosCacheados($cacheFile);
@@ -287,6 +299,7 @@ if (empty($apiData['success']) || !isset($apiData['data']) || !is_array($apiData
 
 $productos = array_values(array_filter($apiData['data'], 'is_array'));
 $priceRange = calcularRangoPrecios($productos);
+$productos = filtrarProductosPorIdArticulo($productos, $selectedIdArticulo);
 
 if ($selectedPriceMin !== null) {
     $selectedPriceMin = max((float) $priceRange['min'], $selectedPriceMin);

@@ -24,30 +24,9 @@ if (isset($_GET['id'])) {
             exit();
         }
 
-        // Verificar que el producto existe en la API antes de mostrar la pagina
-        $api_url = "https://ssl.sol.sistemasolgt.com/libremarquenseDos/api/api_tienda_articulos_listarid.php";
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $api_url);
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode(['idarticulo' => $idarticulo]));
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
-        $api_response = curl_exec($ch);
-        curl_close($ch);
-
-        $producto_data = json_decode($api_response, true);
-
-        // Si el producto no existe o hay error, redirigir
-        if (
-            !$producto_data || !isset($producto_data['success']) || !$producto_data['success'] ||
-            !isset($producto_data['data']) || empty($producto_data['data'])
-        ) {
-            header("HTTP/1.0 404 Not Found");
-            header("Location: index.php?error=producto_no_encontrado");
-            exit();
-        }
+        // El detalle se carga en el navegador. No redirigir aqui si el API de detalle
+        // responde vacio, porque los listados pueden tener articulos validos que ese
+        // endpoint no devuelve de forma consistente.
     } else {
         // ID invalido (contiene caracteres no numericos)
         header("HTTP/1.0 400 Bad Request");
@@ -373,7 +352,7 @@ include 'head.php';
                                     "BOLIGRAFOS" => "bx bx-pen",
                                     "PAPELERIA" => "bx bx-file",
                                     "TEXTO ESCOLAR" => "bx bx-book",
-                                    "DIDACTICO INFANTIL" => "bx bx-child",
+                                    "DIDACTICO INFANTIL" => "bx bx-book",
                                     "MARCADOR" => "bx bx-pencil",
                                     "TECNOLOGIA" => "bx bx-laptop",
                                     "CONTABILIDAD Y AUDITORIA" => "bx bx-calculator",
@@ -667,6 +646,11 @@ include 'head.php';
     // ============================================================
     const IMAGEN_PRODUCTO_BASE = "https://ssl.sol.sistemasolgt.com/libremarquenseDos/files/articulos/";
     const IMAGEN_PRODUCTO_PLACEHOLDER = "assets/img/404.png";
+    const PRODUCTO_DETALLE_API = "https://ssl.sol.sistemasolgt.com/libremarquenseDos/api/api_tienda_articulos_listarid.php";
+    const PRODUCTO_FOTOS_API = "https://ssl.sol.sistemasolgt.com/libremarquenseDos/api/api_tienda_mostrarfotosproducto.php";
+    const PRODUCTO_FALLBACK_ENDPOINT = "assets/php/productos_paginados.php";
+    const PRODUCTO_FALLBACK_MODOS = ["nuevos", "ofertas", "menosde100"];
+    const PRODUCTO_FALLBACK_PER_PAGE = 60;
 
     function construirUrlImagenProducto(nombreArchivo) {
         const nombre = (nombreArchivo ?? "").toString().trim();
@@ -726,7 +710,7 @@ include 'head.php';
     // ============================================================
     // CARGAR DATOS DEL PRODUCTO DESDE LA API (con validación)
     // ============================================================
-    function cargarProducto(idarticulo) {
+    async function cargarProducto(idarticulo) {
         // Validar ID nuevamente antes de hacer la petición
         if (!validarIdProducto(idarticulo)) {
             mostrarError('ID de producto inválido.');
@@ -736,49 +720,118 @@ include 'head.php';
         // Sanitizar ID para la petición
         const idSanitizado = parseInt(idarticulo, 10);
 
-        fetch("https://ssl.sol.sistemasolgt.com/libremarquenseDos/api/api_tienda_articulos_listarid.php", {
+        try {
+            productoActual = await obtenerProductoDesdeDetalle(idSanitizado);
+
+            if (!productoActual) {
+                productoActual = await buscarProductoEnListados(idSanitizado);
+            }
+
+            if (!productoActual) {
+                mostrarError('No se pudo cargar el producto solicitado.');
+                return;
+            }
+
+            cargarFotosProducto(idSanitizado);
+            return;
+        } catch (error) {
+            console.error('Error:', error);
+            mostrarError('Error al cargar el producto. Por favor, intenta de nuevo.');
+            return;
+        }
+
+    }
+
+    // ============================================================
+    // OBTENER DATOS DEL PRODUCTO
+    // ============================================================
+    async function obtenerProductoDesdeDetalle(idarticulo) {
+        const response = await fetch(PRODUCTO_DETALLE_API, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify({ idarticulo: idSanitizado })
-        })
-            .then(response => {
+            body: JSON.stringify({ idarticulo })
+        });
+
+        if (!response.ok) {
+            throw new Error('Error en la respuesta del servidor');
+        }
+
+        const data = await response.json();
+        if (!data || !data.success || !Array.isArray(data.data) || data.data.length === 0) {
+            return null;
+        }
+
+        const producto = data.data.find(item => String(item?.idarticulo) === String(idarticulo)) || data.data[0];
+        if (!producto || String(producto.idarticulo) !== String(idarticulo)) {
+            return null;
+        }
+
+        return normalizarProducto(producto, idarticulo);
+    }
+
+    async function buscarProductoEnListados(idarticulo) {
+        for (const modo of PRODUCTO_FALLBACK_MODOS) {
+            let pagina = 1;
+            let totalPaginas = 1;
+
+            do {
+                const response = await fetch(PRODUCTO_FALLBACK_ENDPOINT, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        mode: modo,
+                        page: pagina,
+                        per_page: PRODUCTO_FALLBACK_PER_PAGE,
+                        idarticulo
+                    })
+                });
+
                 if (!response.ok) {
-                    throw new Error('Error en la respuesta del servidor');
-                }
-                return response.json();
-            })
-            .then(data => {
-                // Validar respuesta de la API
-                if (!data || !data.success || !data.data || data.data.length === 0) {
-                    mostrarError('No se encontró el producto. El ID puede ser inválido o el producto no existe.');
-                    // Limpiar URL si el producto no existe
-                    if (window.history && window.history.replaceState) {
-                        window.history.replaceState({}, document.title, 'producto.php');
-                    }
-                    return;
+                    break;
                 }
 
-                productoActual = data.data[0];
-
-                // Validar que el ID del producto coincide con el solicitado
-                if (productoActual.idarticulo != idSanitizado) {
-                    console.warn('⚠️ El ID del producto no coincide');
-                    mostrarError('Error de validación del producto.');
-                    return;
+                const data = await response.json();
+                if (!data || !data.success || !Array.isArray(data.data)) {
+                    break;
                 }
 
-                cargarFotosProducto(idSanitizado);
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                mostrarError('Error al cargar el producto. Por favor, intenta de nuevo.');
-            });
+                const producto = data.data.find(item => String(item?.idarticulo) === String(idarticulo));
+                if (producto) {
+                    return normalizarProducto(producto, idarticulo);
+                }
+
+                totalPaginas = Number(data?.meta?.total_pages) || 1;
+                pagina++;
+            } while (pagina <= totalPaginas);
+        }
+
+        return null;
+    }
+
+    function normalizarProducto(producto, idarticulo) {
+        const stock = producto.stock ?? producto.stocksucursal ?? producto.existencia ?? 0;
+        const descripcion = (producto.descripcion ?? '').toString().trim();
+        const descripcionValida = descripcion && descripcion !== '0' ? descripcion : '';
+
+        return {
+            ...producto,
+            idarticulo: producto.idarticulo || idarticulo,
+            codigo: producto.codigo || producto.codarticulo || 'N/A',
+            nombre: producto.nombre || producto.descripcion || producto.codigo || 'Producto',
+            descripcion: descripcionValida || producto.nombre || '',
+            precio_venta: producto.precio_venta ?? producto.precio ?? producto.preciofinal ?? 0,
+            stock,
+            categoria: producto.categoria || producto.nombrecategoria || producto.nom_categoria || 'N/A',
+            imagen: producto.imagen || producto.foto || producto.ruta_imagen || ''
+        };
     }
 
     // ============================================================
-    // CARGAR FOTOS DEL PRODUCTO (con validación)
+    // CARGAR FOTOS DEL PRODUCTO (con validacion)
     // ============================================================
     function cargarFotosProducto(idarticulo) {
         // Validar ID antes de cargar fotos
@@ -799,7 +852,7 @@ include 'head.php';
         console.log('🖼️ Imagen principal:', imagenPrincipal);
 
         // Cargar fotos desde la API
-        fetch("https://ssl.sol.sistemasolgt.com/libremarquenseDos/api/api_tienda_mostrarfotosproducto.php", {
+        fetch(PRODUCTO_FOTOS_API, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ idarticulo: idSanitizado })
