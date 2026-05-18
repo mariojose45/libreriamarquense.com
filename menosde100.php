@@ -1,8 +1,8 @@
 <?php
 // SEO para la pagina menos de Q100
-$seo_title = "TI-CELL | Productos y accesorios por menos de Q100";
-$seo_description = "Descubre accesorios y productos para celular por menos de Q100 en TI-CELL.";
-$seo_keywords = "TI-CELL, accesorios para celular baratos, productos menos de Q100, tienda de celulares Guatemala";
+$seo_title = "Menos de Q100 - Librería Marquense | Productos escolares económicos";
+$seo_description = "Descubre productos escolares, útiles, papelería y artículos de oficina por menos de Q100 en Librería Marquense.";
+$seo_keywords = "Librería Marquense, productos menos de Q100, útiles escolares económicos, papelería económica, Guatemala";
 
 include 'head.php';
 $current_page = basename($_SERVER['PHP_SELF']);

@@ -1,8 +1,8 @@
 <?php
 // SEO para la pagina nosotros
-$seo_title = "Nosotros - TI-CELL | Venta y reparacion de celulares";
-$seo_description = "Conoce mas sobre TI-CELL, nuestra historia, mision y vision en venta de celulares, accesorios y reparacion tecnica.";
-$seo_keywords = "nosotros TI-CELL, historia TI-CELL, tienda de celulares Guatemala, reparacion de celulares";
+$seo_title = "Nosotros - Librería Marquense | Útiles escolares y papelería";
+$seo_description = "Conoce más sobre Librería Marquense, nuestra historia, misión y visión como tienda de útiles escolares, papelería, libros, material didáctico y productos de oficina.";
+$seo_keywords = "Librería Marquense, nosotros Librería Marquense, útiles escolares Guatemala, papelería Guatemala, libros, material didáctico, productos de oficina";
 
 include 'head.php';
 include 'assets/php/rutas.php';
@@ -54,20 +54,20 @@ if (!function_exists('getApiData')) {
 $imagenNosotros = 'assets/img/Historia TI-CELL.png';
 
 $historiaParrafos = [
-    'TI-CELL nace con el objetivo de acercar celulares, accesorios, repuestos y soluciones tecnicas confiables a cada cliente que busca comprar o reparar su equipo con seguridad.',
-    'Desde nuestras sucursales trabajamos para ofrecer una atencion cercana, opciones utiles para diferentes necesidades y un servicio tecnico enfocado en diagnostico, reparacion y compatibilidad real de cada dispositivo.',
-    'Nuestro crecimiento se basa en la confianza de nuestros clientes, la rapidez de respuesta y el compromiso de brindar una experiencia clara, honesta y funcional en cada compra o servicio.'
+    'Librería Marquense nace con el propósito de ofrecer útiles escolares, papelería, libros, material didáctico y productos de oficina para estudiantes, docentes, familias y empresas.',
+    'Trabajamos para brindar atención cercana, variedad de productos y soluciones prácticas para cada temporada escolar, tarea, oficina o necesidad educativa.',
+    'Nuestro compromiso se basa en la confianza de nuestros clientes, la calidad del servicio y el deseo de apoyar la educación con productos útiles, accesibles y confiables.'
 ];
 
-$misionTexto = 'Brindar celulares, accesorios, repuestos y servicios de reparacion con atencion cercana, soluciones practicas y acompanamiento confiable para cada cliente.';
-$visionTexto = 'Ser una tienda de referencia en tecnologia movil y reparacion de celulares, reconocida por su servicio, confianza, experiencia y respuesta oportuna.';
+$misionTexto = 'Brindar útiles escolares, papelería, libros, material didáctico y productos de oficina con atención cercana, variedad, precios accesibles y servicio confiable para cada cliente.';
+$visionTexto = 'Ser una librería de referencia en Guatemala, reconocida por su variedad, calidad, atención y compromiso con la educación de estudiantes, docentes, familias y empresas.';
 
 $diferenciadores = [
-    'Venta de celulares, accesorios y repuestos con orientacion practica.',
-    'Atencion personalizada para ayudarte a elegir la mejor opcion.',
-    'Servicio tecnico para diagnostico, mantenimiento y reparacion.',
-    'Acompanamiento en compatibilidad de equipos, modelos y accesorios.',
-    'Atencion en sucursales para estar mas cerca de cada cliente.'
+    'Variedad de útiles escolares, papelería, libros y productos de oficina.',
+    'Atención personalizada para estudiantes, docentes, familias y empresas.',
+    'Apoyo en la preparación de listas escolares y pedidos por cantidad.',
+    'Productos prácticos para tareas, oficina, estudio y actividades educativas.',
+    'Servicio cercano, confiable y orientado a las necesidades del cliente.'
 ];
 
 /*
@@ -323,7 +323,7 @@ if (!empty($nosotrosData) && is_array($nosotrosData)) {
                             <div class="ticell-about-media">
                                 <img
                                     src="<?php echo htmlspecialchars($imagenNosotros, ENT_QUOTES, 'UTF-8'); ?>"
-                                    alt="TI-CELL - Nosotros"
+                                    alt="Librería Marquense - Nosotros"
                                     onerror="this.onerror=null;this.src='assets/img/servicios/nosotros.png';"
                                 >
                             </div>

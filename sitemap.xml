@@ -3,72 +3,88 @@
 
     <!-- Página Principal -->
     <url>
-        <loc>https://ti-cell.com/</loc>
-        <lastmod>2025-01-26</lastmod>
+        <loc>https://libreriamarquense.com/</loc>
+        <lastmod>2026-05-18</lastmod>
         <changefreq>daily</changefreq>
         <priority>1.0</priority>
     </url>
 
-    <!-- Tienda - Productos Naturales -->
+    <!-- Tienda -->
     <url>
-        <loc>https://ti-cell.com/tienda.php</loc>
-        <lastmod>2025-01-26</lastmod>
+        <loc>https://libreriamarquense.com/tienda.php</loc>
+        <lastmod>2026-05-18</lastmod>
         <changefreq>daily</changefreq>
         <priority>0.9</priority>
     </url>
 
-    <!-- Nosotros -->
+    <!-- Ofertas -->
     <url>
-        <loc>https://ti-cell.com/nosotros.php</loc>
-        <lastmod>2025-01-26</lastmod>
-        <changefreq>monthly</changefreq>
-        <priority>0.8</priority>
-    </url>
-
-    <!-- Servicios -->
-    <url>
-        <loc>https://ti-cell.com/servicios.php</loc>
-        <lastmod>2025-01-26</lastmod>
+        <loc>https://libreriamarquense.com/ofertas.php</loc>
+        <lastmod>2026-05-18</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.8</priority>
     </url>
 
+    <!-- Menos de 100 -->
+    <url>
+        <loc>https://libreriamarquense.com/menosde100.php</loc>
+        <lastmod>2026-05-18</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+    </url>
+
+    <!-- Nosotros -->
+    <url>
+        <loc>https://libreriamarquense.com/nosotros.php</loc>
+        <lastmod>2026-05-18</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+    </url>
+
+    <!-- Servicios -->
+    <url>
+        <loc>https://libreriamarquense.com/servicios.php</loc>
+        <lastmod>2026-05-18</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+    </url>
+
     <!-- Contacto -->
     <url>
-        <loc>https://ti-cell.com/contact.php</loc>
-        <lastmod>2025-01-26</lastmod>
+        <loc>https://libreriamarquense.com/contact.php</loc>
+        <lastmod>2026-05-18</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.7</priority>
     </url>
 
     <!-- Preguntas Frecuentes -->
     <url>
-        <loc>https://ti-cell.com/preguntas_frecuentes.php</loc>
-        <lastmod>2025-01-26</lastmod>
+        <loc>https://libreriamarquense.com/preguntas_frecuentes.php</loc>
+        <lastmod>2026-05-18</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.6</priority>
     </url>
 
-    <!-- Términos y Condiciones -->
+    <!-- Métodos de Pago -->
     <url>
-        <loc>https://ti-cell.com/terminos.php</loc>
-        <lastmod>2025-01-26</lastmod>
+        <loc>https://libreriamarquense.com/metodos_de_pago.php</loc>
+        <lastmod>2026-05-18</lastmod>
         <changefreq>yearly</changefreq>
-        <priority>0.4</priority>
+        <priority>0.5</priority>
     </url>
 
     <!-- Políticas de Garantía -->
     <url>
-        <loc>https://ti-cell.com/politicas_de_garantia.php</loc>
-        <lastmod>2025-01-26</lastmod>
+        <loc>https://libreriamarquense.com/politicas_de_garantia.php</loc>
+        <lastmod>2026-05-18</lastmod>
         <changefreq>yearly</changefreq>
         <priority>0.4</priority>
     </url>
 
-    <!-- Métodos de Pago -->
+    <!-- Términos -->
     <url>
-        <loc>https://ti-cell.com/metodos_de_pago.php</loc>
-        <lastmod>2025-01-26</lastmod>
+        <loc>https://libreriamarquense.com/terminos.php</loc>
+        <lastmod>2026-05-18</lastmod>
         <changefreq>yearly</changefreq>
         <priority>0.4</priority>
     </url>

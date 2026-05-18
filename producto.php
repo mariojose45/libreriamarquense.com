@@ -1,8 +1,8 @@
 <?php
 // SEO para la pagina de producto
-$seo_title = "Producto - TI-CELL | Celulares y accesorios";
-$seo_description = "Consulta detalles de productos en TI-CELL: celulares, accesorios, repuestos y tecnologia para tu dia a dia.";
-$seo_keywords = "TI-CELL, producto celular, accesorios para telefonos, repuestos, tienda de tecnologia Guatemala";
+$seo_title = "Producto - Librería Marquense | Útiles escolares y papelería";
+$seo_description = "Consulta detalles de productos en Librería Marquense: útiles escolares, papelería, libros, material didáctico y artículos de oficina.";
+$seo_keywords = "Librería Marquense, producto escolar, útiles escolares, papelería, libros, material didáctico, productos de oficina Guatemala";
 $current_page = basename($_SERVER['PHP_SELF']);
 
 // Obtener y validar idarticulo de la URL

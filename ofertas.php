@@ -1,8 +1,8 @@
 <?php
 // SEO para la pagina de ofertas
-$seo_title = "TI-CELL | Ofertas en celulares, accesorios y reparaciones";
-$seo_description = "Aprovecha las ofertas de TI-CELL en celulares, accesorios, repuestos y servicios de reparacion.";
-$seo_keywords = "TI-CELL, ofertas de celulares, accesorios en oferta, reparacion de celulares Guatemala";
+$seo_title = "Ofertas - Librería Marquense | Útiles escolares y papelería";
+$seo_description = "Aprovecha las ofertas de Librería Marquense en útiles escolares, papelería, libros, material didáctico y productos de oficina.";
+$seo_keywords = "ofertas Librería Marquense, útiles escolares en oferta, papelería en oferta, libros, productos escolares Guatemala";
 
 include 'head.php';
 $current_page = basename($_SERVER['PHP_SELF']);

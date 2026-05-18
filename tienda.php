@@ -1,8 +1,8 @@
 <?php
 // SEO para la pagina de tienda
-$seo_title = "Tienda - TI-CELL | Celulares, accesorios y reparaciones";
-$seo_description = "Explora la tienda en linea de TI-CELL con celulares, accesorios, repuestos y soluciones de reparacion.";
-$seo_keywords = "TI-CELL, tienda de celulares, accesorios para celular, repuestos para telefonos, reparacion de celulares Guatemala";
+$seo_title = "Tienda - Librería Marquense | Útiles escolares y papelería";
+$seo_description = "Explora la tienda en línea de Librería Marquense con útiles escolares, papelería, libros, material didáctico y productos de oficina.";
+$seo_keywords = "tienda Librería Marquense, útiles escolares, papelería, libros, material didáctico, productos escolares Guatemala";
 
 include 'head.php';
 $current_page = basename($_SERVER['PHP_SELF']);

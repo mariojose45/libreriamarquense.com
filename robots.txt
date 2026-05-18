@@ -1,19 +1,23 @@
-# robots.txt para Medinature Productos
-# Empresa especializada en tratamientos naturales para la salud
+# robots.txt para Librería Marquense
+# Sitio de útiles escolares, papelería, libros y productos de oficina
 
 User-agent: *
 Allow: /
 
-# No indexar archivos de configuración y carpetas privadas
+# No indexar carpetas técnicas o privadas
+Disallow: /api/
+Disallow: /config/
+Disallow: /logs/
+Disallow: /storage/
+Disallow: /integrations/
 Disallow: /assets/php/
-Disallow: /tema de tienda/
+Disallow: /docs/
 
-# Permitir recursos estáticos necesarios para el sitio
+# Permitir recursos estáticos necesarios
 Allow: /assets/css/
 Allow: /assets/js/
 Allow: /assets/img/
-Allow: /files/
+Allow: /assets/fonts/
 
-# Sitemap XML para ayudar a los buscadores a indexar el sitio
-Sitemap: https://ti-cell.com/sitemap.xml
-
+# Sitemap principal
+Sitemap: https://libreriamarquense.com/sitemap.xml
