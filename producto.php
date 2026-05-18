@@ -368,44 +368,145 @@ include 'head.php';
 
                         <ul class="categories">
                             <?php
-                            // Iconos disponibles para las cateroias (Boxicons - belleza y cuidado personal)
-                            $iconos = [
-                                "bx bx-spa",               // Spa / tratamientos de belleza
-                                "bx bx-heart",             // Cuidado personal / amor propio
-                                "bx bx-star",              // Calidad / productos destacados
-                                "bx bx-palette",           // Maquillaje / colores
-                                "bx bx-droplet",           // Hidrataci / cuidado de la piel
-                                "bx bx-shield",            // protección / cuidado
-                                "bx bx-check-circle",      // Verificado / calidad garantizada
-                                "bx bx-sparkles"           // Brillo / belleza / glamour
-                            ];
+                                // Iconos por categoría - Librería Marquense
+                                $iconosPorCategoria = [
+                                    "BOLIGRAFOS" => "bx bx-pen",
+                                    "PAPELERIA" => "bx bx-file",
+                                    "TEXTO ESCOLAR" => "bx bx-book",
+                                    "DIDACTICO INFANTIL" => "bx bx-child",
+                                    "MARCADOR" => "bx bx-pencil",
+                                    "TECNOLOGIA" => "bx bx-laptop",
+                                    "CONTABILIDAD Y AUDITORIA" => "bx bx-calculator",
+                                    "NOVELA Y LITERATURA GENERAL" => "bx bx-book-open",
+                                    "JURIDICOS" => "bx bx-shield",
+                                    "AUTOAYUDA" => "bx bx-heart",
+                                    "ARTICULOS DE CORTE" => "bx bx-cut",
+                                    "ADHESIVOS" => "bx bx-purchase-tag",
+                                    "OFICINA" => "bx bx-briefcase",
+                                    "BIBLIAS" => "bx bx-book-reader",
+                                    "TINTAS Y SUMINISTROS" => "bx bx-printer",
+                                    "LIBRO INFANTIL" => "bx bx-happy",
+                                    "MANUALIDADES" => "bx bx-palette",
+                                    "ESCOLAR" => "bx bx-library",
+                                    "OTROS" => "bx bx-category",
+                                    "CUADERNOS" => "bx bx-notepad",
+                                    "IDIOMAS" => "bx bx-globe",
+                                    "SOCIOLOGIA" => "bx bx-group",
+                                    "FACTURACION" => "bx bx-receipt",
+                                    "POLITICA" => "bx bx-building",
+                                    "FIESTA Y DECORACION" => "bx bx-party",
+                                    "DICCIONARIO" => "bx bx-book-content",
+                                    "SEXOLOGIA" => "bx bx-heart-circle",
+                                    "LIBROS DE COLOREAR" => "bx bx-brush",
+                                    "ENTRETENIMIENTO" => "bx bx-joystick",
+                                    "EDICIONES ANTIGUAS" => "bx bx-time-five",
+                                    "LIMPIEZA Y CAFETERIA" => "bx bx-coffee",
+                                    "TEMPORADA" => "bx bx-calendar-star",
+                                    "ANTROPOLOGIA/MAYA" => "bx bx-map-alt",
+                                    "LITERATURA" => "bx bx-book-open",
+                                    "ADMINISTRACION, LIDERAZGO Y MARKETING" => "bx bx-line-chart",
+                                    "EDICIONES ATRASADAS" => "bx bx-history",
+                                    "FISICA" => "bx bx-atom",
+                                    "TEATRO" => "bx bx-mask",
+                                    "POESIA" => "bx bx-edit",
+                                    "ECONOMIA" => "bx bx-bar-chart-alt-2",
+                                    "HISTORIA DE GUATEMALA" => "bx bx-landscape",
+                                    "METODOLOGIA" => "bx bx-list-check",
+                                    "RELIGIOSOS" => "bx bx-church",
+                                    "QUIMICA" => "bx bx-test-tube",
+                                    "ESTADISTICA" => "bx bx-pie-chart-alt-2",
+                                    "MATEMATICA" => "bx bx-math",
+                                    "TEXTOS EN INGLES" => "bx bx-world",
+                                    "GASTRONOMIA" => "bx bx-dish",
+                                    "PSICOLOGIA" => "bx bx-brain",
+                                    "COMUNICACION" => "bx bx-message-dots",
+                                    "FILOSOFIA" => "bx bx-bulb",
+                                    "BOTANICA" => "bx bx-leaf",
+                                    "GRAMATICA" => "bx bx-text",
+                                    "HISTORIA GENERAL" => "bx bx-history",
+                                    "EMPAQUE" => "bx bx-package",
+                                    "ARTE Y DIBUJO ESCOLAR" => "bx bx-palette",
+                                    "PROMOCIONALES" => "bx bx-gift",
+                                    "BIOGRAFIA" => "bx bx-user",
+                                    "ESPIRITUALIDAD" => "bx bx-donate-heart",
+                                    "ARQUITECTURA" => "bx bx-building-house",
+                                    "PEDAGOGIA" => "bx bx-chalkboard",
+                                    "MONOGRAFIA" => "bx bx-file-find",
+                                    "INGENIERIA" => "bx bx-cog",
+                                    "ETICA Y MORAL" => "bx bx-check-shield",
+                                    "SALUD Y BIENESTAR" => "bx bx-plus-medical",
+                                    "BIOLOGIA" => "bx bx-dna",
+                                    "LIBROS DE ARTE" => "bx bx-paint",
+                                    "TURISMO" => "bx bx-map",
+                                    "FOTOGRAFIA" => "bx bx-camera",
+                                    "VARIOS" => "bx bx-category-alt",
+                                    "MANGA COMICS" => "bx bx-book-heart",
+                                    "MUSICA" => "bx bx-music",
+                                    "TECNICO" => "bx bx-wrench",
+                                    "MEDICINA" => "bx bx-plus-medical",
+                                    "N/A" => "bx bx-category",
+                                    "HIGIENE CUIDADO PERSONAL" => "bx bx-health"
+                                ];
 
-                            $index = 0;
-                            foreach ($categorias as $cat):
-                                // Solo mostrar categorias activas (condicion == 1)
-                                if (isset($cat['condicion']) && $cat['condicion'] == 1):
-                                    $icono = $iconos[$index % count($iconos)];
-                                    ?>
-                                    <li>
-                                        <a href="tienda.php?categoria=<?= $cat['idcategoria'] ?>" class="nav-link">
-                                            <i class="<?= $icono ?>"></i>
-                                            <?= htmlspecialchars($cat['nombre']) ?>
-                                        </a>
-                                    </li>
-                                    <?php
-                                    $index++;
-                                endif;
-                            endforeach;
+                                $index = 0;
+                                $limiteCategoriasSidebar = 60;
+                                $categoriasMostradas = [];
 
-                            // Si no hay categorias, mostrar mensaje
-                            if (empty($categorias) || $index == 0):
+                                foreach ($categorias as $cat):
+                                    if (isset($cat['condicion']) && $cat['condicion'] == 1):
+
+                                        $nombreOriginal = trim((string) ($cat['nombre'] ?? ''));
+
+                                        $nombreCategoria = strtoupper($nombreOriginal);
+                                        $nombreCategoria = strtr($nombreCategoria, [
+                                            'Á' => 'A',
+                                            'É' => 'E',
+                                            'Í' => 'I',
+                                            'Ó' => 'O',
+                                            'Ú' => 'U',
+                                            'Ü' => 'U',
+                                            'Ñ' => 'N',
+                                            'á' => 'A',
+                                            'é' => 'E',
+                                            'í' => 'I',
+                                            'ó' => 'O',
+                                            'ú' => 'U',
+                                            'ü' => 'U',
+                                            'ñ' => 'N'
+                                        ]);
+
+                                        $nombreCategoria = preg_replace('/\s+/', ' ', $nombreCategoria);
+
+                                        if ($nombreCategoria === '' || isset($categoriasMostradas[$nombreCategoria])) {
+                                            continue;
+                                        }
+
+                                        if ($index >= $limiteCategoriasSidebar) {
+                                            break;
+                                        }
+
+                                        $categoriasMostradas[$nombreCategoria] = true;
+                                        $icono = $iconosPorCategoria[$nombreCategoria] ?? "bx bx-category";
                                 ?>
-                                <li>
-                                    <div class="alert alert-info" style="padding: 10px; margin: 0;">
-                                        No hay categorias disponibles.
-                                    </div>
-                                </li>
-                            <?php endif; ?>
+                                        <li>
+                                            <a href="tienda.php?categoria=<?= $cat['idcategoria'] ?>" class="nav-link">
+                                                <i class="<?= $icono ?>"></i>
+                                                <?= htmlspecialchars($nombreOriginal) ?>
+                                            </a>
+                                        </li>
+                                <?php
+                                        $index++;
+                                    endif;
+                                endforeach;
+
+                                if (empty($categorias) || $index == 0):
+                                ?>
+                                    <li>
+                                        <div class="alert alert-info" style="padding: 10px; margin: 0;">
+                                            No hay categorías disponibles.
+                                        </div>
+                                    </li>
+                                <?php endif; ?>
                         </ul>
                     </div>
 
@@ -547,18 +648,6 @@ include 'head.php';
     </div>
 </section>
 <!-- End Shop Area -->
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 <!-- Start Footer Area -->

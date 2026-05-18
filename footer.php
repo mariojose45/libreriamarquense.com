@@ -13,13 +13,17 @@ $footer_social_links = array_filter($site_social_links ?? []);
                             <span>Ubicaci&oacute;n:</span>
                             <a href="contact.php">8A Avenida 19-55, Cdad. de Guatemala 01001.</a>
                         </li>
-                        <li class="footer-phone-item">
+                       <li class="footer-phone-item">
                             <span>Telefonos:</span>
-                            <?php echo htmlspecialchars($site_phone_number ?? "+502 2232-8537 / +502 2253-6302 / +502 2372-3286"); ?>
+                            <span class="footer-contact-text">
+                                <?php echo htmlspecialchars($site_phone_number ?? "+502 2232-8537 / +502 2253-6302 / +502 2372-3286 / +502 2372-3287"); ?>
+                            </span>
 
                             <div class="footer-whatsapp-line">
                                 <span>WhatsApp:</span>
-                                <?php echo htmlspecialchars($site_whatsapp_number ?? "+502 5591-0533"); ?>
+                                <span class="footer-contact-text">
+                                    <?php echo htmlspecialchars($site_whatsapp_number ?? "+502 5591-0533"); ?>
+                                </span>
                             </div>
                         </li>
                         <?php if (!empty($site_email)): ?>

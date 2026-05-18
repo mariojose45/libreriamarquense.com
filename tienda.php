@@ -459,106 +459,137 @@ $categoria_actual = isset($_GET['categoria']) ? (string) $_GET['categoria'] : ''
                                 <ul class="categories">
                                     <?php
                                     $iconosPorCategoria = [
-                                        "CABLES DE AUDIO" => "bx bx-headphone",
-                                        "COMPONENTES ELECTRONICOS" => "bx bx-microchip",
-                                        "USO TECNICO" => "bx bx-wrench",
-                                        "CAR AUDIO" => "bx bx-car",
-                                        "MODULOS" => "bx bx-chip",
-                                        "PANTALLAS SAMSUNG" => "bx bx-mobile",
-                                        "PANTALLAS IPHONE" => "bx bxl-apple",
-                                        "BATERIAS" => "bx bx-battery",
-                                        "PLACAS" => "bx bx-microchip",
-                                        "RATON" => "bx bx-mouse",
-                                        "CONTROLES" => "bx bx-joystick",
-                                        "CONECTORES" => "bx bx-plug",
-                                        "LUCES LED" => "bx bx-bulb",
-                                        "FOCOS" => "bx bx-bulb",
-                                        "PANTALLAS HONOR" => "bx bx-mobile",
-                                        "ACCESORIOS" => "bx bx-category",
-                                        "MEMORIAS" => "bx bx-memory-card",
-                                        "PROTECTORES" => "bx bx-shield",
-                                        "TOUCH" => "bx bx-mobile",
-                                        "PANTALLAS MOTOROLA" => "bx bx-mobile",
-                                        "PANTALLAS HUAWEI" => "bx bx-mobile",
-                                        "PANTALLAS TECNO SPARK" => "bx bx-mobile",
-                                        "PANTALLAS XIAOMI REDMI" => "bx bx-mobile",
-                                        "PANTALLAS ALCATEL" => "bx bx-mobile",
-                                        "PANTALLAS MAXWEST" => "bx bx-mobile",
-                                        "PANTALLAS HAIER" => "bx bx-mobile",
-                                        "PANTALLAS LG" => "bx bx-mobile",
-                                        "PANTALLAS SKY" => "bx bx-mobile",
-                                        "PANTALLAS POCO" => "bx bx-mobile",
-                                        "PANTALLAS NOKIA" => "bx bx-mobile",
-                                        "PANTALLAS ONE PLUS" => "bx bx-mobile",
-                                        "ADAPTADOR OTG" => "bx bx-usb",
-                                        "PANTALLAS REALME" => "bx bx-mobile",
-                                        "PANTALLAS XIAOMI" => "bx bx-mobile",
-                                        "PANTALLAS ZTE" => "bx bx-mobile",
-                                        "PANTALLAS OPPO" => "bx bx-mobile",
-                                        "GLASS + OCA" => "bx bx-layer",
-                                        "PANTALLAS INFINIX" => "bx bx-mobile",
-                                        "PUERTOS DE CARGA" => "bx bx-plug",
-                                        "RACK DE CARGA" => "bx bx-plug",
-                                        "FLEX DE CARGA" => "bx bx-extension",
-                                        "LAMINAS DE HIDROGEL" => "bx bx-shield",
-                                        "FLEX MAIN" => "bx bx-extension",
-                                        "BANDEJA SIM" => "bx bx-chip",
-                                        "MICROFONOS" => "bx bx-microphone",
-                                        "HERRAMIENTAS" => "bx bx-wrench",
-                                        "TAPADERAS" => "bx bx-layer",
-                                        "AURICULARES" => "bx bx-headphone",
-                                        "REPUESTOS" => "bx bx-cog",
-                                        "LENTES" => "bx bx-show",
-                                        "BATERIA PARA RELOJ" => "bx bx-time-five",
-                                        "VIDRIOS TEMPLADOS" => "bx bx-shield",
-                                        "CAMARAS" => "bx bx-camera",
-                                        "CUBOS" => "bx bx-plug",
-                                        "ACCESORIOS PARA CARRO" => "bx bx-car",
-                                        "ACCESORIOS VARIOS" => "bx bx-category",
-                                        "CARGADORES" => "bx bx-plug",
-                                        "CABLES" => "bx bx-usb",
-                                        "HUELLAS" => "bx bx-fingerprint",
-                                        "TELEFONOS F/TIGO" => "bx bx-phone",
-                                        "TELEFONOS SMARTHONE TIGO" => "bx bx-phone",
-                                        "TELEFONO SMARTHONE LIBERADOS" => "bx bx-mobile",
-                                        "ANTENA DE SEÑAL" => "bx bx-broadcast",
-                                        "VIDRIOS DE CAMARAS" => "bx bx-camera",
-                                        "FLEX DE SEÑAL" => "bx bx-broadcast",
-                                        "PEGAMENTO IMPERMEABLE" => "bx bx-water",
-                                        "SOPORTE" => "bx bx-package",
-                                        "BOCINA" => "bx bx-volume-full"
+                                        "BOLIGRAFOS" => "bx bx-pencil",
+                                        "PAPELERIA" => "bx bx-file",
+                                        "TEXTO ESCOLAR" => "bx bx-book",
+                                        "DIDACTICO INFANTIL" => "bx bx-book",
+                                        "MARCADOR" => "bx bx-edit",
+                                        "TECNOLOGIA" => "bx bx-laptop",
+                                        "CONTABILIDAD Y AUDITORIA" => "bx bx-calculator",
+                                        "NOVELA Y LITERATURA GENERAL" => "bx bx-book-open",
+                                        "JURIDICOS" => "bx bx-shield",
+                                        "AUTOAYUDA" => "bx bx-heart",
+                                        "ARTICULOS DE CORTE" => "bx bx-cut",
+                                        "ADHESIVOS" => "bx bx-purchase-tag",
+                                        "OFICINA" => "bx bx-briefcase",
+                                        "BIBLIAS" => "bx bx-book",
+                                        "TINTAS Y SUMINISTROS" => "bx bx-printer",
+                                        "LIBRO INFANTIL" => "bx bx-book",
+                                        "MANUALIDADES" => "bx bx-palette",
+                                        "ESCOLAR" => "bx bx-book",
+                                        "OTROS" => "bx bx-category-alt",
+                                        "CUADERNOS" => "bx bx-notepad",
+                                        "IDIOMAS" => "bx bx-globe",
+                                        "SOCIOLOGIA" => "bx bx-group",
+                                        "FACTURACION" => "bx bx-receipt",
+                                        "POLITICA" => "bx bx-building",
+                                        "FIESTA Y DECORACION" => "bx bx-gift",
+                                        "DICCIONARIO" => "bx bx-book",
+                                        "SEXOLOGIA" => "bx bx-heart-circle",
+                                        "LIBROS DE COLOREAR" => "bx bx-brush",
+                                        "ENTRETENIMIENTO" => "bx bx-joystick",
+                                        "EDICIONES ANTIGUAS" => "bx bx-history",
+                                        "LIMPIEZA Y CAFETERIA" => "bx bx-coffee",
+                                        "TEMPORADA" => "bx bx-calendar",
+                                        "ANTROPOLOGIA/MAYA" => "bx bx-map-alt",
+                                        "LITERATURA" => "bx bx-book-open",
+                                        "ADMINISTRACION, LIDERAZGO Y MARKETING" => "bx bx-line-chart",
+                                        "EDICIONES ATRASADAS" => "bx bx-history",
+                                        "FISICA" => "bx bx-bulb",
+                                        "TEATRO" => "bx bx-movie-play",
+                                        "POESIA" => "bx bx-edit-alt",
+                                        "ECONOMIA" => "bx bx-bar-chart-alt-2",
+                                        "HISTORIA DE GUATEMALA" => "bx bx-landscape",
+                                        "METODOLOGIA" => "bx bx-list-check",
+                                        "RELIGIOSOS" => "bx bx-book",
+                                        "QUIMICA" => "bx bx-flask",
+                                        "ESTADISTICA" => "bx bx-pie-chart-alt-2",
+                                        "MATEMATICA" => "bx bx-calculator",
+                                        "TEXTOS EN INGLES" => "bx bx-world",
+                                        "GASTRONOMIA" => "bx bx-coffee",
+                                        "PSICOLOGIA" => "bx bx-brain",
+                                        "COMUNICACION" => "bx bx-message-dots",
+                                        "FILOSOFIA" => "bx bx-bulb",
+                                        "BOTANICA" => "bx bx-leaf",
+                                        "GRAMATICA" => "bx bx-text",
+                                        "HISTORIA GENERAL" => "bx bx-history",
+                                        "EMPAQUE" => "bx bx-package",
+                                        "ARTE Y DIBUJO ESCOLAR" => "bx bx-palette",
+                                        "PROMOCIONALES" => "bx bx-gift",
+                                        "BIOGRAFIA" => "bx bx-user",
+                                        "ESPIRITUALIDAD" => "bx bx-donate-heart",
+                                        "ARQUITECTURA" => "bx bx-building-house",
+                                        "PEDAGOGIA" => "bx bx-book",
+                                        "MONOGRAFIA" => "bx bx-file-find",
+                                        "INGENIERIA" => "bx bx-cog",
+                                        "ETICA Y MORAL" => "bx bx-check-shield",
+                                        "SALUD Y BIENESTAR" => "bx bx-plus-medical",
+                                        "BIOLOGIA" => "bx bx-leaf",
+                                        "LIBROS DE ARTE" => "bx bx-paint",
+                                        "TURISMO" => "bx bx-map",
+                                        "FOTOGRAFIA" => "bx bx-camera",
+                                        "VARIOS" => "bx bx-category-alt",
+                                        "MANGA COMICS" => "bx bx-book-open",
+                                        "MUSICA" => "bx bx-music",
+                                        "TECNICO" => "bx bx-wrench",
+                                        "MEDICINA" => "bx bx-plus-medical",
+                                        "N/A" => "bx bx-category-alt",
+                                        "HIGIENE CUIDADO PERSONAL" => "bx bx-health"
                                     ];
 
                                     $index = 0;
-                                    foreach ($categorias as $cat):
-                                        // Solo mostrar categorías activas (condicion == 1)
-                                        if (isset($cat['condicion']) && $cat['condicion'] == 1):
-                                            $nombreCategoria = strtoupper(trim((string) $cat['nombre']));
-                                            $icono = $iconosPorCategoria[$nombreCategoria] ?? "bx bx-category";
+                                    $categoriasMostradas = [];
 
-                                            if (strpos($nombreCategoria, 'ANTENA') !== false || (strpos($nombreCategoria, 'FLEX') !== false && strpos($nombreCategoria, 'SE') !== false)) {
-                                                $icono = "bx bx-broadcast";
+                                    foreach ($categorias as $cat):
+                                        if (isset($cat['condicion']) && $cat['condicion'] == 1):
+
+                                            $nombreOriginal = trim((string) ($cat['nombre'] ?? ''));
+
+                                            $nombreCategoria = strtoupper($nombreOriginal);
+                                            $nombreCategoria = strtr($nombreCategoria, [
+                                                'Á' => 'A',
+                                                'É' => 'E',
+                                                'Í' => 'I',
+                                                'Ó' => 'O',
+                                                'Ú' => 'U',
+                                                'Ü' => 'U',
+                                                'Ñ' => 'N',
+                                                'á' => 'A',
+                                                'é' => 'E',
+                                                'í' => 'I',
+                                                'ó' => 'O',
+                                                'ú' => 'U',
+                                                'ü' => 'U',
+                                                'ñ' => 'N'
+                                            ]);
+
+                                            $nombreCategoria = preg_replace('/\s+/', ' ', $nombreCategoria);
+
+                                            if ($nombreCategoria === '' || isset($categoriasMostradas[$nombreCategoria])) {
+                                                continue;
                                             }
+
+                                            $categoriasMostradas[$nombreCategoria] = true;
+                                            $icono = $iconosPorCategoria[$nombreCategoria] ?? "bx bx-book";
                                     ?>
-                                    <li>
-                                        <a href="tienda.php?categoria=<?= $cat['idcategoria'] ?>" class="nav-link <?= $categoria_actual === (string) $cat['idcategoria'] ? 'active' : '' ?>">
-                                            <i class="<?= $icono ?>"></i>
-                                            <?= htmlspecialchars($cat['nombre']) ?>
-                                        </a>
-                                    </li>
+                                            <li>
+                                                <a href="tienda.php?categoria=<?= $cat['idcategoria'] ?>" class="nav-link <?= $categoria_actual === (string) $cat['idcategoria'] ? 'active' : '' ?>">
+                                                    <i class="<?= $icono ?>"></i>
+                                                    <?= htmlspecialchars($nombreOriginal) ?>
+                                                </a>
+                                            </li>
                                     <?php
                                             $index++;
                                         endif;
                                     endforeach;
 
-                                    // Si no hay categorías, mostrar mensaje
                                     if (empty($categorias) || $index == 0):
                                     ?>
-                                    <li>
-                                        <div class="alert alert-info" style="padding: 10px; margin: 0;">
-                                            No hay categorías disponibles.
-                                        </div>
-                                    </li>
+                                        <li>
+                                            <div class="alert alert-info" style="padding: 10px; margin: 0;">
+                                                No hay categorías disponibles.
+                                            </div>
+                                        </li>
                                     <?php endif; ?>
                                 </ul>
                             </div>
