@@ -7,11 +7,23 @@ Options -Indexes
 
 # ===============================
 # FORZAR HTTPS (EXCEPTO LOCALHOST)
+# TEMPORALMENTE DESACTIVADO
+# 
+# Este bloque se debe activar SOLO cuando el SSL/HTTPS
+# ya funcione correctamente en:
+#
+# https://libreriamarquense.com/index.php
+# https://libreriamarquense.com/cart.php
+# https://libreriamarquense.com/api/cybersource/test.php
+#
+# Si se activa ahorita, manda el sitio a HTTPS
+# y como HTTPS está fallando, aparece 404.
 # ===============================
 
-RewriteCond %{HTTP_HOST} !^(localhost|127\.0\.0\.1)(:.*)?$ [NC]
-RewriteCond %{HTTPS} off
-RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+# RewriteCond %{HTTP_HOST} !^(localhost|127\.0\.0\.1)(:.*)?$ [NC]
+# RewriteCond %{HTTPS} off
+# RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
 
 # ===============================
 # REDIRIGIR HTTPS A HTTP SOLO EN LOCALHOST
@@ -20,6 +32,7 @@ RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 RewriteCond %{HTTPS} on
 RewriteCond %{HTTP_HOST} ^(localhost|127\.0\.0\.1)(:.*)?$ [NC]
 RewriteRule ^(.*)$ http://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
 
 # ===============================
 # PREVENIR ACCESO A ARCHIVOS SENSIBLES
@@ -33,6 +46,7 @@ RewriteRule ^(.*)$ http://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
     Require all denied
 </FilesMatch>
 
+
 # ===============================
 # COMPRESIÓN GZIP
 # ===============================
@@ -40,6 +54,7 @@ RewriteRule ^(.*)$ http://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 <IfModule mod_deflate.c>
     AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css text/javascript application/javascript application/json
 </IfModule>
+
 
 # ===============================
 # CACHE PARA MEJOR RENDIMIENTO
@@ -59,11 +74,6 @@ RewriteRule ^(.*)$ http://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
     ExpiresByType application/pdf "access plus 1 month"
 </IfModule>
 
-# ===============================
-# PROTECCIÓN EXTRA
-# ===============================
-
-ServerSignature Off
 
 # ===============================
 # UTF-8
