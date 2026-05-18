@@ -6,12 +6,19 @@ RewriteEngine On
 Options -Indexes
 
 # ===============================
-# FORZAR HTTPS (EXCEPTO LOCALHOST)
+# DOMINIO CANONICO Y HTTPS (EXCEPTO LOCALHOST)
 # ===============================
+
+RewriteCond %{HTTP_HOST} ^www\.libreriamarquense\.com$ [NC]
+RewriteRule ^ https://libreriamarquense.com%{REQUEST_URI} [L,R=301]
 
 RewriteCond %{HTTP_HOST} !^(localhost|127\.0\.0\.1)(:.*)?$ [NC]
 RewriteCond %{HTTPS} off
 RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+<IfModule mod_headers.c>
+    Header always set Strict-Transport-Security "max-age=31536000"
+</IfModule>
 
 # ===============================
 # REDIRIGIR HTTPS A HTTP SOLO EN LOCALHOST
