@@ -29,6 +29,7 @@ if (!headers_sent()) {
         . "object-src 'none'; "
         . "base-uri 'self'; "
         . "frame-ancestors 'self'; "
+        . "upgrade-insecure-requests; "
         . "form-action 'self';";
 
     header('X-Content-Type-Options: nosniff');
