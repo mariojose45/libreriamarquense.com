@@ -28,7 +28,7 @@ $logLine = PHP_EOL .
     '================================================' . PHP_EOL;
 
 file_put_contents(
-    dirname(__DIR__, 2) . '/logs/neonet_return.log',
+    __DIR__ . '/neonet_return.log',
     $logLine,
     FILE_APPEND | LOCK_EX
 );
