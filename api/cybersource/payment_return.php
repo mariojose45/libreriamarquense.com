@@ -4,6 +4,60 @@ require __DIR__ . '/_bootstrap.php';
 
 $params = $_SERVER['REQUEST_METHOD'] === 'POST' ? $_POST : $_GET;
 
+// =======================================================
+// DEBUG REAL NEONET / CYBERSOURCE
+// Guarda TODO lo que Neonet devuelve al payment_return.php
+// =======================================================
+
+$debugDir = __DIR__;
+
+$rawBody = file_get_contents('php://input');
+
+$headers = function_exists('getallheaders') ? getallheaders() : [];
+
+$debugReference = $params['req_reference_number']
+    ?? $params['reference_number']
+    ?? $params['reference']
+    ?? $params['ref']
+    ?? 'sin_referencia';
+
+$debugDecision = $params['decision']
+    ?? $params['status']
+    ?? $params['payment_status']
+    ?? 'sin_estado';
+
+$debugReference = preg_replace('/[^A-Za-z0-9_-]/', '_', $debugReference);
+$debugDecision = preg_replace('/[^A-Za-z0-9_-]/', '_', $debugDecision);
+
+$debugUnique = function_exists('random_bytes') ? bin2hex(random_bytes(4)) : uniqid();
+
+$debugFileName = 'neonet_return_' . date('Ymd_His') . '_' . $debugReference . '_' . $debugDecision . '_' . $debugUnique . '.json';
+
+$debugData = [
+    'fecha_servidor' => date('Y-m-d H:i:s'),
+    'metodo' => $_SERVER['REQUEST_METHOD'] ?? '',
+    'url' => $_SERVER['REQUEST_URI'] ?? '',
+    'ip' => $_SERVER['REMOTE_ADDR'] ?? '',
+    'user_agent' => $_SERVER['HTTP_USER_AGENT'] ?? '',
+    'headers' => $headers,
+    'get' => $_GET,
+    'post' => $_POST,
+    'params_usados_por_sistema' => $params,
+    'raw_body' => $rawBody
+];
+
+$savedDebug = file_put_contents(
+    $debugDir . '/' . $debugFileName,
+    json_encode($debugData, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE),
+    LOCK_EX
+);
+
+if ($savedDebug === false) {
+    error_log('No se pudo guardar respuesta real de Neonet en: ' . $debugDir . '/' . $debugFileName);
+}
+
+// =======================================================
+
 $checkout = new \LM\CyberSource\HostedCheckoutService($config);
 $secureAcceptance = new \LM\CyberSource\SecureAcceptanceService($config);
 
@@ -17,27 +71,6 @@ if (isset($params['signed_field_names'], $params['signature'])) {
     $trusted = $checkout->validateProviderSignature($params);
     $status = $checkout->normalizeStatus($statusParam);
 }
-
-// Guardar respuesta completa de la pasarela en la misma carpeta cybersource
-$returnDir = __DIR__;
-
-$debugReference = $reference !== '' ? $reference : 'sin_referencia';
-$debugStatus = $status !== '' ? $status : 'sin_estado';
-
-$fileName = date('Ymd_His') . '_' . preg_replace('/[^A-Za-z0-9_-]/', '_', $debugReference) . '_' . $debugStatus . '.json';
-
-file_put_contents(
-    $returnDir . '/' . $fileName,
-    json_encode([
-        'fecha_servidor' => date('Y-m-d H:i:s'),
-        'reference' => $reference,
-        'trusted' => $trusted,
-        'status' => $status,
-        'params' => $params
-    ], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE),
-    LOCK_EX
-);
-//-------------------------------------------------------------------------------------
 
 $title = 'Pago en validacion';
 $message = 'Recibimos el retorno del portal de pago. Tu pedido queda en revision mientras se confirma la transaccion.';
