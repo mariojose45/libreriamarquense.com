@@ -344,28 +344,26 @@ jQuery(function ($) {
 		input = spinner.find('input[type="text"]'),
 		btnUp = spinner.find('.plus-btn'),
 		btnDown = spinner.find('.minus-btn'),
-		min = input.attr('min'),
-		max = input.attr('max');
+		min = parseInt(input.attr('min'), 10),
+		max = parseInt(input.attr('max'), 10);
+
+		if (isNaN(min)) {
+			min = 1;
+		}
+
+		if (isNaN(max)) {
+			max = 999;
+		}
 		
 		btnUp.on('click', function() {
-			var oldValue = parseFloat(input.val());
-			if (oldValue >= max) {
-				var newVal = oldValue;
-			} 
-			else {
-				var newVal = oldValue + 1;
-			}
+			var oldValue = parseInt(input.val(), 10);
+			var newVal = isNaN(oldValue) ? min : Math.min(max, oldValue + 1);
 			spinner.find("input").val(newVal);
 			spinner.find("input").trigger("change");
 		});
 		btnDown.on('click', function() {
-			var oldValue = parseFloat(input.val());
-			if (oldValue <= min) {
-				var newVal = oldValue;
-			} 
-			else {
-				var newVal = oldValue - 1;
-			}
+			var oldValue = parseInt(input.val(), 10);
+			var newVal = isNaN(oldValue) ? min : Math.max(min, oldValue - 1);
 			spinner.find("input").val(newVal);
 			spinner.find("input").trigger("change");
 		});

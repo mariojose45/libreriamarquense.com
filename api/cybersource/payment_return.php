@@ -18,6 +18,27 @@ if (isset($params['signed_field_names'], $params['signature'])) {
     $status = $checkout->normalizeStatus($statusParam);
 }
 
+// Guardar respuesta completa de la pasarela en la misma carpeta cybersource
+$returnDir = __DIR__;
+
+$debugReference = $reference !== '' ? $reference : 'sin_referencia';
+$debugStatus = $status !== '' ? $status : 'sin_estado';
+
+$fileName = date('Ymd_His') . '_' . preg_replace('/[^A-Za-z0-9_-]/', '_', $debugReference) . '_' . $debugStatus . '.json';
+
+file_put_contents(
+    $returnDir . '/' . $fileName,
+    json_encode([
+        'fecha_servidor' => date('Y-m-d H:i:s'),
+        'reference' => $reference,
+        'trusted' => $trusted,
+        'status' => $status,
+        'params' => $params
+    ], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE),
+    LOCK_EX
+);
+//-------------------------------------------------------------------------------------
+
 $title = 'Pago en validacion';
 $message = 'Recibimos el retorno del portal de pago. Tu pedido queda en revision mientras se confirma la transaccion.';
 $clearCart = false;

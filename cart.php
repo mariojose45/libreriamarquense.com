@@ -196,8 +196,9 @@ $current_page = basename($_SERVER['PHP_SELF']);
 
                         <div class="mp-form-group mp-payment-method-group">
                             <label for="formaPago">M&eacute;todos de Pago</label>
-                            <select id="formaPago" name="formaPago" class="form-control" autocomplete="off">
-                                <option value="Pago Contra Entrega" selected>Pago Contra Entrega</option>
+                            <select id="formaPago" name="formaPago" class="form-control" autocomplete="off" required>
+                                <option value="" selected>Seleccione m&eacute;todo de pago</option>
+                                <option value="Pago Contra Entrega">Pago Contra Entrega</option>
                                 <option value="Tarjeta">Tarjeta de Cr&eacute;dito/D&eacute;bito</option>
                                 <option value="Transferencia">Transferencia Bancaria</option>
                             </select>
@@ -308,6 +309,10 @@ $current_page = basename($_SERVER['PHP_SELF']);
                 margin-top: 18px;
             }
 
+            .mp-payment-method-group .nice-select.open {
+                margin-bottom: 210px;
+            }
+
             .mp-form-group label {
                 display: block;
                 margin-bottom: 6px;
@@ -395,6 +400,16 @@ $current_page = basename($_SERVER['PHP_SELF']);
                 padding: 11px 16px;
                 display: flex;
                 align-items: center;
+            }
+
+            .mp-payment-method-group .nice-select .list {
+                margin-top: 10px;
+                padding: 8px 0;
+            }
+
+            .mp-payment-method-group .nice-select .option {
+                padding-left: 18px;
+                padding-right: 18px;
             }
 
             .mp-card-gateway {

@@ -122,6 +122,66 @@ function obtenerErrorLugarEnvio(lugarEnvioInput) {
     return '';
 }
 
+function entregaEsDepartamentos() {
+    const opcionSeleccionada = obtenerOpcionLugarEnvio();
+    return !!opcionSeleccionada && opcionSeleccionada.value === 'Departamentos';
+}
+
+function obtenerErrorFormaPago(formaPagoInput) {
+    if (!formaPagoInput || !formaPagoInput.value) {
+        return 'Seleccione el metodo de pago.';
+    }
+
+    if (!VALIDACION_PEDIDO.FORMAS_PAGO_PERMITIDAS.includes(formaPagoInput.value)) {
+        return 'El metodo de pago seleccionado no es valido.';
+    }
+
+    if (formaPagoInput.value === 'Pago Contra Entrega' && entregaEsDepartamentos()) {
+        return 'Pago Contra Entrega no esta disponible para envios a Departamentos.';
+    }
+
+    return '';
+}
+
+function actualizarVisibilidadPagoContraEntrega(formaPagoInput, ocultar) {
+    if (!formaPagoInput) {
+        return;
+    }
+
+    if (window.jQuery) {
+        const $selectVisual = window.jQuery(formaPagoInput).next('.nice-select');
+        $selectVisual.find('.option').filter(function () {
+            return window.jQuery(this).data('value') === 'Pago Contra Entrega';
+        }).toggle(!ocultar);
+    }
+}
+
+function sincronizarFormaPagoPorLugarEnvio() {
+    const formaPagoInput = document.getElementById('formaPago');
+    if (!formaPagoInput) {
+        return;
+    }
+
+    const ocultarPagoContraEntrega = entregaEsDepartamentos();
+    const opcionPagoContraEntrega = Array.from(formaPagoInput.options).find(function (option) {
+        return option.value === 'Pago Contra Entrega';
+    });
+
+    if (opcionPagoContraEntrega) {
+        opcionPagoContraEntrega.disabled = ocultarPagoContraEntrega;
+        opcionPagoContraEntrega.hidden = ocultarPagoContraEntrega;
+    }
+
+    if (ocultarPagoContraEntrega && formaPagoInput.value === 'Pago Contra Entrega') {
+        formaPagoInput.value = '';
+    }
+
+    refrescarSelectorVisual(formaPagoInput);
+    actualizarVisibilidadPagoContraEntrega(formaPagoInput, ocultarPagoContraEntrega);
+    aplicarEstadoValidacion(formaPagoInput, formaPagoInput.value ? obtenerErrorFormaPago(formaPagoInput) : '');
+    actualizarVistaPagoTarjeta();
+}
+
 function actualizarTotales(subtotal = null) {
     if (subtotal === null) {
         subtotal = Carrito.obtenerSubtotal();
@@ -418,18 +478,27 @@ function inicializarRestriccionesFormularioPedido() {
     }
 
     if (lugarEnvioInput) {
-        lugarEnvioInput.addEventListener('change', function () {
-            aplicarEstadoValidacion(this, obtenerErrorLugarEnvio(this));
+        const sincronizarTotalesEntrega = function () {
+            aplicarEstadoValidacion(lugarEnvioInput, obtenerErrorLugarEnvio(lugarEnvioInput));
+            sincronizarFormaPagoPorLugarEnvio();
             actualizarTotales();
-        });
+        };
+
+        lugarEnvioInput.addEventListener('change', sincronizarTotalesEntrega);
+
+        if (window.jQuery) {
+            window.jQuery(lugarEnvioInput).off('change.lmShippingTotals').on('change.lmShippingTotals', sincronizarTotalesEntrega);
+        }
     }
 
     if (formaPagoInput) {
         formaPagoInput.addEventListener('change', function () {
-            if (!VALIDACION_PEDIDO.FORMAS_PAGO_PERMITIDAS.includes(this.value)) {
-                this.value = 'Pago Contra Entrega';
+            const errorFormaPago = obtenerErrorFormaPago(this);
+            if (errorFormaPago && this.value) {
+                this.value = '';
                 refrescarSelectorVisual(this);
             }
+            aplicarEstadoValidacion(this, this.value ? obtenerErrorFormaPago(this) : '');
             actualizarVistaPagoTarjeta();
         });
     }
@@ -487,10 +556,10 @@ function abrirModalPedido() {
     aplicarEstadoValidacion(document.getElementById('tipoDocumento'), '');
     aplicarEstadoValidacion(document.getElementById('numeroDocumento'), '');
 
-    // Establecer metodo de pago por defecto a Pago Contra Entrega
-    document.getElementById('formaPago').value = 'Pago Contra Entrega';
+    // Dejar el metodo de pago pendiente para que el cliente lo seleccione.
+    document.getElementById('formaPago').value = '';
     refrescarSelectorVisual(document.getElementById('lugarEnvio'));
-    refrescarSelectorVisual(document.getElementById('formaPago'));
+    sincronizarFormaPagoPorLugarEnvio();
     actualizarTotales();
     actualizarVistaPagoTarjeta();
 
@@ -655,7 +724,7 @@ function procesarPedido(event) {
     const necesitaFactura = document.getElementById('necesitaFactura').checked;
     const tipoDocumento = tipoDocumentoInput.value;
     const numeroDocumento = limpiarDocumentoInput(numeroDocumentoInput.value, tipoDocumento);
-    const formaPago = formaPagoInput.value || 'Pago Contra Entrega';
+    const formaPago = formaPagoInput.value;
 
     nombreInput.value = nombreCompleto;
     direccionInput.value = direccion;
@@ -703,10 +772,13 @@ function procesarPedido(event) {
     }
     aplicarEstadoValidacion(lugarEnvioInput, '');
 
-    if (!VALIDACION_PEDIDO.FORMAS_PAGO_PERMITIDAS.includes(formaPago)) {
-        mostrarErrorFormulario('El metodo de pago seleccionado no es valido', 'formaPago');
+    const errorFormaPago = obtenerErrorFormaPago(formaPagoInput);
+    if (errorFormaPago) {
+        aplicarEstadoValidacion(formaPagoInput, errorFormaPago);
+        mostrarErrorFormulario(errorFormaPago, 'formaPago');
         return;
     }
+    aplicarEstadoValidacion(formaPagoInput, '');
 
     // Si no necesita factura, usar "C/F" como NIT
     let nitFinal = '';

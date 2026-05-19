@@ -559,11 +559,11 @@ include 'head.php';
                                             <span>Cantidad:</span>
 
                                             <div class="input-counter">
-                                                <span class="minus-btn" onclick="cambiarCantidad(-1)">
+                                                <span class="minus-btn">
                                                     <i class='bx bx-minus'></i>
                                                 </span>
-                                                <input type="text" id="producto-cantidad" value="1">
-                                                <span class="plus-btn" onclick="cambiarCantidad(1)">
+                                                <input type="text" id="producto-cantidad" value="1" min="1" max="999" inputmode="numeric" pattern="[0-9]*" onchange="normalizarCantidadProducto()" oninput="normalizarCantidadProducto(false)">
+                                                <span class="plus-btn">
                                                     <i class='bx bx-plus'></i>
                                                 </span>
                                             </div>
@@ -1116,11 +1116,29 @@ include 'head.php';
     // ============================================================
     // CAMBIAR CANTIDAD
     // ============================================================
+    function normalizarCantidadProducto(forzarMinimo = true) {
+        const input = document.getElementById('producto-cantidad');
+        if (!input) return 1;
+
+        const valorLimpio = input.value.replace(/\D/g, '');
+        let cantidad = parseInt(valorLimpio, 10);
+
+        if (!Number.isInteger(cantidad) || cantidad < 1) {
+            cantidad = 1;
+        }
+
+        input.value = forzarMinimo || valorLimpio !== '' ? String(cantidad) : '';
+        return cantidad;
+    }
+
     function cambiarCantidad(n) {
-        let input = document.getElementById('producto-cantidad');
-        let val = parseInt(input.value) + n;
-        if (val < 1) val = 1;
-        input.value = val;
+        const input = document.getElementById('producto-cantidad');
+        if (!input) return;
+
+        const cantidadActual = normalizarCantidadProducto();
+        const cambio = n > 0 ? 1 : -1;
+        const nuevaCantidad = Math.max(1, cantidadActual + cambio);
+        input.value = String(nuevaCantidad);
     }
 
     // ============================================================
@@ -1129,7 +1147,7 @@ include 'head.php';
     function agregarAlCarritoDesdeProducto() {
         if (!productoActual) return;
 
-        let cantidad = parseInt(document.getElementById('producto-cantidad').value) || 1;
+        let cantidad = normalizarCantidadProducto();
         let imagen = imagenesProducto[0] || imagenPrincipal || IMAGEN_PRODUCTO_PLACEHOLDER;
 
         agregarAlCarrito(
@@ -1137,7 +1155,8 @@ include 'head.php';
             productoActual.nombre,
             productoActual.precio_venta,
             imagen,
-            productoActual.descripcion || ''
+            productoActual.descripcion || '',
+            cantidad
         );
 
         // Mostrar mensaje 
