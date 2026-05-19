@@ -91,14 +91,69 @@ header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
             <div class="ref">Referencia: <?php echo htmlspecialchars($reference, ENT_QUOTES, 'UTF-8'); ?></div>
         <?php endif; ?>
         <br>
-        <a href="/index.php">Volver al inicio</a>
+        <a href="/index.php" id="return-home-link">Volver al inicio</a>
     </main>
-    <?php if ($clearCart): ?>
     <script>
-        sessionStorage.removeItem('compusisgt_carrito');
-        sessionStorage.removeItem('compusisgt_carrito_timestamp');
-        sessionStorage.removeItem('compusisgt_carrito_hash');
+        (function () {
+            const shouldClearCart = <?php echo $clearCart ? 'true' : 'false'; ?>;
+            const homeUrl = '/index.php';
+            const cartStorageKeys = [
+                'compusisgt_carrito',
+                'compusisgt_carrito_timestamp',
+                'compusisgt_carrito_hash'
+            ];
+
+            function clearCartStorage(targetWindow) {
+                if (!shouldClearCart || !targetWindow) {
+                    return;
+                }
+
+                try {
+                    cartStorageKeys.forEach(function (key) {
+                        targetWindow.sessionStorage.removeItem(key);
+                    });
+                } catch (error) {
+                    console.warn('No se pudo limpiar el carrito de la ventana indicada:', error);
+                }
+            }
+
+            function goHomeAndClosePaymentTab(event) {
+                if (event) {
+                    event.preventDefault();
+                }
+
+                clearCartStorage(window);
+
+                try {
+                    if (window.opener && !window.opener.closed) {
+                        clearCartStorage(window.opener);
+                        window.opener.location.replace(homeUrl);
+                        window.close();
+
+                        window.setTimeout(function () {
+                            if (!window.closed) {
+                                window.location.replace(homeUrl);
+                            }
+                        }, 250);
+                        return;
+                    }
+                } catch (error) {
+                    console.warn('No se pudo controlar la pestana original:', error);
+                }
+
+                window.location.replace(homeUrl);
+            }
+
+            clearCartStorage(window);
+            if (window.opener && !window.opener.closed) {
+                clearCartStorage(window.opener);
+            }
+
+            const returnHomeLink = document.getElementById('return-home-link');
+            if (returnHomeLink) {
+                returnHomeLink.addEventListener('click', goHomeAndClosePaymentTab);
+            }
+        }());
     </script>
-    <?php endif; ?>
 </body>
 </html>
