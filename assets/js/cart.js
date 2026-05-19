@@ -87,23 +87,60 @@ function cargarCarrito() {
 // ============================================================
 // ACTUALIZAR TOTALES DEL CARRITO
 // ============================================================
+function obtenerOpcionLugarEnvio() {
+    const lugarEnvioInput = document.getElementById('lugarEnvio');
+    if (!lugarEnvioInput || lugarEnvioInput.selectedIndex < 0) {
+        return null;
+    }
+
+    return lugarEnvioInput.options[lugarEnvioInput.selectedIndex];
+}
+
+function obtenerCostoEnvioSeleccionado(subtotal = null) {
+    if (subtotal !== null && subtotal <= 0) {
+        return 0;
+    }
+
+    const opcionSeleccionada = obtenerOpcionLugarEnvio();
+    const costoEnvio = opcionSeleccionada
+        ? parseFloat(opcionSeleccionada.getAttribute('data-shipping') || '0')
+        : 0;
+
+    return Number.isFinite(costoEnvio) && costoEnvio > 0 ? costoEnvio : 0;
+}
+
+function obtenerErrorLugarEnvio(lugarEnvioInput) {
+    if (!lugarEnvioInput || !lugarEnvioInput.value) {
+        return 'Seleccione el lugar de entrega para calcular el envio.';
+    }
+
+    const costoEnvio = obtenerCostoEnvioSeleccionado();
+    if (costoEnvio <= 0) {
+        return 'Seleccione un lugar de entrega valido.';
+    }
+
+    return '';
+}
+
 function actualizarTotales(subtotal = null) {
     if (subtotal === null) {
         subtotal = Carrito.obtenerSubtotal();
     }
 
-    const shipping = 30.00; // Costo de envío fijo
+    const shipping = obtenerCostoEnvioSeleccionado(subtotal);
     const total = subtotal + shipping;
 
     const subtotalElement = document.querySelector('.cart-totals ul li:nth-child(1) span');
     const shippingElement = document.querySelector('.cart-totals ul li:nth-child(2) span');
     const totalElement = document.querySelector('.cart-totals ul li:nth-child(3) span');
     const payableElement = document.querySelector('.cart-totals ul li:nth-child(4) span');
+    const orderTotalElement = document.getElementById('totalPagarPedido');
 
     if (subtotalElement) subtotalElement.textContent = `Q${subtotal.toFixed(2)}`;
     if (shippingElement) shippingElement.textContent = `Q${shipping.toFixed(2)}`;
     if (totalElement) totalElement.textContent = `Q${total.toFixed(2)}`;
     if (payableElement) payableElement.textContent = `Q${total.toFixed(2)}`;
+    if (orderTotalElement) orderTotalElement.textContent = `Q${total.toFixed(2)}`;
 }
 
 // ============================================================
@@ -347,6 +384,7 @@ function inicializarRestriccionesFormularioPedido() {
     const direccionInput = document.getElementById('direccion');
     const telefonoInput = document.getElementById('telefono');
     const correoInput = document.getElementById('correo');
+    const lugarEnvioInput = document.getElementById('lugarEnvio');
     const formaPagoInput = document.getElementById('formaPago');
     const tipoDocumentoInput = document.getElementById('tipoDocumento');
     const numeroDocumentoInput = document.getElementById('numeroDocumento');
@@ -376,6 +414,13 @@ function inicializarRestriccionesFormularioPedido() {
         correoInput.addEventListener('input', function () {
             this.value = limpiarCorreoInput(this.value);
             aplicarEstadoValidacion(this, obtenerErrorCorreo(this.value));
+        });
+    }
+
+    if (lugarEnvioInput) {
+        lugarEnvioInput.addEventListener('change', function () {
+            aplicarEstadoValidacion(this, obtenerErrorLugarEnvio(this));
+            actualizarTotales();
         });
     }
 
@@ -436,6 +481,7 @@ function abrirModalPedido() {
     document.getElementById('documentoHelp').textContent = '';
     aplicarEstadoValidacion(document.getElementById('nombreCompleto'), '');
     aplicarEstadoValidacion(document.getElementById('direccion'), '');
+    aplicarEstadoValidacion(document.getElementById('lugarEnvio'), '');
     aplicarEstadoValidacion(document.getElementById('telefono'), '');
     aplicarEstadoValidacion(document.getElementById('correo'), '');
     aplicarEstadoValidacion(document.getElementById('tipoDocumento'), '');
@@ -443,7 +489,9 @@ function abrirModalPedido() {
 
     // Establecer metodo de pago por defecto a Pago Contra Entrega
     document.getElementById('formaPago').value = 'Pago Contra Entrega';
+    refrescarSelectorVisual(document.getElementById('lugarEnvio'));
     refrescarSelectorVisual(document.getElementById('formaPago'));
+    actualizarTotales();
     actualizarVistaPagoTarjeta();
 
     // Mostrar modal
@@ -594,6 +642,7 @@ function procesarPedido(event) {
     const direccionInput = document.getElementById('direccion');
     const telefonoInput = document.getElementById('telefono');
     const correoInput = document.getElementById('correo');
+    const lugarEnvioInput = document.getElementById('lugarEnvio');
     const tipoDocumentoInput = document.getElementById('tipoDocumento');
     const numeroDocumentoInput = document.getElementById('numeroDocumento');
     const formaPagoInput = document.getElementById('formaPago');
@@ -646,6 +695,14 @@ function procesarPedido(event) {
     }
     aplicarEstadoValidacion(correoInput, '');
 
+    const errorLugarEnvio = obtenerErrorLugarEnvio(lugarEnvioInput);
+    if (errorLugarEnvio) {
+        aplicarEstadoValidacion(lugarEnvioInput, errorLugarEnvio);
+        mostrarErrorFormulario(errorLugarEnvio, 'lugarEnvio');
+        return;
+    }
+    aplicarEstadoValidacion(lugarEnvioInput, '');
+
     if (!VALIDACION_PEDIDO.FORMAS_PAGO_PERMITIDAS.includes(formaPago)) {
         mostrarErrorFormulario('El metodo de pago seleccionado no es valido', 'formaPago');
         return;
@@ -664,6 +721,9 @@ function procesarPedido(event) {
         nitFinal = 'C/F';
     }
 
+    const subtotalPedido = Carrito.obtenerSubtotal();
+    const shippingPedido = obtenerCostoEnvioSeleccionado(subtotalPedido);
+
     const formData = {
         nombreCompleto: nombreCompleto,
         direccion: direccion,
@@ -674,9 +734,9 @@ function procesarPedido(event) {
         numeroDocumento: nitFinal,
         formaPago: formaPago,
         carrito: Carrito.obtenerCarrito(),
-        subtotal: Carrito.obtenerSubtotal(),
-        shipping: 30.00,
-        total: Carrito.obtenerSubtotal() + 30.00
+        subtotal: subtotalPedido,
+        shipping: shippingPedido,
+        total: subtotalPedido + shippingPedido
     };
 
     // Validar documento si necesita factura
@@ -716,9 +776,8 @@ function procesarPedido(event) {
 
     // Obtener carrito (ya validado)
     const carrito = Carrito.obtenerCarrito();
-    const subtotal = Carrito.obtenerSubtotal();
-    const shipping = 30.00;
-    const total = subtotal + shipping;
+    const subtotal = formData.subtotal;
+    const total = formData.total;
 
     // Construir array de artículos
     const idarticulo = [];
