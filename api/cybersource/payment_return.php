@@ -5,56 +5,33 @@ require __DIR__ . '/_bootstrap.php';
 $params = $_SERVER['REQUEST_METHOD'] === 'POST' ? $_POST : $_GET;
 
 // =======================================================
-// DEBUG REAL NEONET / CYBERSOURCE
-// Guarda TODO lo que Neonet devuelve al payment_return.php
+// LOG REAL NEONET / CYBERSOURCE
+// Guarda lo que Neonet devuelve después del pago
 // =======================================================
-
-$debugDir = __DIR__;
 
 $rawBody = file_get_contents('php://input');
 
-$headers = function_exists('getallheaders') ? getallheaders() : [];
-
-$debugReference = $params['req_reference_number']
-    ?? $params['reference_number']
-    ?? $params['reference']
-    ?? $params['ref']
-    ?? 'sin_referencia';
-
-$debugDecision = $params['decision']
-    ?? $params['status']
-    ?? $params['payment_status']
-    ?? 'sin_estado';
-
-$debugReference = preg_replace('/[^A-Za-z0-9_-]/', '_', $debugReference);
-$debugDecision = preg_replace('/[^A-Za-z0-9_-]/', '_', $debugDecision);
-
-$debugUnique = function_exists('random_bytes') ? bin2hex(random_bytes(4)) : uniqid();
-
-$debugFileName = 'neonet_return_' . date('Ymd_His') . '_' . $debugReference . '_' . $debugDecision . '_' . $debugUnique . '.json';
-
 $debugData = [
-    'fecha_servidor' => date('Y-m-d H:i:s'),
+    'fecha' => date('Y-m-d H:i:s'),
     'metodo' => $_SERVER['REQUEST_METHOD'] ?? '',
     'url' => $_SERVER['REQUEST_URI'] ?? '',
     'ip' => $_SERVER['REMOTE_ADDR'] ?? '',
-    'user_agent' => $_SERVER['HTTP_USER_AGENT'] ?? '',
-    'headers' => $headers,
     'get' => $_GET,
     'post' => $_POST,
-    'params_usados_por_sistema' => $params,
+    'params' => $params,
     'raw_body' => $rawBody
 ];
 
-$savedDebug = file_put_contents(
-    $debugDir . '/' . $debugFileName,
-    json_encode($debugData, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE),
-    LOCK_EX
-);
+$logLine = PHP_EOL .
+    '================ NEONET RETURN ================' . PHP_EOL .
+    json_encode($debugData, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) . PHP_EOL .
+    '================================================' . PHP_EOL;
 
-if ($savedDebug === false) {
-    error_log('No se pudo guardar respuesta real de Neonet en: ' . $debugDir . '/' . $debugFileName);
-}
+file_put_contents(
+    dirname(__DIR__, 2) . '/logs/neonet_return.log',
+    $logLine,
+    FILE_APPEND | LOCK_EX
+);
 
 // =======================================================
 
