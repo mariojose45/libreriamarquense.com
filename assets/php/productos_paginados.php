@@ -2,6 +2,7 @@
 declare(strict_types=1);
 
 header('Content-Type: application/json; charset=UTF-8');
+header('X-Content-Type-Options: nosniff');
 
 const PRODUCTOS_CACHE_TTL = 120;
 const PRODUCTOS_DEFAULT_PER_PAGE = 30;
@@ -14,6 +15,14 @@ function responderJson(array $payload, int $statusCode = 200): void
     http_response_code($statusCode);
     echo json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
     exit;
+}
+
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    responderJson([
+        'success' => false,
+        'message' => 'Metodo no permitido.',
+        'data' => [],
+    ], 405);
 }
 
 function leerEntradaJson(): array
@@ -62,28 +71,33 @@ function obtenerConfiguracionFuente(string $baseApi, array $input): array
             'payload' => [],
             ];
         case 'categoria':
+            $idCategoria = trim((string) ($input['idcategoria'] ?? ''));
             return [
             'mode' => $mode,
             'url' => $baseApi . 'api_tienda_articulos_listarProductosxCategoria.php',
             'payload' => [
-                'idcategoria' => (string) ($input['idcategoria'] ?? ''),
+                'idcategoria' => preg_match('/^\d{1,10}$/', $idCategoria) ? $idCategoria : '',
             ],
             ];
         case 'busqueda':
+            $search = trim((string) ($input['search'] ?? ''));
+            $search = preg_replace('/[\x00-\x1F\x7F]/u', '', $search);
             return [
             'mode' => $mode,
             'url' => $baseApi . 'api_tienda_articulos_listarProductosxSearch.php',
             'payload' => [
-                'search' => trim((string) ($input['search'] ?? '')),
+                'search' => function_exists('mb_substr') ? mb_substr($search, 0, 80, 'UTF-8') : substr($search, 0, 80),
             ],
             ];
         case 'marca':
+            $idMarca = trim((string) ($input['idmarca'] ?? ''));
+            $idSucursal = trim((string) ($input['idsucursal'] ?? '4'));
             return [
             'mode' => $mode,
             'url' => $baseApi . 'api_tienda_articulos_listarProductosxMarca.php',
             'payload' => [
-                'idmarca' => (string) ($input['idmarca'] ?? ''),
-                'idsucursal' => (string) ($input['idsucursal'] ?? '4'),
+                'idmarca' => preg_match('/^\d{1,10}$/', $idMarca) ? $idMarca : '',
+                'idsucursal' => preg_match('/^\d{1,10}$/', $idSucursal) ? $idSucursal : '4',
             ],
             ];
         case 'ofertas':
@@ -113,7 +127,13 @@ function validarConfiguracionFuente(array $sourceConfig): ?string
         case 'categoria':
             return empty($sourceConfig['payload']['idcategoria']) ? 'La categoria es obligatoria.' : null;
         case 'busqueda':
-            return empty($sourceConfig['payload']['search']) ? 'El termino de busqueda es obligatorio.' : null;
+            if (empty($sourceConfig['payload']['search'])) {
+                return 'El termino de busqueda es obligatorio.';
+            }
+
+            return preg_match('/<\s*(script|iframe|object|embed|style|link|meta)|javascript\s*:|on[a-z]+\s*=/i', $sourceConfig['payload']['search'])
+                ? 'El termino de busqueda no es valido.'
+                : null;
         case 'marca':
             return empty($sourceConfig['payload']['idmarca']) ? 'La marca es obligatoria.' : null;
         default:

@@ -22,6 +22,15 @@ try {
     }
 
     $input = lm_read_json_body();
+
+    if (!empty($input['website'])) {
+        lm_json_response(array('success' => false, 'message' => 'Solicitud no valida.'), 400);
+    }
+
+    lm_require_csrf_token('checkout', $input);
+    lm_require_rate_limit_json('checkout:' . lm_client_ip(), 8, 300);
+    unset($input['csrf_token'], $input['website']);
+
     $validator = new \LM\CyberSource\OrderPayloadValidator($config);
     $orderPayload = $validator->validateForHostedCheckout($input);
 

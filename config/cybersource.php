@@ -78,6 +78,9 @@ $config = array(
     'security' => array(
         'admin_token' => getenv('CYBERSOURCE_ADMIN_TOKEN') ?: '',
         'max_amount' => 50000,
+        'max_quantity' => 99,
+        'max_line_items' => 100,
+        'max_unit_price' => 50000,
     ),
 
     'external_order_api' => array(

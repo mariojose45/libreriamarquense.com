@@ -7793,9 +7793,9 @@ body {
 .exclusive-offers-banner.banner-soft,
 .section-header-soft,
 .carousel-section,
-.ti-cell-legal-area,
+.lm-legal-area,
 .copyright-showcase-area,
-.ticell-about-area {
+.lm-about-area {
     background-color: var(--lm-main-bg) !important;
 }
 
@@ -7854,4 +7854,148 @@ body {
     border-color: #D6B900 !important;
     color: #292929 !important;
     box-shadow: 0 12px 28px rgba(184, 173, 37, 0.34) !important;
+}
+
+/* Responsive layer and spacing refinements */
+.middle-header-area {
+    position: relative;
+    z-index: 10020;
+}
+
+.middle-header-search {
+    position: relative;
+    z-index: 10030;
+}
+
+.middle-header-search form,
+.middle-header-search form .form-group {
+    position: relative;
+    z-index: inherit;
+}
+
+.middle-header-search form .form-group .nice-select {
+    z-index: 10040;
+}
+
+.middle-header-search form .form-group .nice-select.open {
+    z-index: 10070;
+}
+
+.middle-header-search form .form-group .nice-select .list {
+    z-index: 10080;
+}
+
+.middle-header-search form .form-group .nice-select.open .list {
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    transition: none !important;
+    -webkit-transition: none !important;
+    transform: scale(1) translateY(0) !important;
+    -webkit-transform: scale(1) translateY(0) !important;
+}
+
+.middle-header-search form .form-group .nice-select .list .option:hover,
+.middle-header-search form .form-group .nice-select .list .option.focus,
+.middle-header-search form .form-group .nice-select .list .option.selected {
+    background-color: #1A2697 !important;
+    color: #ffffff !important;
+}
+
+@media only screen and (max-width: 991px) {
+    .catalog-pagination-host {
+        margin-top: 18px;
+        margin-bottom: 6px;
+    }
+
+    .catalog-pagination {
+        gap: 14px;
+        padding: 16px 18px;
+        border-radius: 14px;
+    }
+
+    .catalog-pagination__summary {
+        font-size: 18px;
+        line-height: 1.25;
+    }
+
+    .catalog-pagination__context {
+        margin-top: 4px;
+        font-size: 13px;
+    }
+
+    .catalog-pagination__pages {
+        gap: 8px;
+    }
+
+    .catalog-pagination__button {
+        min-width: 40px;
+        height: 40px;
+        padding: 0 13px;
+        font-size: 14px;
+    }
+
+    .catalog-pagination__button--page {
+        width: 40px;
+        min-width: 40px;
+    }
+
+    .catalog-pagination__ellipsis {
+        height: 40px;
+        font-size: 14px;
+    }
+
+    .catalog-pagination__button--prev,
+    .catalog-pagination__button--next {
+        min-width: 110px;
+    }
+}
+
+@media only screen and (max-width: 575px) {
+    .catalog-pagination-host {
+        margin-top: 14px;
+        margin-bottom: 4px;
+    }
+
+    .catalog-pagination {
+        gap: 9px;
+        padding: 12px;
+        border-radius: 12px;
+    }
+
+    .catalog-pagination__summary {
+        font-size: 15.5px;
+        line-height: 1.25;
+    }
+
+    .catalog-pagination__context {
+        margin-top: 3px;
+        font-size: 12.5px;
+    }
+
+    .catalog-pagination__pages {
+        gap: 6px;
+    }
+
+    .catalog-pagination__button {
+        min-width: 34px;
+        height: 34px;
+        padding: 0 11px;
+        font-size: 13px;
+    }
+
+    .catalog-pagination__button--page {
+        width: 34px;
+        min-width: 34px;
+    }
+
+    .catalog-pagination__ellipsis {
+        min-width: 16px;
+        height: 34px;
+        font-size: 13px;
+    }
+
+    .catalog-pagination__button--prev,
+    .catalog-pagination__button--next {
+        min-width: 92px;
+    }
 }

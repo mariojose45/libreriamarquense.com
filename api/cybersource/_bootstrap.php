@@ -1,6 +1,7 @@
 <?php
 
 require_once dirname(__DIR__, 2) . '/integrations/cybersource/Autoload.php';
+require_once dirname(__DIR__, 2) . '/assets/php/security.php';
 
 use LM\CyberSource\Config;
 use LM\CyberSource\GatewayException;
@@ -71,6 +72,52 @@ function lm_require_admin_token(Config $config)
     if ($expected === '' || !hash_equals($expected, $received)) {
         lm_json_response(array('success' => false, 'message' => 'No autorizado.'), 403);
     }
+}
+
+function lm_require_csrf_token($action, array $payload = array())
+{
+    $token = (string) lm_request_header('X-CSRF-Token');
+
+    if ($token === '' && isset($payload['csrf_token'])) {
+        $token = (string) $payload['csrf_token'];
+    }
+
+    if (!lm_validate_csrf_token($token, $action)) {
+        lm_json_response(array('success' => false, 'message' => 'La sesion del formulario vencio. Recargue la pagina e intente nuevamente.'), 403);
+    }
+}
+
+function lm_require_rate_limit_json($key, $maxAttempts, $windowSeconds)
+{
+    if (!lm_rate_limit($key, $maxAttempts, $windowSeconds)) {
+        lm_json_response(array('success' => false, 'message' => 'Ha realizado varios intentos seguidos. Espere un momento e intente nuevamente.'), 429);
+    }
+}
+
+function lm_payment_reference_is_valid($reference)
+{
+    return is_string($reference) && preg_match('/^LMQ-\d{14}-[A-F0-9]{8}$/', $reference);
+}
+
+function lm_session_is_expired(array $session)
+{
+    return isset($session['expires_at']) && strtotime((string) $session['expires_at']) < time();
+}
+
+function lm_provider_amount_matches_session(array $params, array $session)
+{
+    $expected = isset($session['amount']) ? lm_normalize_money($session['amount']) : 0.0;
+
+    foreach (array('req_amount', 'auth_amount', 'amount', 'total', 'transaction_amount', 'order_amount') as $field) {
+        if (!isset($params[$field]) || trim((string) $params[$field]) === '') {
+            continue;
+        }
+
+        $received = lm_normalize_money(preg_replace('/[^0-9.\-]/', '', (string) $params[$field]));
+        return abs($received - $expected) <= 0.01;
+    }
+
+    return true;
 }
 
 function lm_payment_service(Config $config, SecureLogger $logger)

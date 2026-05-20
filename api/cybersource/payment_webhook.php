@@ -28,10 +28,21 @@ try {
         $statusParam = isset($input['status']) ? $input['status'] : (isset($input['payment_status']) ? $input['payment_status'] : '');
         $status = $checkout->normalizeStatus($statusParam);
     }
+
+    if (!lm_payment_reference_is_valid($reference)) {
+        throw new \LM\CyberSource\GatewayException('Referencia no valida.');
+    }
+
     $session = $store->find($reference);
 
     if (!$session) {
         throw new \LM\CyberSource\GatewayException('Referencia no encontrada.');
+    }
+
+    if (lm_session_is_expired($session)) {
+        $session['status'] = 'EXPIRED';
+        $store->save($reference, $session);
+        throw new \LM\CyberSource\GatewayException('La sesion de pago vencio.');
     }
 
     $session['provider_webhook'] = array(
@@ -41,6 +52,10 @@ try {
     );
 
     if ($status === 'APPROVED') {
+        if (!lm_provider_amount_matches_session($input, $session)) {
+            throw new \LM\CyberSource\GatewayException('El monto aprobado no coincide con el total del pedido.');
+        }
+
         $session['status'] = 'PAID';
         $session['provider_transaction_id'] = $secureAcceptance->extractTransactionId($input);
         $session['provider_authorization_number'] = $secureAcceptance->extractAuthorizationNumber($input);

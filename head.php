@@ -11,7 +11,8 @@ function getApi($url)
     $response = curl_exec($ch);
 
     if ($response === false) {
-        echo "Error CURL: " . curl_error($ch);
+        error_log('Error CURL consultando API: ' . curl_error($ch));
+        $response = '';
     }
 
     curl_close($ch);
@@ -226,8 +227,8 @@ $categorias = $data["data"] ?? [];
                                             <option value="">Todas las categorías</option>
 
                                             <?php foreach ($categorias as $cat): ?>
-                                                <option value="<?= $cat['idcategoria'] ?>">
-                                                    <?= htmlspecialchars($cat['nombre']) ?>
+                                                <option value="<?= htmlspecialchars((string) $cat['idcategoria'], ENT_QUOTES, 'UTF-8') ?>">
+                                                    <?= htmlspecialchars((string) $cat['nombre'], ENT_QUOTES, 'UTF-8') ?>
                                                 </option>
                                             <?php endforeach; ?>
                                         </select>
@@ -420,17 +421,75 @@ $categorias = $data["data"] ?? [];
             display: none;
         }
 
+        .middle-header-area {
+            position: relative;
+            z-index: 10020;
+        }
+
+        .middle-header-search {
+            position: relative;
+            z-index: 10030;
+        }
+
+        .middle-header-search form .form-group .nice-select {
+            z-index: 10040;
+        }
+
+        .middle-header-search form .form-group .nice-select.open {
+            z-index: 10070;
+        }
+
+        .middle-header-search form .form-group .nice-select .list {
+            z-index: 10080;
+        }
+
+        .middle-header-search form .form-group .nice-select.open .list {
+            opacity: 1 !important;
+            pointer-events: auto !important;
+            transform: scale(1) translateY(0) !important;
+            -webkit-transform: scale(1) translateY(0) !important;
+        }
+
+        .middle-header-search form .form-group .nice-select .list .option:hover,
+        .middle-header-search form .form-group .nice-select .list .option.focus,
+        .middle-header-search form .form-group .nice-select .list .option.selected {
+            background-color: #1A2697 !important;
+            color: #ffffff !important;
+        }
+
         /* Mobile menu layer: always above banners, videos and page content. */
         @media (max-width: 991px) {
 
+            .middle-header-area,
             .middle-header-search {
                 position: relative;
-                z-index: 99999;
+                z-index: 2000000;
             }
 
-            #select-categoria-header {
+            #select-categoria-header,
+            .middle-header-search form .form-group .nice-select {
                 position: relative;
-                z-index: 999999;
+                z-index: 2000001;
+            }
+
+            .middle-header-search form .form-group .nice-select.open,
+            .middle-header-search form .form-group .nice-select .list {
+                z-index: 2000002 !important;
+            }
+
+            .middle-header-search form .form-group .nice-select.open .list {
+                opacity: 1 !important;
+                pointer-events: auto !important;
+                transition: none !important;
+                -webkit-transition: none !important;
+                transform: scale(1) translateY(0) !important;
+                -webkit-transform: scale(1) translateY(0) !important;
+            }
+
+            .middle-header-search form .form-group .nice-select .list .option:hover,
+            .middle-header-search form .form-group .nice-select .list .option.focus,
+            .middle-header-search form .form-group .nice-select .list .option.selected {
+                color: #ffffff !important;
             }
 
             .navbar-area,

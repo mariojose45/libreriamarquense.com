@@ -652,6 +652,15 @@ include 'head.php';
     const PRODUCTO_FALLBACK_MODOS = ["nuevos", "ofertas", "menosde100"];
     const PRODUCTO_FALLBACK_PER_PAGE = 60;
 
+    function escaparHTMLProducto(valor) {
+        return String(valor ?? '')
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;');
+    }
+
     function construirUrlImagenProducto(nombreArchivo) {
         const nombre = (nombreArchivo ?? "").toString().trim();
         return nombre ? `${IMAGEN_PRODUCTO_BASE}${encodeURIComponent(nombre)}` : "";
@@ -848,9 +857,6 @@ include 'head.php';
         imagenesProducto = [];
         imagenIndex = 0; // Empezar con la imagen principal
 
-        console.log('🖼️ Cargando fotos para producto:', idarticulo);
-        console.log('🖼️ Imagen principal:', imagenPrincipal);
-
         // Cargar fotos desde la API
         fetch(PRODUCTO_FOTOS_API, {
             method: "POST",
@@ -859,11 +865,7 @@ include 'head.php';
         })
             .then(r => r.json())
             .then(data => {
-                console.log('📸 Respuesta de API de fotos:', data);
-
                 if (data.success && data.imagenes && Array.isArray(data.imagenes)) {
-                    console.log('✅ Se encontraron', data.imagenes.length, 'fotos adicionales');
-
                     // Procesar y ordenar las imágenes
                     let imagenesProcesadas = [];
 
@@ -898,7 +900,6 @@ include 'head.php';
                                     orden: parseInt(img.orden) || index,
                                     id: img.id
                                 });
-                                console.log(`  📷 Foto ${index + 1} (orden ${img.orden || index}): ${url}`);
                             }
                         } else {
                             console.warn(`⚠️ Imagen ${index + 1} no tiene ruta válida:`, img);
@@ -923,25 +924,15 @@ include 'head.php';
                         imagenesProducto.push(img.url);
                     });
 
-                    console.log('📋 Imágenes ordenadas por campo "orden":');
-                    imagenesProducto.forEach((url, idx) => {
-                        const img = imagenesProcesadas.find(i => i.url === url);
-                        console.log(`  ${idx + 1}. Orden: ${img?.orden || 'N/A'}, ID: ${img?.id || 'N/A'} - ${url.split('/').pop()}`);
-                    });
                 } else {
-                    console.log('⚠️ No se encontraron fotos adicionales en la API');
-
                     if (data.imagenes && !Array.isArray(data.imagenes)) {
-                        console.log('⚠️ data.imagenes no es un array:', typeof data.imagenes);
+                        console.warn('data.imagenes no es un array:', typeof data.imagenes);
                     }
                     if (!data.success) {
-                        console.log('⚠️ API devolvió success: false');
+                        console.warn('La API de fotos devolvio success: false');
                     }
                 }
 
-                console.log('🖼️ Imagen principal:', imagenPrincipal);
-                console.log('🖼️ Fotos adicionales:', imagenesProducto.length);
-                console.log('🖼️ Total de imágenes disponibles:', imagenesProducto.length + 1);
                 mostrarProducto();
             })
             .catch(error => {
@@ -974,15 +965,16 @@ include 'head.php';
         document.getElementById('producto-categoria').textContent = productoActual.categoria || 'N/A';
 
         // Llenar descripción completa
+        const descripcionCompletaSegura = escaparHTMLProducto(productoActual.descripcion || '');
         document.getElementById('producto-descripcion-completa').innerHTML =
-            productoActual.descripcion ? `<p>${productoActual.descripcion}</p>` : '<p>No hay descripción disponible para este producto.</p>';
+            descripcionCompletaSegura ? `<p>${descripcionCompletaSegura}</p>` : '<p>No hay descripción disponible para este producto.</p>';
 
         // Llenar información adicional
         let infoHtml = `
-        <li><strong>Nombre:</strong> <span>${productoActual.nombre || 'N/A'}</span></li>
-        <li><strong>Código:</strong> <span>${productoActual.codigo || 'N/A'}</span></li>
-        <li><strong>Categoría:</strong> <span>${productoActual.categoria || 'N/A'}</span></li>
-        <li><strong>Stock:</strong> <span>${productoActual.stock || '0'}</span></li>
+        <li><strong>Nombre:</strong> <span>${escaparHTMLProducto(productoActual.nombre || 'N/A')}</span></li>
+        <li><strong>Código:</strong> <span>${escaparHTMLProducto(productoActual.codigo || 'N/A')}</span></li>
+        <li><strong>Categoría:</strong> <span>${escaparHTMLProducto(productoActual.categoria || 'N/A')}</span></li>
+        <li><strong>Stock:</strong> <span>${escaparHTMLProducto(productoActual.stock || '0')}</span></li>
         <li><strong>Precio:</strong> <span>Q${parseFloat(productoActual.precio_venta || 0).toFixed(2)}</span></li>
     `;
         document.getElementById('producto-informacion').innerHTML = infoHtml;
@@ -996,11 +988,8 @@ include 'head.php';
     // ============================================================
     function mostrarImagenes() {
         if (!imagenPrincipal) {
-            console.log('⚠️ No hay imagen principal para mostrar');
             return;
         }
-
-        console.log('🖼️ Mostrando imagen principal y', imagenesProducto.length, 'fotos adicionales');
 
         let sliderNav = document.getElementById('slider-nav');
         let sliderFor = document.getElementById('slider-for');
@@ -1070,8 +1059,6 @@ include 'head.php';
             divNav.appendChild(imgNav);
             sliderNav.appendChild(divNav);
         });
-
-        console.log('✅ Imágenes mostradas correctamente');
     }
 
     // ============================================================
@@ -1086,12 +1073,10 @@ include 'head.php';
             // Mostrar imagen principal
             imgPrincipal.src = imagenPrincipal;
             imagenIndex = -1;
-            console.log('🖼️ Cambiando a imagen principal');
         } else if (index >= 0 && index < imagenesProducto.length) {
             // Mostrar foto de la API
             imgPrincipal.src = imagenesProducto[index];
             imagenIndex = index;
-            console.log('🖼️ Cambiando a foto', index + 1, 'de la API');
         }
 
         // Actualizar clase activa en miniaturas
@@ -1210,7 +1195,7 @@ include 'head.php';
     function mostrarError(mensaje) {
         document.getElementById('producto-loading').style.display = 'none';
         document.getElementById('producto-error').style.display = 'block';
-        document.getElementById('producto-error').innerHTML = `<p style="color: red;">${mensaje}</p>`;
+        document.getElementById('producto-error').innerHTML = `<p style="color: red;">${escaparHTMLProducto(mensaje)}</p>`;
     }
 
     // ============================================================

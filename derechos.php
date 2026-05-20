@@ -167,13 +167,13 @@ $paginas_servicios = [
             <div class="copyright-legal-card-body">
                 <div class="copyright-legal-top">
                     <div class="copyright-legal-heading">
-                        <h3>❓📝 Texto recomendado de Derechos Reservados</h3>
+                        <h3>Derechos reservados de Librer&iacute;a Marquense</h3>
                     </div>
                 </div>
 
-                <p class="copyright-legal-updated">Última actualización: 26 de diciembre de 2025</p>
+                <p class="copyright-legal-updated">&Uacute;ltima actualizaci&oacute;n: 20 de mayo de 2026</p>
 
-                <p class="copyright-legal-copy">© 2025 COMPUSISGT – Computadoras y Sistemas de Guatemala. Todos los derechos reservados. El contenido de este sitio web, incluyendo textos, imágenes, logotipos y diseños, es propiedad de COMPUSISGT y está protegido por las leyes de derechos de autor. Queda prohibida su reproducción total o parcial sin autorización previa.</p>
+                <p class="copyright-legal-copy">&copy; <?php echo date('Y'); ?> Librer&iacute;a Marquense. Todos los derechos reservados. El contenido de este sitio web, incluyendo textos, im&aacute;genes, logotipos, cat&aacute;logos, fotograf&iacute;as de productos, dise&ntilde;os y materiales informativos, es propiedad de Librer&iacute;a Marquense o se utiliza con autorizaci&oacute;n correspondiente. Queda prohibida su reproducci&oacute;n total o parcial sin autorizaci&oacute;n previa.</p>
             </div>
         </div>
     </div>

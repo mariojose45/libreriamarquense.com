@@ -766,7 +766,7 @@ $rutaImagenes = "https://ssl.sol.sistemasolgt.com/libremarquenseDos/files/articu
     <div class="exclusive-offers-banner banner-main">
         <div class="container">
             <div class="banner-content">
-                <span class="banner-text">COLECCI&Oacute;N TECNOL&Oacute;GICA</span>
+                <span class="banner-text">COLECCI&Oacute;N ESCOLAR</span>
                 <a href="tienda.php" class="banner-btn">VER PRODUCTOS</a>
             </div>
         </div>

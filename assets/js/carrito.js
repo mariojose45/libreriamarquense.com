@@ -49,6 +49,7 @@ const Carrito = {
     // Precio mínimo y máximo permitidos (protección básica)
     PRECIO_MINIMO: 0.01,
     PRECIO_MAXIMO: 999999.99,
+    CANTIDAD_MAXIMA: 99,
 
     // ============================================================
     // GENERAR HASH DE INTEGRIDAD DEL CARRITO
@@ -58,7 +59,7 @@ const Carrito = {
         const datos = JSON.stringify(carrito.map(item => ({
             id: item.idarticulo,
             precio: parseFloat(item.precio || 0).toFixed(2),
-            cantidad: parseInt(item.cantidad || 1)
+            cantidad: String(item.cantidad ?? '1').trim()
         })).sort((a, b) => a.id - b.id));
         
         // Hash simple pero efectivo (no es criptográficamente seguro, pero detecta cambios)
@@ -124,7 +125,6 @@ const Carrito = {
 
             // Verificar si el carrito ha expirado (solo si no se omite la verificación)
             if (!skipExpirationCheck && this.carritoExpirado()) {
-                console.log('El carrito ha expirado, se limpiará automáticamente');
                 this.limpiarCarrito();
                 return [];
             }
@@ -193,8 +193,13 @@ const Carrito = {
             return { valido: false, mensaje: `El producto "${nombre}" tiene un precio invalido. Por favor, recarga la pagina.` };
         }
 
-        const cantidad = parseInt(item.cantidad || 1, 10);
-        if (!Number.isInteger(cantidad) || cantidad < 1 || cantidad > 999) {
+        const cantidadTexto = String(item.cantidad ?? '1').trim();
+        if (!/^\d+$/.test(cantidadTexto)) {
+            return { valido: false, mensaje: `La cantidad del producto "${nombre}" no es valida.` };
+        }
+
+        const cantidad = parseInt(cantidadTexto, 10);
+        if (!Number.isInteger(cantidad) || cantidad < 1 || cantidad > this.CANTIDAD_MAXIMA) {
             return { valido: false, mensaje: `La cantidad del producto "${nombre}" no es valida.` };
         }
 
@@ -245,7 +250,17 @@ const Carrito = {
     // ============================================================
     agregarProducto(producto, cantidad = 1) {
         // Validar cantidad
-        cantidad = Math.max(1, parseInt(cantidad) || 1);
+        const cantidadTexto = String(cantidad ?? '1').trim();
+        if (!/^\d+$/.test(cantidadTexto)) {
+            this.mostrarNotificacion(`Ingrese una cantidad entera entre 1 y ${this.CANTIDAD_MAXIMA}.`);
+            return false;
+        }
+
+        cantidad = parseInt(cantidadTexto, 10);
+        if (cantidad < 1 || cantidad > this.CANTIDAD_MAXIMA) {
+            this.mostrarNotificacion(`Ingrese una cantidad entre 1 y ${this.CANTIDAD_MAXIMA}.`);
+            return false;
+        }
         
         // Validar y obtener precio
         const precio = parseFloat(producto.precio || producto.precio_venta || 0);
@@ -270,7 +285,13 @@ const Carrito = {
 
         if (productoExistente) {
             // Si existe, aumentar la cantidad (pero mantener el precio original)
-            productoExistente.cantidad = (productoExistente.cantidad || 1) + cantidad;
+            const cantidadActual = parseInt(productoExistente.cantidad || 1, 10);
+            const cantidadFinal = cantidadActual + cantidad;
+            if (cantidadFinal > this.CANTIDAD_MAXIMA) {
+                this.mostrarNotificacion(`La cantidad maxima por producto es ${this.CANTIDAD_MAXIMA}.`);
+                return false;
+            }
+            productoExistente.cantidad = cantidadFinal;
             // IMPORTANTE: No permitir cambiar el precio de productos existentes
             // El precio se mantiene como estaba cuando se agregó por primera vez
         } else {
@@ -311,8 +332,20 @@ const Carrito = {
     // ACTUALIZAR CANTIDAD DE UN PRODUCTO (sin permitir cambiar precio)
     // ============================================================
     actualizarCantidad(idarticulo, nuevaCantidad) {
-        if (nuevaCantidad < 1) {
+        const cantidadTexto = String(nuevaCantidad ?? '').trim();
+        if (!/^\d+$/.test(cantidadTexto)) {
+            this.mostrarNotificacion(`Ingrese una cantidad entera entre 1 y ${this.CANTIDAD_MAXIMA}.`);
+            return false;
+        }
+
+        const cantidadNormalizada = parseInt(cantidadTexto, 10);
+        if (cantidadNormalizada < 1) {
             return this.eliminarProducto(idarticulo);
+        }
+
+        if (cantidadNormalizada > this.CANTIDAD_MAXIMA) {
+            this.mostrarNotificacion(`La cantidad maxima por producto es ${this.CANTIDAD_MAXIMA}.`);
+            return false;
         }
 
         const carrito = this.obtenerCarrito();
@@ -327,7 +360,7 @@ const Carrito = {
                 return false;
             }
             
-            producto.cantidad = Math.max(1, parseInt(nuevaCantidad) || 1);
+            producto.cantidad = cantidadNormalizada;
             // Asegurar que el precio no se modifique
             producto.precio = precioOriginal;
             
@@ -348,7 +381,11 @@ const Carrito = {
             return 0;
         }
         const carrito = this.obtenerCarrito(true); // Omitir verificación de expiración para evitar recursión
-        return carrito.reduce((total, item) => total + (item.cantidad || 1), 0);
+        return carrito.reduce((total, item) => {
+            const cantidadTexto = String(item.cantidad ?? '1').trim();
+            const cantidad = /^\d+$/.test(cantidadTexto) ? parseInt(cantidadTexto, 10) : 1;
+            return total + Math.min(Math.max(cantidad, 1), this.CANTIDAD_MAXIMA);
+        }, 0);
     },
 
     // ============================================================
@@ -362,9 +399,10 @@ const Carrito = {
         const carrito = this.obtenerCarrito(true, true); // Omitir verificaciones para evitar recursión
         return carrito.reduce((total, item) => {
             const precio = parseFloat(item.precio || 0);
-            const cantidad = parseInt(item.cantidad || 1);
+            const cantidadTexto = String(item.cantidad ?? '1').trim();
+            const cantidad = /^\d+$/.test(cantidadTexto) ? parseInt(cantidadTexto, 10) : 1;
             // Validar precio antes de sumar
-            if (this.validarPrecio(precio)) {
+            if (this.validarPrecio(precio) && cantidad >= 1 && cantidad <= this.CANTIDAD_MAXIMA) {
                 return total + (precio * cantidad);
             }
             return total;
@@ -503,9 +541,6 @@ const Carrito = {
                 toast: true,
                 position: 'top-end'
             });
-        } else {
-            // Si no, usar alert simple
-            console.log(mensaje);
         }
     }
 };
@@ -534,7 +569,7 @@ function agregarAlCarritoDesdeModal() {
     const sku = document.getElementById('mp-sku')?.innerText || '';
     const imagen = document.getElementById('mp-imagen-principal')?.src || '';
     const descripcion = document.getElementById('mp-descripcion')?.innerText || '';
-    const cantidad = parseInt(document.getElementById('mp-cantidad')?.value || '1');
+    const cantidad = document.getElementById('mp-cantidad')?.value || '1';
     
     if (!sku) {
         console.error('No se pudo obtener el SKU del producto');

@@ -9,6 +9,54 @@ document.addEventListener("DOMContentLoaded", function () {
     actualizarVistaPagoTarjeta();
 });
 
+const CANTIDAD_MAXIMA_CARRITO = 99;
+
+function escaparHTML(valor) {
+    return String(valor ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+}
+
+function obtenerIdProductoSeguro(valor) {
+    const texto = String(valor ?? '').trim();
+    return /^\d+$/.test(texto) && parseInt(texto, 10) > 0 ? texto : '';
+}
+
+function normalizarCantidadPedido(valor) {
+    const texto = String(valor ?? '').trim();
+    if (!/^\d+$/.test(texto)) {
+        return null;
+    }
+
+    const cantidad = parseInt(texto, 10);
+    return cantidad >= 1 && cantidad <= CANTIDAD_MAXIMA_CARRITO ? cantidad : null;
+}
+
+function obtenerImagenProductoSegura(valor) {
+    const fallback = 'assets/img/cart/cart-1.png';
+    const texto = String(valor ?? '').trim();
+
+    if (!texto) {
+        return fallback;
+    }
+
+    try {
+        const url = new URL(texto, window.location.href);
+        if (url.protocol === 'http:' || url.protocol === 'https:') {
+            return url.href;
+        }
+    } catch (error) {
+        if (/^(assets\/|\.?\/?assets\/)/.test(texto)) {
+            return texto;
+        }
+    }
+
+    return fallback;
+}
+
 // ============================================================
 // CARGAR PRODUCTOS DEL CARRITO DESDE LOCALSTORAGE
 // ============================================================
@@ -39,36 +87,42 @@ function cargarCarrito() {
 
     tbody.innerHTML = '';
 
-    carrito.forEach((producto, index) => {
-        const imagen = producto.imagen || 'assets/img/cart/cart-1.png';
+    carrito.forEach((producto) => {
+        const idarticulo = obtenerIdProductoSeguro(producto.idarticulo);
+        if (!idarticulo) {
+            return;
+        }
+
+        const imagen = escaparHTML(obtenerImagenProductoSegura(producto.imagen));
+        const nombre = escaparHTML(producto.nombre || 'Producto');
         const precio = parseFloat(producto.precio) || 0;
-        const cantidad = producto.cantidad || 1;
+        const cantidad = normalizarCantidadPedido(producto.cantidad) || 1;
         const total = precio * cantidad;
 
         const tr = document.createElement('tr');
         tr.innerHTML = `
             <td class="product-thumbnail">
-                <a href="javascript:void(0)" class="remove" onclick="eliminarDelCarrito('${producto.idarticulo}')">
+                <a href="javascript:void(0)" class="remove" onclick="eliminarDelCarrito('${idarticulo}')">
                     <i class='bx bx-x'></i>
                 </a>
                 <a href="#">
-                    <img src="${imagen}" alt="${producto.nombre}">
+                    <img src="${imagen}" alt="${nombre}">
                 </a>
             </td>
             <td class="product-name">
-                <a href="producto.php?id=${producto.idarticulo}">${producto.nombre}</a>
+                <a href="producto.php?id=${idarticulo}">${nombre}</a>
             </td>
             <td class="product-price">
                 <span class="unit-amount">Q${precio.toFixed(2)}</span>
             </td>
             <td class="product-quantity">
                 <div class="input-counter">
-                    <span class="minus-btn" onclick="cambiarCantidad('${producto.idarticulo}', -1)">
+                    <span class="minus-btn" onclick="cambiarCantidad('${idarticulo}', -1)">
                         <i class='bx bx-minus'></i>
                     </span>
-                    <input type="text" value="${cantidad}" id="cantidad-${producto.idarticulo}" 
-                           onchange="actualizarCantidadInput('${producto.idarticulo}', this.value)">
-                    <span class="plus-btn" onclick="cambiarCantidad('${producto.idarticulo}', 1)">
+                    <input type="text" value="${cantidad}" id="cantidad-${idarticulo}" inputmode="numeric" pattern="[0-9]*" maxlength="2"
+                           onchange="actualizarCantidadInput('${idarticulo}', this.value)">
+                    <span class="plus-btn" onclick="cambiarCantidad('${idarticulo}', 1)">
                         <i class='bx bx-plus'></i>
                     </span>
                 </div>
@@ -221,9 +275,12 @@ function cambiarCantidad(idarticulo, cambio) {
     const producto = carrito.find(item => item.idarticulo == idarticulo);
 
     if (producto) {
-        const nuevaCantidad = (producto.cantidad || 1) + cambio;
+        const cantidadActual = normalizarCantidadPedido(producto.cantidad) || 1;
+        const nuevaCantidad = cantidadActual + cambio;
         if (nuevaCantidad < 1) {
             eliminarDelCarrito(idarticulo);
+        } else if (nuevaCantidad > CANTIDAD_MAXIMA_CARRITO) {
+            mostrarErrorFormulario(`La cantidad maxima por producto es ${CANTIDAD_MAXIMA_CARRITO}.`);
         } else {
             Carrito.actualizarCantidad(idarticulo, nuevaCantidad);
             cargarCarrito();
@@ -235,13 +292,15 @@ function cambiarCantidad(idarticulo, cambio) {
 // ACTUALIZAR CANTIDAD DESDE INPUT
 // ============================================================
 function actualizarCantidadInput(idarticulo, valor) {
-    const cantidad = parseInt(valor) || 1;
-    if (cantidad < 1) {
-        eliminarDelCarrito(idarticulo);
-    } else {
-        Carrito.actualizarCantidad(idarticulo, cantidad);
+    const cantidad = normalizarCantidadPedido(valor);
+    if (cantidad === null) {
+        mostrarErrorFormulario(`Ingrese una cantidad entera entre 1 y ${CANTIDAD_MAXIMA_CARRITO}.`);
         cargarCarrito();
+        return;
     }
+
+    Carrito.actualizarCantidad(idarticulo, cantidad);
+    cargarCarrito();
 }
 
 // ============================================================
@@ -267,14 +326,15 @@ function inicializarEventos() {
 }
 
 const VALIDACION_PEDIDO = {
-    NOMBRE_REGEX: /^(?=.{3,120}$)[A-Za-zÀ-ÖØ-öø-ÿÑñ][A-Za-zÀ-ÖØ-öø-ÿÑñ\s.'-]*$/,
-    DIRECCION_REGEX: /^(?=.{8,180}$)[A-Za-z0-9À-ÖØ-öø-ÿÑñ][A-Za-z0-9À-ÖØ-öø-ÿÑñ\s#.,\/-]*$/,
+    NOMBRE_REGEX: /^(?=.{3,80}$)[A-Za-zÀ-ÖØ-öø-ÿÑñ][A-Za-zÀ-ÖØ-öø-ÿÑñ\s]*$/,
+    DIRECCION_REGEX: /^(?=.{8,250}$)[A-Za-z0-9À-ÖØ-öø-ÿÑñ][A-Za-z0-9À-ÖØ-öø-ÿÑñ\s#.,\/-]*$/,
     TELEFONO_REGEX: /^\d{8,15}$/,
     EMAIL_REGEX: /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,24}$/,
     NIT_REGEX: /^\d{1,12}$/,
     DPI_REGEX: /^\d{13}$/,
     FORMAS_PAGO_PERMITIDAS: ['Pago Contra Entrega', 'Tarjeta', 'Transferencia'],
-    TIPOS_DOCUMENTO_PERMITIDOS: ['nit', 'dpi']
+    TIPOS_DOCUMENTO_PERMITIDOS: ['nit', 'dpi'],
+    CANTIDAD_MAXIMA: CANTIDAD_MAXIMA_CARRITO
 };
 
 function normalizarTextoSeguro(str) {
@@ -301,7 +361,7 @@ function limpiarNombreInput(str) {
         .replace(/[^A-Za-zÀ-ÖØ-öø-ÿÑñ\s.'-]/g, '')
         .replace(/\s{2,}/g, ' ')
         .replace(/^\s+/, '')
-        .slice(0, 120);
+        .slice(0, 80);
 }
 
 function limpiarDireccionInput(str) {
@@ -309,7 +369,7 @@ function limpiarDireccionInput(str) {
         .replace(/[^A-Za-z0-9À-ÖØ-öø-ÿÑñ\s#.,\/-]/g, '')
         .replace(/\s{2,}/g, ' ')
         .replace(/^\s+/, '')
-        .slice(0, 180);
+        .slice(0, 250);
 }
 
 function limpiarTelefonoInput(str) {
@@ -339,7 +399,7 @@ function sanitizarInput(str) {
 function obtenerErrorNombre(nombre) {
     if (!nombre) return 'El nombre completo es obligatorio';
     if (!VALIDACION_PEDIDO.NOMBRE_REGEX.test(nombre)) {
-        return 'Ingrese un nombre valido usando solo letras, espacios, apostrofe, punto o guion.';
+        return 'Ingrese un nombre valido usando solo letras y espacios.';
     }
     return '';
 }
@@ -347,7 +407,7 @@ function obtenerErrorNombre(nombre) {
 function obtenerErrorDireccion(direccion) {
     if (!direccion) return 'La direccion es obligatoria';
     if (!VALIDACION_PEDIDO.DIRECCION_REGEX.test(direccion)) {
-        return 'La direccion debe tener entre 8 y 180 caracteres y solo usar letras, numeros y signos permitidos.';
+        return 'La direccion debe tener entre 8 y 250 caracteres y solo usar letras, numeros y signos permitidos.';
     }
     return '';
 }
@@ -860,10 +920,11 @@ function procesarPedido(event) {
 
     carrito.forEach(producto => {
         idarticulo.push(parseInt(producto.idarticulo));
-        cantidad.push(parseFloat(producto.cantidad || 1));
+        const cantidadProducto = normalizarCantidadPedido(producto.cantidad) || 1;
+        cantidad.push(cantidadProducto);
         const precio = parseFloat(producto.precio || 0);
         precio_venta.push(precio);
-        const subtotalItem = precio * (producto.cantidad || 1);
+        const subtotalItem = precio * cantidadProducto;
         subtotal1.push(subtotalItem);
         subtotaldes1.push(subtotalItem);
     });
@@ -1155,6 +1216,11 @@ function restaurarBotonPagoTarjeta(btnEnviar) {
 
 function iniciarPagoTarjeta(apiData, btnEnviar) {
     const ventanaPago = abrirVentanaPagoExterna();
+    const csrfToken = document.getElementById('checkoutCsrfToken')?.value || '';
+    const secureApiData = Object.assign({}, apiData, {
+        csrf_token: csrfToken,
+        website: document.getElementById('checkoutWebsite')?.value || ''
+    });
 
     if (!ventanaPago) {
         restaurarBotonPagoTarjeta(btnEnviar);
@@ -1177,9 +1243,10 @@ function iniciarPagoTarjeta(apiData, btnEnviar) {
     fetch('/api/cybersource/create_checkout.php', {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'X-CSRF-Token': csrfToken
         },
-        body: JSON.stringify(apiData)
+        body: JSON.stringify(secureApiData)
     })
         .then(response => {
             return response.text().then(text => {

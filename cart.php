@@ -1,4 +1,7 @@
-<?php include 'head.php';
+<?php
+require_once __DIR__ . '/assets/php/security.php';
+$checkout_csrf_token = lm_csrf_token('checkout');
+include 'head.php';
 $current_page = basename($_SERVER['PHP_SELF']);
 
 ?>
@@ -79,12 +82,14 @@ $current_page = basename($_SERVER['PHP_SELF']);
                     <p class="mp-form-subtitle">Por favor complete la siguiente información para continuar</p>
                     
                     <form id="formPedido" onsubmit="procesarPedido(event)">
+                        <input type="hidden" id="checkoutCsrfToken" name="csrf_token" value="<?php echo lm_html_escape($checkout_csrf_token); ?>">
+                        <input type="text" id="checkoutWebsite" name="website" value="" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-10000px;width:1px;height:1px;opacity:0;pointer-events:none;">
                         <div class="mp-form-group">
                             <label for="nombreCompleto">Nombre Completo <span class="required">*</span></label>
                             <input type="text" id="nombreCompleto" name="nombreCompleto" class="form-control"
-                                autocomplete="name" minlength="3" maxlength="120"
-                                pattern="[\p{L}\p{M} .'\-]{3,120}"
-                                title="Ingrese solo letras, espacios, punto, apostrofe o guion."
+                                autocomplete="name" minlength="3" maxlength="80"
+                                pattern="[\p{L}\p{M} ]{3,80}"
+                                title="Ingrese solo letras y espacios."
                                 required>
                         </div>
 
@@ -149,8 +154,8 @@ $current_page = basename($_SERVER['PHP_SELF']);
                         <div class="mp-form-group">
                             <label for="direccion">Dirección <span class="required">*</span></label>
                             <input type="text" id="direccion" name="direccion" class="form-control"
-                                autocomplete="street-address" minlength="8" maxlength="180"
-                                pattern="[\p{L}\p{M}0-9 #.,\/\-]{8,180}"
+                                autocomplete="street-address" minlength="8" maxlength="250"
+                                pattern="[\p{L}\p{M}0-9 #.,\/\-]{8,250}"
                                 title="Use letras, numeros, espacios y signos de direccion como #, punto, coma, diagonal o guion."
                                 required>
                         </div>

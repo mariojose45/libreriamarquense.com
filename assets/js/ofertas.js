@@ -380,7 +380,7 @@ window.compartirWhatsApp = function (e) {
 }
 
 /* ============================================================
-   PAGINACION DE OFERTAS - TI-CELL
+   PAGINACION DE OFERTAS - LIBRERIA MARQUENSE
 ============================================================ */
 const OFERTAS_PRODUCTOS_PAGINADOS_ENDPOINT = "assets/php/productos_paginados.php";
 const OFERTAS_PRODUCTOS_POR_PAGINA = 30;

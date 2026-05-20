@@ -1,22 +1,22 @@
 <?php
 
-if (!function_exists('ticell_render_legal_styles')) {
-    function ticell_render_legal_styles()
+if (!function_exists('lm_render_legal_styles')) {
+    function lm_render_legal_styles()
     {
         ?>
         <style>
-            .ti-cell-legal-area {
+            .lm-legal-area {
                 background: #F7F8FC;
                 padding: 50px 0;
             }
 
-            .ti-cell-legal-header {
+            .lm-legal-header {
                 margin: 0 auto 28px;
                 max-width: 900px;
                 text-align: center;
             }
 
-            .ti-cell-legal-header h2 {
+            .lm-legal-header h2 {
                 color: #16224a;
                 font-size: 48px;
                 font-weight: 800;
@@ -24,7 +24,7 @@ if (!function_exists('ticell_render_legal_styles')) {
                 margin-bottom: 0;
             }
 
-            .ti-cell-legal-card {
+            .lm-legal-card {
                 background: #ffffff;
                 border: 1px solid rgba(36, 71, 155, 0.12);
                 border-radius: 28px;
@@ -33,7 +33,7 @@ if (!function_exists('ticell_render_legal_styles')) {
                 position: relative;
             }
 
-            .ti-cell-legal-card::before {
+            .lm-legal-card::before {
                 background: #24479b;
                 content: "";
                 display: block;
@@ -41,18 +41,18 @@ if (!function_exists('ticell_render_legal_styles')) {
                 width: 100%;
             }
 
-            .ti-cell-legal-card-body {
+            .lm-legal-card-body {
                 padding: 42px 46px;
             }
 
-            .ti-cell-legal-card-top {
+            .lm-legal-card-top {
                 align-items: center;
                 display: flex;
                 gap: 18px;
                 margin-bottom: 18px;
             }
 
-            .ti-cell-legal-icon {
+            .lm-legal-icon {
                 align-items: center;
                 background: linear-gradient(145deg, rgba(36, 71, 155, 0.15), rgba(36, 71, 155, 0.04));
                 border-radius: 20px;
@@ -65,11 +65,11 @@ if (!function_exists('ticell_render_legal_styles')) {
                 width: 72px;
             }
 
-            .ti-cell-legal-heading {
+            .lm-legal-heading {
                 flex: 1 1 auto;
             }
 
-            .ti-cell-legal-heading h3 {
+            .lm-legal-heading h3 {
                 color: #16224a;
                 font-size: 30px;
                 font-weight: 800;
@@ -77,27 +77,27 @@ if (!function_exists('ticell_render_legal_styles')) {
                 margin-bottom: 8px;
             }
 
-            .ti-cell-legal-updated {
+            .lm-legal-updated {
                 color: #617089;
                 font-size: 17px;
                 line-height: 1.6;
                 margin-bottom: 0;
             }
 
-            .ti-cell-legal-intro {
+            .lm-legal-intro {
                 color: #2d3850;
                 font-size: 18px;
                 line-height: 1.8;
                 margin-bottom: 28px;
             }
 
-            .ti-cell-legal-block + .ti-cell-legal-block {
+            .lm-legal-block + .lm-legal-block {
                 border-top: 1px solid rgba(36, 71, 155, 0.10);
                 margin-top: 24px;
                 padding-top: 24px;
             }
 
-            .ti-cell-legal-block h4 {
+            .lm-legal-block h4 {
                 color: #16224a;
                 font-size: 28px;
                 font-weight: 800;
@@ -105,24 +105,24 @@ if (!function_exists('ticell_render_legal_styles')) {
                 margin-bottom: 14px;
             }
 
-            .ti-cell-legal-block p {
+            .lm-legal-block p {
                 color: #2e384f;
                 font-size: 18px;
                 line-height: 1.85;
                 margin-bottom: 14px;
             }
 
-            .ti-cell-legal-block p:last-child {
+            .lm-legal-block p:last-child {
                 margin-bottom: 0;
             }
 
-            .ti-cell-legal-list {
+            .lm-legal-list {
                 list-style: none;
                 margin: 0;
                 padding: 0;
             }
 
-            .ti-cell-legal-list li {
+            .lm-legal-list li {
                 color: #2e384f;
                 font-size: 18px;
                 line-height: 1.8;
@@ -130,11 +130,11 @@ if (!function_exists('ticell_render_legal_styles')) {
                 position: relative;
             }
 
-            .ti-cell-legal-list li + li {
+            .lm-legal-list li + li {
                 margin-top: 8px;
             }
 
-            .ti-cell-legal-list li::before {
+            .lm-legal-list li::before {
                 background: #4aa364;
                 border-radius: 999px;
                 content: "";
@@ -146,41 +146,41 @@ if (!function_exists('ticell_render_legal_styles')) {
             }
 
             @media only screen and (max-width: 991px) {
-                .ti-cell-legal-header h2 {
+                .lm-legal-header h2 {
                     font-size: 40px;
                 }
 
-                .ti-cell-legal-card-body {
+                .lm-legal-card-body {
                     padding: 34px 28px;
                 }
 
-                .ti-cell-legal-card-top {
+                .lm-legal-card-top {
                     align-items: flex-start;
                     flex-direction: column;
                 }
             }
 
             @media only screen and (max-width: 767px) {
-                .ti-cell-legal-area {
+                .lm-legal-area {
                     padding: 40px 0;
                 }
 
-                .ti-cell-legal-header h2 {
+                .lm-legal-header h2 {
                     font-size: 32px;
                 }
 
-                .ti-cell-legal-heading h3 {
+                .lm-legal-heading h3 {
                     font-size: 24px;
                 }
 
-                .ti-cell-legal-updated,
-                .ti-cell-legal-intro,
-                .ti-cell-legal-block p,
-                .ti-cell-legal-list li {
+                .lm-legal-updated,
+                .lm-legal-intro,
+                .lm-legal-block p,
+                .lm-legal-list li {
                     font-size: 16px;
                 }
 
-                .ti-cell-legal-block h4 {
+                .lm-legal-block h4 {
                     font-size: 22px;
                 }
             }
@@ -188,41 +188,41 @@ if (!function_exists('ticell_render_legal_styles')) {
         <?php
     }
 
-    function ticell_open_legal_section($pageTitle, $cardTitle, $updatedText, $introText = '', $iconClass = 'bx-file')
+    function lm_open_legal_section($pageTitle, $cardTitle, $updatedText, $introText = '', $iconClass = 'bx-file')
     {
-        ticell_render_legal_styles();
+        lm_render_legal_styles();
         ?>
-        <section class="ti-cell-legal-area">
+        <section class="lm-legal-area">
             <div class="container">
-                <div class="ti-cell-legal-header">
+                <div class="lm-legal-header">
                     <h2><?php echo $pageTitle; ?></h2>
                 </div>
 
-                <div class="ti-cell-legal-card">
-                    <div class="ti-cell-legal-card-body">
-                        <div class="ti-cell-legal-card-top">
-                            <div class="ti-cell-legal-icon">
+                <div class="lm-legal-card">
+                    <div class="lm-legal-card-body">
+                        <div class="lm-legal-card-top">
+                            <div class="lm-legal-icon">
                                 <i class='bx <?php echo htmlspecialchars($iconClass); ?>'></i>
                             </div>
 
-                            <div class="ti-cell-legal-heading">
+                            <div class="lm-legal-heading">
                                 <h3><?php echo $cardTitle; ?></h3>
                                 <?php if (!empty($updatedText)): ?>
-                                    <p class="ti-cell-legal-updated"><?php echo $updatedText; ?></p>
+                                    <p class="lm-legal-updated"><?php echo $updatedText; ?></p>
                                 <?php endif; ?>
                             </div>
                         </div>
 
                         <?php if (!empty($introText)): ?>
-                            <p class="ti-cell-legal-intro"><?php echo $introText; ?></p>
+                            <p class="lm-legal-intro"><?php echo $introText; ?></p>
                         <?php endif; ?>
         <?php
     }
 
-    function ticell_render_legal_block($title, array $paragraphs = [], array $bullets = [])
+    function lm_render_legal_block($title, array $paragraphs = [], array $bullets = [])
     {
         ?>
-        <div class="ti-cell-legal-block">
+        <div class="lm-legal-block">
             <h4><?php echo $title; ?></h4>
 
             <?php foreach ($paragraphs as $paragraph): ?>
@@ -230,7 +230,7 @@ if (!function_exists('ticell_render_legal_styles')) {
             <?php endforeach; ?>
 
             <?php if (!empty($bullets)): ?>
-                <ul class="ti-cell-legal-list">
+                <ul class="lm-legal-list">
                     <?php foreach ($bullets as $bullet): ?>
                         <li><?php echo $bullet; ?></li>
                     <?php endforeach; ?>
@@ -240,7 +240,7 @@ if (!function_exists('ticell_render_legal_styles')) {
         <?php
     }
 
-    function ticell_close_legal_section()
+    function lm_close_legal_section()
     {
         ?>
                     </div>

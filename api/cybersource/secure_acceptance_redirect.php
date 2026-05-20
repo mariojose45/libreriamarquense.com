@@ -5,6 +5,10 @@ require __DIR__ . '/_bootstrap.php';
 $reference = isset($_GET['ref']) ? $_GET['ref'] : '';
 
 try {
+    if (!lm_payment_reference_is_valid($reference)) {
+        throw new \LM\CyberSource\GatewayException('Referencia de pago no valida.');
+    }
+
     if (!$config->isEnabled() || !$config->hasSecureAcceptance()) {
         throw new \LM\CyberSource\GatewayException('La pasarela no esta configurada.');
     }

@@ -12,7 +12,9 @@ include "assets/php/rutas.php";
 $response = getApi($url_listar_categorias);
 $data = json_decode($response, true);
 $categorias = $data["data"] ?? [];
-$categoria_actual = isset($_GET['categoria']) ? (string) $_GET['categoria'] : '';
+$categoria_actual = isset($_GET['categoria']) && preg_match('/^\d{1,10}$/', (string) $_GET['categoria'])
+    ? (string) $_GET['categoria']
+    : '';
 
 ?>
 
@@ -573,9 +575,9 @@ $categoria_actual = isset($_GET['categoria']) ? (string) $_GET['categoria'] : ''
                                             $icono = $iconosPorCategoria[$nombreCategoria] ?? "bx bx-book";
                                     ?>
                                             <li>
-                                                <a href="tienda.php?categoria=<?= $cat['idcategoria'] ?>" class="nav-link <?= $categoria_actual === (string) $cat['idcategoria'] ? 'active' : '' ?>">
-                                                    <i class="<?= $icono ?>"></i>
-                                                    <?= htmlspecialchars($nombreOriginal) ?>
+                                                <a href="tienda.php?categoria=<?= rawurlencode((string) $cat['idcategoria']) ?>" class="nav-link <?= $categoria_actual === (string) $cat['idcategoria'] ? 'active' : '' ?>">
+                                                    <i class="<?= htmlspecialchars($icono, ENT_QUOTES, 'UTF-8') ?>"></i>
+                                                    <?= htmlspecialchars($nombreOriginal, ENT_QUOTES, 'UTF-8') ?>
                                                 </a>
                                             </li>
                                     <?php

@@ -519,9 +519,9 @@ Dirigite a Nosotros
 
             <div class="lm-feature-banner-col">
                 <a class="lm-feature-banner" href="contact.php">
-                    <img class="lm-feature-banner__image" src="assets/img/AsesoriaTecnica.png" alt="Asesoría Técnica">
+                    <img class="lm-feature-banner__image" src="assets/img/AsesoriaEscolar.png" alt="Asesoría escolar">
                     <div class="lm-feature-banner__content">
-                        <h3 class="lm-feature-banner__title">Asesoría Técnica</h3>
+                        <h3 class="lm-feature-banner__title">Asesoría Escolar</h3>
                         <span class="lm-feature-banner__subtitle">Personalizada</span>
                     </div>
                 </a>

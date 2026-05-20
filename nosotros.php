@@ -51,7 +51,7 @@ if (!function_exists('getApiData')) {
 | Estos se muestran si la API no responde o viene vacia.
 |--------------------------------------------------------------------------
 */
-$imagenNosotros = 'assets/img/Historia TI-CELL.png';
+$imagenNosotros = 'assets/img/Sucursales/LibreriaMarquense01.jpeg';
 
 $historiaParrafos = [
     'Librería Marquense nace con el propósito de ofrecer útiles escolares, papelería, libros, material didáctico y productos de oficina para estudiantes, docentes, familias y empresas.',
@@ -143,17 +143,17 @@ if (!empty($nosotrosData) && is_array($nosotrosData)) {
 </div>
 
 <style>
-    .ticell-about-area {
+    .lm-about-area {
         background: #F7F8FC;
         padding: 50px 0;
     }
 
-    .ticell-about-grid {
+    .lm-about-grid {
         --bs-gutter-x: 18px;
         --bs-gutter-y: 18px;
     }
 
-    .ticell-about-panel {
+    .lm-about-panel {
         background: #ffffff;
         border: 1px solid rgba(26, 38, 151, 0.12);
         border-radius: 28px;
@@ -162,7 +162,7 @@ if (!empty($nosotrosData) && is_array($nosotrosData)) {
         position: relative;
     }
 
-    .ticell-about-panel::before {
+    .lm-about-panel::before {
         background: #1A2697;
         content: "";
         display: block;
@@ -170,26 +170,26 @@ if (!empty($nosotrosData) && is_array($nosotrosData)) {
         width: 100%;
     }
 
-    .ticell-about-story,
-    .ticell-about-media,
-    .ticell-about-card,
-    .ticell-about-diff {
+    .lm-about-story,
+    .lm-about-media,
+    .lm-about-card,
+    .lm-about-diff {
         height: 100%;
     }
 
-    .ticell-about-story-group .row {
+    .lm-about-story-group .row {
         --bs-gutter-x: 0;
     }
 
-    .ticell-about-story-body,
-    .ticell-about-card-body,
-    .ticell-about-diff-body {
+    .lm-about-story-body,
+    .lm-about-card-body,
+    .lm-about-diff-body {
         padding: 30px 32px;
     }
 
-    .ticell-about-story h3,
-    .ticell-about-card h3,
-    .ticell-about-diff h3 {
+    .lm-about-story h3,
+    .lm-about-card h3,
+    .lm-about-diff h3 {
         color: #17214F;
         font-size: 34px;
         font-weight: 800;
@@ -197,27 +197,27 @@ if (!empty($nosotrosData) && is_array($nosotrosData)) {
         margin-bottom: 18px;
     }
 
-    .ticell-about-story p,
-    .ticell-about-card p {
+    .lm-about-story p,
+    .lm-about-card p {
         color: #2D3448;
         font-size: 18px;
         line-height: 1.9;
         margin-bottom: 14px;
     }
 
-    .ticell-about-story p:last-child,
-    .ticell-about-card p:last-child {
+    .lm-about-story p:last-child,
+    .lm-about-card p:last-child {
         margin-bottom: 0;
     }
 
-    .ticell-about-media {
+    .lm-about-media {
         align-items: center;
         display: flex;
         justify-content: center;
         padding: 26px 26px 26px 0;
     }
 
-    .ticell-about-media img {
+    .lm-about-media img {
         border-radius: 20px;
         display: block;
         height: auto;
@@ -227,22 +227,22 @@ if (!empty($nosotrosData) && is_array($nosotrosData)) {
         width: 100%;
     }
 
-    .ticell-about-card h3 {
+    .lm-about-card h3 {
         font-size: 30px;
         margin-bottom: 12px;
     }
 
-    .ticell-about-diff-body {
+    .lm-about-diff-body {
         padding-bottom: 30px;
     }
 
-    .ticell-about-list {
+    .lm-about-list {
         list-style: none;
         margin: 0;
         padding: 0;
     }
 
-    .ticell-about-list li {
+    .lm-about-list li {
         color: #2D3448;
         font-size: 18px;
         line-height: 1.85;
@@ -250,11 +250,11 @@ if (!empty($nosotrosData) && is_array($nosotrosData)) {
         position: relative;
     }
 
-    .ticell-about-list li + li {
+    .lm-about-list li + li {
         margin-top: 10px;
     }
 
-    .ticell-about-list li i {
+    .lm-about-list li i {
         color: #166B38;
         font-size: 18px;
         left: 0;
@@ -263,53 +263,157 @@ if (!empty($nosotrosData) && is_array($nosotrosData)) {
     }
 
     @media only screen and (max-width: 991px) {
-        .ticell-about-story h3,
-        .ticell-about-card h3,
-        .ticell-about-diff h3 {
-            font-size: 28px;
+        .lm-about-area {
+            padding: 36px 0;
         }
 
-        .ticell-about-media {
-            padding: 0 22px 22px 22px;
+        .lm-about-grid {
+            --bs-gutter-x: 14px;
+            --bs-gutter-y: 14px;
         }
 
-        .ticell-about-media img {
-            max-height: 320px;
+        .lm-about-panel {
+            border-radius: 22px;
+        }
+
+        .lm-about-panel::before {
+            height: 6px;
+        }
+
+        .lm-about-story-body,
+        .lm-about-card-body,
+        .lm-about-diff-body {
+            padding: 24px;
+        }
+
+        .lm-about-story h3,
+        .lm-about-card h3,
+        .lm-about-diff h3 {
+            font-size: 26px;
+            margin-bottom: 12px;
+        }
+
+        .lm-about-card h3 {
+            font-size: 24px;
+        }
+
+        .lm-about-story p,
+        .lm-about-card p {
+            font-size: 16px;
+            line-height: 1.65;
+            margin-bottom: 10px;
+        }
+
+        .lm-about-list li {
+            font-size: 16px;
+            line-height: 1.6;
+            padding-left: 26px;
+        }
+
+        .lm-about-list li + li {
+            margin-top: 8px;
+        }
+
+        .lm-about-list li i {
+            top: 5px;
+        }
+
+        .lm-about-media {
+            padding: 0 20px 20px 20px;
+        }
+
+        .lm-about-media img {
+            max-height: 260px;
         }
     }
 
     @media only screen and (max-width: 767px) {
-        .ticell-about-area {
-            padding: 40px 0;
+        .lm-about-area {
+            padding: 28px 0;
         }
 
-        .ticell-about-story-body,
-        .ticell-about-card-body,
-        .ticell-about-diff-body {
-            padding: 26px 22px;
+        .lm-about-grid {
+            --bs-gutter-x: 12px;
+            --bs-gutter-y: 12px;
         }
 
-        .ticell-about-story p,
-        .ticell-about-card p,
-        .ticell-about-list li {
-            font-size: 16px;
+        .lm-about-panel {
+            border-radius: 18px;
         }
 
-        .ticell-about-media img {
-            max-height: 240px;
+        .lm-about-story-body,
+        .lm-about-card-body,
+        .lm-about-diff-body {
+            padding: 20px 18px;
+        }
+
+        .lm-about-story h3,
+        .lm-about-card h3,
+        .lm-about-diff h3 {
+            font-size: 22px;
+            margin-bottom: 10px;
+        }
+
+        .lm-about-story p,
+        .lm-about-card p,
+        .lm-about-list li {
+            font-size: 15px;
+            line-height: 1.55;
+        }
+
+        .lm-about-list li + li {
+            margin-top: 7px;
+        }
+
+        .lm-about-media {
+            padding: 0 16px 18px 16px;
+        }
+
+        .lm-about-media img {
+            border-radius: 16px;
+            max-height: 210px;
+        }
+    }
+
+    @media only screen and (max-width: 575px) {
+        .lm-about-area {
+            padding: 24px 0;
+        }
+
+        .lm-about-story-body,
+        .lm-about-card-body,
+        .lm-about-diff-body {
+            padding: 18px 16px;
+        }
+
+        .lm-about-story h3,
+        .lm-about-card h3,
+        .lm-about-diff h3 {
+            font-size: 21px;
+        }
+
+        .lm-about-story p,
+        .lm-about-card p,
+        .lm-about-list li {
+            font-size: 14.5px;
+            line-height: 1.5;
+        }
+
+        .lm-about-media img {
+            max-height: 190px;
         }
     }
 </style>
 
-<section class="ticell-about-area">
+<section class="lm-about-area">
     <div class="container">
-        <div class="row ticell-about-grid">
+        <div class="row lm-about-grid">
             <div class="col-lg-12">
-                <div class="ticell-about-panel ticell-about-story-group">
+                <div class="lm-about-panel lm-about-story-group">
                     <div class="row align-items-stretch">
                         <div class="col-lg-7 col-md-12">
-                            <div class="ticell-about-story">
-                                <div class="ticell-about-story-body">
+                            <div class="lm-about-story">
+                                <div class="lm-about-story-body">
                                     <h3>Historia de la Empresa</h3>
 
                                     <?php foreach ($historiaParrafos as $parrafo): ?>
@@ -320,11 +424,11 @@ if (!empty($nosotrosData) && is_array($nosotrosData)) {
                         </div>
 
                         <div class="col-lg-5 col-md-12">
-                            <div class="ticell-about-media">
+                            <div class="lm-about-media">
                                 <img
                                     src="<?php echo htmlspecialchars($imagenNosotros, ENT_QUOTES, 'UTF-8'); ?>"
                                     alt="Librería Marquense - Nosotros"
-                                    onerror="this.onerror=null;this.src='assets/img/servicios/nosotros.png';"
+                                    onerror="this.onerror=null;this.src='assets/img/LogoLibreriaMarquense.jpeg';"
                                 >
                             </div>
                         </div>
@@ -333,29 +437,29 @@ if (!empty($nosotrosData) && is_array($nosotrosData)) {
             </div>
 
             <div class="col-lg-6 col-md-12">
-                <div class="ticell-about-panel ticell-about-card">
-                    <div class="ticell-about-card-body">
-                        <h3>Mision</h3>
+                <div class="lm-about-panel lm-about-card">
+                    <div class="lm-about-card-body">
+                        <h3>Misi&oacute;n</h3>
                         <p><?php echo htmlspecialchars($misionTexto, ENT_QUOTES, 'UTF-8'); ?></p>
                     </div>
                 </div>
             </div>
 
             <div class="col-lg-6 col-md-12">
-                <div class="ticell-about-panel ticell-about-card">
-                    <div class="ticell-about-card-body">
-                        <h3>Vision</h3>
+                <div class="lm-about-panel lm-about-card">
+                    <div class="lm-about-card-body">
+                        <h3>Visi&oacute;n</h3>
                         <p><?php echo htmlspecialchars($visionTexto, ENT_QUOTES, 'UTF-8'); ?></p>
                     </div>
                 </div>
             </div>
 
             <div class="col-lg-12">
-                <div class="ticell-about-panel ticell-about-diff">
-                    <div class="ticell-about-diff-body">
-                        <h3>&iquest;Que nos diferencia de la competencia?</h3>
+                <div class="lm-about-panel lm-about-diff">
+                    <div class="lm-about-diff-body">
+                        <h3>&iquest;Qu&eacute; nos diferencia de la competencia?</h3>
 
-                        <ul class="ticell-about-list">
+                        <ul class="lm-about-list">
                             <?php foreach ($diferenciadores as $diferenciador): ?>
                                 <li>
                                     <i class='bx bx-check'></i>

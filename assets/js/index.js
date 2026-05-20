@@ -559,9 +559,6 @@ function cargarProductosMasVendidos() {
         .then(response => response.json())
         .then(async data => {
 
-            // Mostrar JSON real (solo para pruebas)
-            // alert(JSON.stringify(data, null, 2));
-
             let contenedor = document.getElementById("productos-mas-vendidos");
 
             contenedor.innerHTML = "";

@@ -782,7 +782,7 @@ function cargarProductosPorMarca(idmarca, idsucursal) {
 }
 
 /* ============================================================
-   PAGINACION DE PRODUCTOS - TI-CELL
+   PAGINACION DE PRODUCTOS - LIBRERIA MARQUENSE
 ============================================================ */
 const TIENDA_PRODUCTOS_PAGINADOS_ENDPOINT = "assets/php/productos_paginados.php";
 const TIENDA_PRODUCTOS_POR_PAGINA = 30;

@@ -10,7 +10,7 @@ class PaymentSessionStore
     {
         $this->dir = $dir;
         if (!is_dir($this->dir)) {
-            mkdir($this->dir, 0755, true);
+            mkdir($this->dir, 0750, true);
         }
     }
 
@@ -41,6 +41,7 @@ class PaymentSessionStore
         $data['updated_at'] = gmdate('c');
         $file = $this->fileForReference($reference);
         file_put_contents($file, json_encode(SensitiveData::redact($data), JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES), LOCK_EX);
+        @chmod($file, 0640);
     }
 
     private function generateReference()

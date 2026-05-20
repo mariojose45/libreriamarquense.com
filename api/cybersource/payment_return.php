@@ -23,10 +23,20 @@ $message = 'Recibimos el retorno del portal de pago. Tu pedido queda en revision
 $clearCart = false;
 
 try {
+    if (!lm_payment_reference_is_valid($reference)) {
+        throw new \LM\CyberSource\GatewayException('Referencia de pago no valida.');
+    }
+
     $session = $store->find($reference);
 
     if (!$session) {
         throw new \LM\CyberSource\GatewayException('No encontramos la referencia de pago.');
+    }
+
+    if (lm_session_is_expired($session)) {
+        $session['status'] = 'EXPIRED';
+        $store->save($reference, $session);
+        throw new \LM\CyberSource\GatewayException('La sesion de pago vencio.');
     }
 
     $session['provider_return'] = array(
@@ -37,6 +47,10 @@ try {
     );
 
     if ($trusted && $status === 'APPROVED') {
+        if (!lm_provider_amount_matches_session($params, $session)) {
+            throw new \LM\CyberSource\GatewayException('El monto aprobado no coincide con el total del pedido.');
+        }
+
         $session['status'] = 'PAID';
         $session['provider_transaction_id'] = $secureAcceptance->extractTransactionId($params);
         $session['provider_authorization_number'] = $secureAcceptance->extractAuthorizationNumber($params);

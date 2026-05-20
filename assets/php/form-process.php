@@ -1,123 +1,108 @@
 <?php
 
-$errorMSG = "";
+require_once __DIR__ . '/security.php';
 
-// Función para sanitizar datos
-function sanitizeInput($data)
-{
-    $data = trim($data);
-    $data = stripslashes($data);
-    $data = htmlspecialchars($data);
-    return $data;
-}
+lm_security_headers();
+header('Content-Type: text/plain; charset=utf-8');
 
-// NAME
-if (empty($_POST["name"])) {
-    $errorMSG = "El nombre es requerido ";
-} else {
-    $name = sanitizeInput($_POST["name"]);
-}
-
-// EMAIL
-if (empty($_POST["email"])) {
-    $errorMSG .= "El email es requerido ";
-} else {
-    $email = sanitizeInput($_POST["email"]);
-    // Validar formato de email
-    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        $errorMSG .= "El formato del email no es válido ";
-    }
-}
-
-// MSG SUBJECT
-if (empty($_POST["msg_subject"])) {
-    $errorMSG .= "El asunto es requerido ";
-} else {
-    $msg_subject = sanitizeInput($_POST["msg_subject"]);
-}
-
-// Phone Number
-if (empty($_POST["phone_number"])) {
-    $errorMSG .= "El teléfono es requerido ";
-} else {
-    $phone_number = sanitizeInput($_POST["phone_number"]);
-}
-
-// MESSAGE
-if (empty($_POST["message"])) {
-    $errorMSG .= "El mensaje es requerido ";
-} else {
-    $message = sanitizeInput($_POST["message"]);
-}
-
-
-$EmailTo = "servicioslcliente@libreriamarquense.com";
-
-$Subject = "Nuevo Mensaje para Librería Marquense";
-
-// prepare email body text
-$Body = "";
-$Body .= "Nuevo mensaje recibido desde el formulario de contacto\n\n";
-$Body .= "===========================================\n";
-$Body .= "Nombre: ";
-$Body .= $name;
-$Body .= "\n";
-$Body .= "Email: ";
-$Body .= $email;
-$Body .= "\n";
-$Body .= "Teléfono: ";
-$Body .= $phone_number;
-$Body .= "\n";
-$Body .= "Asunto: ";
-$Body .= $msg_subject;
-$Body .= "\n";
-$Body .= "===========================================\n\n";
-$Body .= "Mensaje:\n";
-$Body .= $message;
-$Body .= "\n\n";
-$Body .= "===========================================\n";
-$Body .= "Este mensaje fue enviado desde el formulario de contacto del sitio web.";
-
-// Si hay errores de validación, retornarlos
-if ($errorMSG != "") {
-    echo $errorMSG;
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    http_response_code(405);
+    echo 'Metodo no permitido.';
     exit;
 }
 
-// Guardar los datos en un archivo de respaldo (útil para desarrollo)
-$backupFile = __DIR__ . '/contactos_backup.txt';
-$backupData = "==========================================\n";
-$backupData .= "Fecha: " . date('Y-m-d H:i:s') . "\n";
-$backupData .= $Body . "\n";
-$backupData .= "==========================================\n\n";
-file_put_contents($backupFile, $backupData, FILE_APPEND);
+$errors = array();
 
-// Configurar headers del email
-$headers = "MIME-Version: 1.0" . "\r\n";
-$headers .= "Content-type:text/plain;charset=UTF-8" . "\r\n";
-$headers .= "From: " . $email . "\r\n";
+if (!lm_validate_csrf_token(isset($_POST['csrf_token']) ? $_POST['csrf_token'] : '', 'contact_form')) {
+    http_response_code(403);
+    echo 'La sesion del formulario vencio. Recargue la pagina e intente nuevamente.';
+    exit;
+}
+
+if (!empty($_POST['website'])) {
+    echo 'success';
+    exit;
+}
+
+if (!lm_rate_limit('contact:' . lm_client_ip(), 3, 60)) {
+    http_response_code(429);
+    echo 'Ha realizado varios intentos seguidos. Espere un momento e intente nuevamente.';
+    exit;
+}
+
+$name = '';
+$email = '';
+$phoneNumber = '';
+$subject = '';
+$message = '';
+
+$error = lm_validate_name(isset($_POST['name']) ? $_POST['name'] : '', $name);
+if ($error !== '') {
+    $errors[] = $error;
+}
+
+$error = lm_validate_email(isset($_POST['email']) ? $_POST['email'] : '', $email, true);
+if ($error !== '') {
+    $errors[] = $error;
+}
+
+$error = lm_validate_phone(isset($_POST['phone_number']) ? $_POST['phone_number'] : '', $phoneNumber, 8, 8);
+if ($error !== '') {
+    $errors[] = $error;
+}
+
+$error = lm_validate_text_field(isset($_POST['msg_subject']) ? $_POST['msg_subject'] : '', 'El asunto', 3, 120, $subject);
+if ($error !== '') {
+    $errors[] = $error;
+}
+
+$error = lm_validate_text_field(isset($_POST['message']) ? $_POST['message'] : '', 'El mensaje', 5, 1000, $message);
+if ($error !== '') {
+    $errors[] = $error;
+}
+
+if ($errors) {
+    http_response_code(422);
+    echo implode(' ', $errors);
+    exit;
+}
+
+$emailTo = 'servicioslcliente@libreriamarquense.com';
+$mailSubject = 'Nuevo mensaje para Libreria Marquense';
+
+$body = "Nuevo mensaje recibido desde el formulario de contacto\n\n";
+$body .= "===========================================\n";
+$body .= "Nombre: " . $name . "\n";
+$body .= "Email: " . $email . "\n";
+$body .= "Telefono: " . $phoneNumber . "\n";
+$body .= "Asunto: " . $subject . "\n";
+$body .= "IP: " . lm_client_ip() . "\n";
+$body .= "===========================================\n\n";
+$body .= "Mensaje:\n" . $message . "\n\n";
+$body .= "===========================================\n";
+$body .= "Este mensaje fue enviado desde el formulario de contacto del sitio web.";
+
+$logDir = dirname(__DIR__, 2) . '/logs';
+if (is_dir($logDir) && is_writable($logDir)) {
+    $backupData = "==========================================\n";
+    $backupData .= "Fecha: " . date('Y-m-d H:i:s') . "\n";
+    $backupData .= $body . "\n";
+    $backupData .= "==========================================\n\n";
+    file_put_contents($logDir . '/contactos_backup.log', $backupData, FILE_APPEND | LOCK_EX);
+}
+
+$headers = "MIME-Version: 1.0\r\n";
+$headers .= "Content-type:text/plain;charset=UTF-8\r\n";
+$headers .= "From: Libreria Marquense <no-reply@libreriamarquense.com>\r\n";
 $headers .= "Reply-To: " . $email . "\r\n";
 
-// Intentar enviar email solo si se configura una cuenta de destino.
-// El formulario visible actualmente abre WhatsApp con el mensaje preparado.
 $success = true;
-if (!empty($EmailTo)) {
-    @$success = mail($EmailTo, $Subject, $Body, $headers);
+if ($emailTo !== '') {
+    $success = mail($emailTo, $mailSubject, $body, $headers);
 }
 
-// En desarrollo local (XAMPP), mail() puede fallar pero los datos se guardaron
-// Consideramos éxito si no hay errores de validación
-// Nota: En producción necesitarás configurar SMTP o usar un servicio de correo
-if ($errorMSG == "") {
-    // En desarrollo, siempre retornamos éxito ya que guardamos el backup
-    // En producción, descomenta la siguiente línea y comenta la otra
-    // if ($success) {
-    echo "success";
-    // } else {
-    //     echo "Ocurrió un error al enviar el mensaje. Los datos fueron guardados. Por favor contacta al administrador.";
-    // }
-} else {
-    echo $errorMSG;
+if (!$success) {
+    error_log('No se pudo enviar el correo del formulario de contacto.');
 }
 
-?>
+echo 'success';

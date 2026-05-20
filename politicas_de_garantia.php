@@ -18,7 +18,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
 </div>
 
 <?php
-ticell_open_legal_section(
+lm_open_legal_section(
     'Pol&iacute;ticas de Garant&iacute;a',
     'POL&Iacute;TICAS DE GARANT&Iacute;A - LIBRER&Iacute;A MARQUENSE',
     '',
@@ -26,25 +26,25 @@ ticell_open_legal_section(
     'bx-shield-quarter'
 );
 
-ticell_render_legal_block('1. Alcance de la Garant&iacute;a', [], [
+lm_render_legal_block('1. Alcance de la Garant&iacute;a', [], [
     'La entrega del producto en buen estado.',
     'Que el producto corresponda a lo solicitado.',
     'Productos con defectos de f&aacute;brica.',
     'Paquetes, listas escolares o pedidos preparados conforme a la informaci&oacute;n confirmada por el cliente.'
 ]);
 
-ticell_render_legal_block('2. Productos Cubiertos', [
+lm_render_legal_block('2. Productos Cubiertos', [
     'La garant&iacute;a aplica cuando el producto presenta defecto de f&aacute;brica, da&ntilde;o visible al momento de la entrega o error comprobado en el pedido. Para listas escolares o paquetes, la revisi&oacute;n se realiza contra la informaci&oacute;n confirmada por el cliente.'
 ]);
 
-ticell_render_legal_block('3. Casos Cubiertos por Garant&iacute;a', [], [
+lm_render_legal_block('3. Casos Cubiertos por Garant&iacute;a', [], [
     'Producto da&ntilde;ado durante el env&iacute;o.',
     'Error en el producto entregado.',
     'Producto con defecto de f&aacute;brica.',
     'Faltante comprobado en un paquete o lista escolar previamente confirmada.'
 ]);
 
-ticell_render_legal_block('4. Casos NO Cubiertos por Garant&iacute;a', [], [
+lm_render_legal_block('4. Casos NO Cubiertos por Garant&iacute;a', [], [
     'Productos usados, manchados, rotos, rayados o da&ntilde;ados por mal uso.',
     'Da&ntilde;os por humedad, calor, almacenamiento inadecuado o manipulaci&oacute;n posterior a la entrega.',
     'Empaques abiertos o alterados cuando el producto requiere empaque sellado para cambio.',
@@ -52,33 +52,33 @@ ticell_render_legal_block('4. Casos NO Cubiertos por Garant&iacute;a', [], [
     'Productos personalizados, de pedido especial o cortados a medida, salvo defecto comprobado.'
 ]);
 
-ticell_render_legal_block('5. Revisi&oacute;n, Cambios y Reposici&oacute;n', [
+lm_render_legal_block('5. Revisi&oacute;n, Cambios y Reposici&oacute;n', [
     'Los cambios o revisiones se realizar&aacute;n cuando el producto presente da&ntilde;os visibles al momento de la entrega, exista un error en el pedido o se detecte una falla cubierta por la garant&iacute;a aplicable.',
     'Todo cambio est&aacute; sujeto a revisi&oacute;n, disponibilidad de inventario y presentaci&oacute;n del comprobante de compra. No se aceptan devoluciones por cambio de opini&oacute;n, salvo acuerdo expreso o error comprobado por parte de Librer&iacute;a Marquense.'
 ]);
 
-ticell_render_legal_block('6. Responsabilidad del Cliente', [], [
+lm_render_legal_block('6. Responsabilidad del Cliente', [], [
     'Revisar el producto al momento de recibirlo o retirarlo.',
     'Verificar cantidades, marcas, colores, medidas, grado escolar y especificaciones antes de confirmar la compra.',
     'Conservar el comprobante de compra y reportar cualquier inconveniente con claridad y evidencia cuando corresponda.'
 ]);
 
-ticell_render_legal_block('7. Limitaci&oacute;n de Responsabilidad', [], [
+lm_render_legal_block('7. Limitaci&oacute;n de Responsabilidad', [], [
     'Uso indebido del producto.',
     'Da&ntilde;os ocasionados despu&eacute;s de la entrega.',
     'P&eacute;rdidas, deterioro o faltantes reportados despu&eacute;s de haber recibido el pedido conforme.',
     'Incumplimiento de recomendaciones de uso, almacenamiento o cuidado del producto.'
 ]);
 
-ticell_render_legal_block('8. Modificaciones', [
+lm_render_legal_block('8. Modificaciones', [
     'Librer&iacute;a Marquense se reserva el derecho de modificar estas Pol&iacute;ticas de Garant&iacute;a en cualquier momento. Las modificaciones entrar&aacute;n en vigor a partir de su publicaci&oacute;n en el sitio web.'
 ]);
 
-ticell_render_legal_block('9. Aceptaci&oacute;n', [
+lm_render_legal_block('9. Aceptaci&oacute;n', [
     'Al realizar una compra en Librer&iacute;a Marquense, el cliente declara haber le&iacute;do, comprendido y aceptado estas Pol&iacute;ticas de Garant&iacute;a en su totalidad.'
 ]);
 
-ticell_close_legal_section();
+lm_close_legal_section();
 ?>
 
 <?php include 'footer.php'; ?>

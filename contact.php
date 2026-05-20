@@ -1,8 +1,11 @@
 <?php
+require_once __DIR__ . '/assets/php/security.php';
+
 // SEO para la pagina de contacto
 $seo_title = "Contacto - Librería Marquense | Útiles escolares y papelería";
 $seo_description = "Contacta a Librería Marquense para consultas sobre útiles escolares, papelería, listas escolares, sucursales y pedidos.";
 $seo_keywords = "contacto Librería Marquense, librería Guatemala, útiles escolares, papelería, listas escolares";
+$contact_csrf_token = lm_csrf_token('contact_form');
 
 $branch_timezone = new DateTimeZone('America/Guatemala');
 
@@ -94,12 +97,14 @@ $current_page = basename($_SERVER['PHP_SELF']);
                             </div>
 
                             <form id="contactForm">
+                                <input type="hidden" name="csrf_token" value="<?php echo lm_html_escape($contact_csrf_token); ?>">
+                                <input type="text" name="website" value="" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-10000px;width:1px;height:1px;opacity:0;pointer-events:none;">
                                 <div class="row">
                                     <div class="col-lg-12 col-md-12">
                                         <div class="form-group">
                                             <label>Mensaje*</label>
 
-                                            <textarea name="message" id="message" cols="30" rows="5" required data-error="Por favor ingrese su mensaje" class="form-control"></textarea>
+                                            <textarea name="message" id="message" cols="30" rows="5" maxlength="1000" required data-error="Por favor ingrese su mensaje" class="form-control"></textarea>
                                             <div class="help-block with-errors"></div>
                                         </div>
                                     </div>
@@ -108,7 +113,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
                                         <div class="form-group">
                                             <label>Nombre*</label>
 
-                                            <input type="text" name="name" id="name" class="form-control" required data-error="Por favor ingrese su nombre">
+                                            <input type="text" name="name" id="name" class="form-control" minlength="3" maxlength="80" autocomplete="name" required data-error="Por favor ingrese su nombre">
                                             <div class="help-block with-errors"></div>
                                         </div>
                                     </div>
@@ -117,7 +122,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
                                         <div class="form-group">
                                             <label>Email*</label>
 
-                                            <input type="email" name="email" id="email" class="form-control" required data-error="Por favor ingrese su email">
+                                            <input type="email" name="email" id="email" class="form-control" maxlength="120" autocomplete="email" required data-error="Por favor ingrese su email">
                                             <div class="help-block with-errors"></div>
                                         </div>
                                     </div>
@@ -126,7 +131,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
                                         <div class="form-group">
                                             <label>Telefono*</label>
 
-                                            <input type="text" name="phone_number" id="phone_number" class="form-control" required data-error="Por favor ingrese su telefono">
+                                            <input type="text" name="phone_number" id="phone_number" class="form-control" inputmode="numeric" minlength="8" maxlength="9" pattern="[0-9]{4}-?[0-9]{4}" autocomplete="tel-national" required data-error="Por favor ingrese su telefono">
                                             <div class="help-block with-errors"></div>
                                         </div>
                                     </div>
@@ -135,7 +140,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
                                         <div class="form-group">
                                             <label>Asunto*</label>
 
-                                            <input type="text" name="msg_subject" id="msg_subject" class="form-control" required data-error="Por favor ingrese el asunto">
+                                            <input type="text" name="msg_subject" id="msg_subject" class="form-control" minlength="3" maxlength="120" required data-error="Por favor ingrese el asunto">
                                             <div class="help-block with-errors"></div>
                                         </div>
                                     </div>
@@ -203,7 +208,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
                     <div class="col-lg-6 col-md-12">
                         <div class="branch-card">
                             <div class="branch-card__media">
-                                <img src="<?= htmlspecialchars(branch_image_src('TI-CELL Zamara.jpeg')) ?>" alt="Sucursal Librer&iacute;a Marquense Zamara">
+                                <img src="<?= htmlspecialchars(branch_image_src('LibreriaMarquense01.jpeg')) ?>" alt="Sucursal Librer&iacute;a Marquense Zamara">
                             </div>
                             <div class="branch-card__body">
                                 <div class="branch-card__summary">
@@ -236,7 +241,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
                     <div class="col-lg-6 col-md-12">
                         <div class="branch-card">
                             <div class="branch-card__media">
-                                <img src="<?= htmlspecialchars(branch_image_src('TI-CELL San Miguel Ixtahuacán2.jpeg')) ?>" alt="Sucursal Librer&iacute;a Marquense San Miguel Ixtahuac&aacute;n 2">
+                                <img src="<?= htmlspecialchars(branch_image_src('LibreriaMarquense01.jpeg')) ?>" alt="Sucursal Librer&iacute;a Marquense San Miguel Ixtahuac&aacute;n 2">
                             </div>
                             <div class="branch-card__body">
                                 <div class="branch-card__summary">
@@ -269,7 +274,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
                     <div class="col-lg-6 col-md-12">
                         <div class="branch-card">
                             <div class="branch-card__media">
-                                <img src="<?= htmlspecialchars(branch_image_src('TI-CELL Sipacapa.jpeg')) ?>" alt="Sucursal Librer&iacute;a Marquense Sipacapa">
+                                <img src="<?= htmlspecialchars(branch_image_src('LibreriaMarquense01.jpeg')) ?>" alt="Sucursal Librer&iacute;a Marquense Sipacapa">
                             </div>
                             <div class="branch-card__body">
                                 <div class="branch-card__summary">
@@ -302,7 +307,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
                     <div class="col-lg-6 col-md-12">
                         <div class="branch-card">
                             <div class="branch-card__media">
-                                <img src="<?= htmlspecialchars(branch_image_src('TI-CELL Huitán.jpeg')) ?>" alt="Sucursal Librer&iacute;a Marquense Huit&aacute;n">
+                                <img src="<?= htmlspecialchars(branch_image_src('LibreriaMarquense01.jpeg')) ?>" alt="Sucursal Librer&iacute;a Marquense Huit&aacute;n">
                             </div>
                             <div class="branch-card__body">
                                 <div class="branch-card__summary">
@@ -531,6 +536,15 @@ $current_page = basename($_SERVER['PHP_SELF']);
 
         @media (max-width: 768px) {
 
+        .contact-area.ptb-50 {
+            padding-top: 34px;
+            padding-bottom: 30px;
+        }
+
+        .branches-area.pb-50 {
+            padding-bottom: 34px;
+        }
+
         .contact-area .container,
         .branches-area .container {
             max-width: 100%;
@@ -541,37 +555,67 @@ $current_page = basename($_SERVER['PHP_SELF']);
         .contact-form {
             margin: 0 auto;
             max-width: none;
-            padding: 18px 14px;
+            padding: 16px 14px;
+        }
+
+        .contact-form .tile {
+            margin-bottom: 20px;
+        }
+
+        .contact-form .tile p {
+            font-size: 15px;
+            line-height: 1.55;
+        }
+
+        .contact-form #contactForm .form-group {
+            margin-bottom: 12px;
+        }
+
+        .contact-form #contactForm .form-group label {
+            font-size: 15px;
+            margin-bottom: 5px;
+        }
+
+        .contact-form #contactForm .form-group .form-control {
+            font-size: 15px;
+            height: 48px;
+        }
+
+        .contact-form #contactForm .form-group textarea.form-control {
+            min-height: 128px;
+            padding-top: 10px;
         }
 
         .branch-title {
-            margin-bottom: 24px;
+            margin-bottom: 18px;
             max-width: none;
         }
 
         .contact-form .tile h3,
         .branch-title h3 {
-            font-size: 22px;
-            line-height: 1.3;
+            font-size: 21px;
+            line-height: 1.25;
+            margin-bottom: 12px;
+            padding-bottom: 12px;
         }
 
         .contact-form .default-btn {
-            margin-top: 10px;
+            margin-top: 8px;
             text-align: center;
             width: 100%;
         }
 
         .branch-card {
-            border-radius: 26px;
+            border-radius: 22px;
             flex-direction: column;
             flex-wrap: nowrap;
-            gap: 20px;
+            gap: 14px;
             max-width: none;
-            padding: 18px;
+            padding: 14px;
         }
 
         .branches-area .row {
-            row-gap: 24px;
+            row-gap: 18px;
         }
 
         .branches-area .col-lg-6,
@@ -596,39 +640,51 @@ $current_page = basename($_SERVER['PHP_SELF']);
         }
 
         .branch-card__media img {
-            border-radius: 22px;
-            height: 220px;
-            max-height: 240px;
+            border-radius: 18px;
+            height: 185px;
+            max-height: 185px;
         }
 
         .branch-card__body h3 {
-            font-size: 22px;
+            font-size: 19px;
+            margin-bottom: 6px;
         }
 
         .branch-card__address,
         .branch-card__pickup,
         .branch-card__meta li {
-            font-size: 14px;
+            font-size: 13px;
+            line-height: 1.25;
+        }
+
+        .branch-card__meta {
+            margin-top: 6px;
+            padding-top: 9px;
+        }
+
+        .branch-card__meta li {
+            margin-bottom: 7px;
         }
 
         .branch-card__actions {
-            margin-top: 14px;
+            gap: 7px;
             grid-template-columns: 1fr;
+            margin-top: 8px;
             max-width: none;
         }
 
         .branch-card__actions a {
-            gap: 10px;
-            min-height: 58px;
+            gap: 8px;
+            min-height: 46px;
         }
 
         .branch-card__actions a img {
-            height: 24px;
-            width: 24px;
+            height: 20px;
+            width: 20px;
         }
 
         .branch-card__actions a i {
-            font-size: 22px;
+            font-size: 20px;
         }
     }
 

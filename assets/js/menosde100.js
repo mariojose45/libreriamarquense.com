@@ -380,7 +380,7 @@ window.compartirWhatsApp = function (e) {
 }
 
 /* ============================================================
-   PAGINACION MENOS DE 100 - TI-CELL
+   PAGINACION MENOS DE 100 - LIBRERIA MARQUENSE
 ============================================================ */
 const MENOS100_PRODUCTOS_PAGINADOS_ENDPOINT = "assets/php/productos_paginados.php";
 const MENOS100_PRODUCTOS_POR_PAGINA = 30;

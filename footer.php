@@ -113,7 +113,7 @@ $footer_social_links = array_filter($site_social_links ?? []);
     <div class="container">
         <div class="copyright-area-content">
             <p>
-                Copyright &copy; <?php echo date('Y'); ?> COMPUSISGT. Todos los derechos reservados.
+                Copyright &copy; <?php echo date('Y'); ?> Librer&iacute;a Marquense. Todos los derechos reservados.
                 <a href="derechos.php">libreriamarquense.com</a>
             </p>
         </div>
