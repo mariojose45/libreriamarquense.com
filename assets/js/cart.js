@@ -884,6 +884,8 @@ function procesarPedido(event) {
         forma_productos: "Detallado",
         comentario_cotizacion: "Tienda en linea",
         destino: "VENTA",
+        no_auto_tarjeta: "",
+        envio: formData.shipping,
         datosArticulos: {
             articulos: {
                 idarticulo: idarticulo,

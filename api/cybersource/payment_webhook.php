@@ -43,6 +43,7 @@ try {
     if ($status === 'APPROVED') {
         $session['status'] = 'PAID';
         $session['provider_transaction_id'] = $secureAcceptance->extractTransactionId($input);
+        $session['provider_authorization_number'] = $secureAcceptance->extractAuthorizationNumber($input);
         $store->save($reference, $session);
         $session = lm_finalize_paid_session($session, $config, $store, $logger);
     } elseif ($status === 'DECLINED' || $status === 'CANCELLED') {

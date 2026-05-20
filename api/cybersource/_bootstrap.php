@@ -78,16 +78,82 @@ function lm_payment_service(Config $config, SecureLogger $logger)
     return new CyberSourcePaymentService(new CyberSourceClient($config, $logger), $config);
 }
 
+function lm_payment_authorization_number_from_session(array $session)
+{
+    foreach (array('provider_authorization_number', 'provider_transaction_id') as $key) {
+        if (isset($session[$key]) && trim((string) $session[$key]) !== '') {
+            return trim((string) $session[$key]);
+        }
+    }
+
+    foreach (array('provider_return', 'provider_webhook') as $containerKey) {
+        if (!isset($session[$containerKey]) || !is_array($session[$containerKey])) {
+            continue;
+        }
+
+        $container = $session[$containerKey];
+        $payload = array();
+
+        if (isset($container['params']) && is_array($container['params'])) {
+            $payload = $container['params'];
+        } elseif (isset($container['payload']) && is_array($container['payload'])) {
+            $payload = $container['payload'];
+        }
+
+        foreach (array('auth_trans_ref_no', 'auth_code', 'authorization_code', 'transaction_id', 'request_token', 'id') as $field) {
+            if (isset($payload[$field]) && trim((string) $payload[$field]) !== '') {
+                return trim((string) $payload[$field]);
+            }
+        }
+    }
+
+    return '';
+}
+
+function lm_normalize_money($value)
+{
+    return (float) number_format(round((float) $value, 2), 2, '.', '');
+}
+
+function lm_shipping_amount_from_order_payload(array $orderPayload)
+{
+    if (array_key_exists('envio', $orderPayload) && trim((string) $orderPayload['envio']) !== '') {
+        return lm_normalize_money($orderPayload['envio']);
+    }
+
+    $total = isset($orderPayload['total_venta']) ? (float) $orderPayload['total_venta'] : 0;
+    $subtotal = isset($orderPayload['total_ventades']) ? (float) $orderPayload['total_ventades'] : 0;
+
+    return lm_normalize_money(max(0, $total - $subtotal));
+}
+
+function lm_external_order_payload(array $session)
+{
+    $orderPayload = isset($session['order_payload']) && is_array($session['order_payload'])
+        ? $session['order_payload']
+        : array();
+
+    $orderPayload['envio'] = lm_shipping_amount_from_order_payload($orderPayload);
+
+    if (!array_key_exists('no_auto_tarjeta', $orderPayload) || trim((string) $orderPayload['no_auto_tarjeta']) === '') {
+        $orderPayload['no_auto_tarjeta'] = lm_payment_authorization_number_from_session($session);
+    }
+
+    return $orderPayload;
+}
+
 function lm_finalize_paid_session(array $session, Config $config, PaymentSessionStore $store, SecureLogger $logger)
 {
     if (isset($session['external_order_response']) && is_array($session['external_order_response'])) {
         return $session;
     }
 
+    $orderPayload = lm_external_order_payload($session);
     $forwarder = new OrderForwarder($config, $logger);
-    $response = $forwarder->send($session['order_payload']);
+    $response = $forwarder->send($orderPayload);
 
     $session['status'] = 'ORDER_SENT';
+    $session['order_payload'] = $orderPayload;
     $session['external_order_response'] = $response;
     $store->save($session['reference'], $session);
 

@@ -60,6 +60,12 @@ class OrderPayloadValidator
 
         $payload['total_venta'] = $amount;
         $payload['total_ventades'] = $this->normalizeAmount($payload['total_ventades']);
+        $payload['envio'] = array_key_exists('envio', $payload)
+            ? $this->normalizeAmount($payload['envio'])
+            : 0.00;
+        $payload['no_auto_tarjeta'] = array_key_exists('no_auto_tarjeta', $payload)
+            ? trim((string) $payload['no_auto_tarjeta'])
+            : '';
 
         return $payload;
     }

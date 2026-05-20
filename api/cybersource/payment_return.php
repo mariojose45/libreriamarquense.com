@@ -4,37 +4,6 @@ require __DIR__ . '/_bootstrap.php';
 
 $params = $_SERVER['REQUEST_METHOD'] === 'POST' ? $_POST : $_GET;
 
-// =======================================================
-// LOG REAL NEONET / CYBERSOURCE
-// Guarda lo que Neonet devuelve después del pago
-// =======================================================
-
-$rawBody = file_get_contents('php://input');
-
-$debugData = [
-    'fecha' => date('Y-m-d H:i:s'),
-    'metodo' => $_SERVER['REQUEST_METHOD'] ?? '',
-    'url' => $_SERVER['REQUEST_URI'] ?? '',
-    'ip' => $_SERVER['REMOTE_ADDR'] ?? '',
-    'get' => $_GET,
-    'post' => $_POST,
-    'params' => $params,
-    'raw_body' => $rawBody
-];
-
-$logLine = PHP_EOL .
-    '================ NEONET RETURN ================' . PHP_EOL .
-    json_encode($debugData, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) . PHP_EOL .
-    '================================================' . PHP_EOL;
-
-file_put_contents(
-    __DIR__ . '/neonet_return.log',
-    $logLine,
-    FILE_APPEND | LOCK_EX
-);
-
-// =======================================================
-
 $checkout = new \LM\CyberSource\HostedCheckoutService($config);
 $secureAcceptance = new \LM\CyberSource\SecureAcceptanceService($config);
 
@@ -70,6 +39,7 @@ try {
     if ($trusted && $status === 'APPROVED') {
         $session['status'] = 'PAID';
         $session['provider_transaction_id'] = $secureAcceptance->extractTransactionId($params);
+        $session['provider_authorization_number'] = $secureAcceptance->extractAuthorizationNumber($params);
         $store->save($reference, $session);
 
         $session = lm_finalize_paid_session($session, $config, $store, $logger);
