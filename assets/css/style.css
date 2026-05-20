@@ -1250,6 +1250,7 @@ Navbar Area CSS
   }
   .main-responsive-nav .main-responsive-menu {
     position: relative;
+    z-index: 10000;
   }
   .main-responsive-nav .main-responsive-menu.mean-container .mean-nav ul {
     font-size: 15px;
@@ -1270,6 +1271,16 @@ Navbar Area CSS
     overflow-y: scroll;
     height: 250px;
   }
+  .main-responsive-nav .main-responsive-menu.mean-container .mean-nav {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    width: 100%;
+    z-index: 10001;
+    background: #ffffff;
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
+  }
   .main-responsive-nav .mean-container a.meanmenu-reveal {
     color: #292929;
   }
@@ -1284,6 +1295,8 @@ Navbar Area CSS
     max-width: 100px !important;
   }
   .navbar-area {
+    position: relative;
+    z-index: 9999;
     background-color: #ffffff;
     box-shadow: 0 2px 28px 0 rgba(0, 0, 0, 0.09);
     padding-top: 15px;
