@@ -25,22 +25,67 @@ if (!function_exists('getApiData')) {
 
         curl_setopt_array($ch, [
             CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_POST => true,
+            CURLOPT_POSTFIELDS => [],
             CURLOPT_SSL_VERIFYPEER => false,
             CURLOPT_SSL_VERIFYHOST => false,
+            CURLOPT_FOLLOWLOCATION => true,
             CURLOPT_TIMEOUT => 10,
             CURLOPT_CONNECTTIMEOUT => 5,
         ]);
 
         $response = curl_exec($ch);
         $error = curl_error($ch);
+        $httpCode = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
 
-        if ($error || !$response) {
+        if ($error || !$response || $httpCode < 200 || $httpCode >= 300) {
             return null;
         }
 
         $data = json_decode($response, true);
         return is_array($data) ? $data : null;
+    }
+}
+
+if (!function_exists('getFirstApiTextValue')) {
+    function getFirstApiTextValue(array $data, array $keys): string
+    {
+        foreach ($keys as $key) {
+            $value = trim((string) ($data[$key] ?? ''));
+            if ($value !== '') {
+                return $value;
+            }
+        }
+
+        return '';
+    }
+}
+
+if (!function_exists('normalizeNosotrosImageUrl')) {
+    function normalizeNosotrosImageUrl(string $image, string $baseUrl): string
+    {
+        $image = trim($image);
+
+        if ($image === '') {
+            return '';
+        }
+
+        if (preg_match('#^https?://#i', $image) || strpos($image, 'assets/') === 0) {
+            return $image;
+        }
+
+        return rtrim($baseUrl, '/') . '/' . ltrim($image, '/');
+    }
+}
+
+if (!function_exists('cleanDiferenciadorText')) {
+    function cleanDiferenciadorText(string $text): string
+    {
+        $text = trim($text);
+        $text = preg_replace('/^(?:(?:\x{2713}|\x{2714}|\x{2022})|[-*])+\s*/u', '', $text);
+
+        return trim((string) $text);
     }
 }
 
@@ -76,9 +121,14 @@ $diferenciadores = [
 |--------------------------------------------------------------------------
 */
 $url_nosotros = $url_nosotros ?? '';
+$url_imagenes_articulos = $url_imagenes_articulos ?? 'https://ssl.sol.sistemasolgt.com/libremarquenseDos/files/articulos/';
 
 $apiNosotros = getApiData($url_nosotros);
-$nosotrosData = $apiNosotros['data'][0] ?? null;
+$nosotrosData = null;
+
+if (!empty($apiNosotros['data'][0]) && is_array($apiNosotros['data'][0])) {
+    $nosotrosData = $apiNosotros['data'][0];
+}
 
 /*
 |--------------------------------------------------------------------------
@@ -87,7 +137,7 @@ $nosotrosData = $apiNosotros['data'][0] ?? null;
 */
 if (!empty($nosotrosData) && is_array($nosotrosData)) {
 
-    $historiaTexto = trim($nosotrosData['historia'] ?? '');
+    $historiaTexto = getFirstApiTextValue($nosotrosData, ['historia_empresa', 'historia']);
     if ($historiaTexto !== '') {
         $historiaParrafosApi = preg_split("/\r\n|\n|\r/", $historiaTexto);
         $historiaParrafosApi = array_filter(array_map('trim', $historiaParrafosApi));
@@ -97,17 +147,17 @@ if (!empty($nosotrosData) && is_array($nosotrosData)) {
         }
     }
 
-    $misionApi = trim($nosotrosData['mision'] ?? '');
+    $misionApi = getFirstApiTextValue($nosotrosData, ['mision_nosotros', 'mision']);
     if ($misionApi !== '') {
         $misionTexto = $misionApi;
     }
 
-    $visionApi = trim($nosotrosData['vision'] ?? '');
+    $visionApi = getFirstApiTextValue($nosotrosData, ['vision_nosotros', 'vision']);
     if ($visionApi !== '') {
         $visionTexto = $visionApi;
     }
 
-    $diferenciaTexto = trim($nosotrosData['diferencia'] ?? '');
+    $diferenciaTexto = getFirstApiTextValue($nosotrosData, ['diferencia_nosotros', 'diferencia']);
     if ($diferenciaTexto !== '') {
         // Soporta separacion por guion o salto de linea
         if (strpos($diferenciaTexto, "\n") !== false || strpos($diferenciaTexto, "\r") !== false) {
@@ -116,16 +166,16 @@ if (!empty($nosotrosData) && is_array($nosotrosData)) {
             $diferenciadoresApi = explode('-', $diferenciaTexto);
         }
 
-        $diferenciadoresApi = array_filter(array_map('trim', $diferenciadoresApi));
+        $diferenciadoresApi = array_filter(array_map('cleanDiferenciadorText', $diferenciadoresApi));
 
         if (!empty($diferenciadoresApi)) {
             $diferenciadores = $diferenciadoresApi;
         }
     }
 
-    $imagenApi = trim($nosotrosData['imagen'] ?? '');
+    $imagenApi = getFirstApiTextValue($nosotrosData, ['imagen_nosotros', 'imagen']);
     if ($imagenApi !== '') {
-        $imagenNosotros = $imagenApi;
+        $imagenNosotros = normalizeNosotrosImageUrl($imagenApi, $url_imagenes_articulos);
     }
 }
 ?>
