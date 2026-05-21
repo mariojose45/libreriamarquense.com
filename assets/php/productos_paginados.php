@@ -5,6 +5,7 @@ header('Content-Type: application/json; charset=UTF-8');
 header('X-Content-Type-Options: nosniff');
 
 const PRODUCTOS_CACHE_TTL = 120;
+const PRODUCTOS_SEARCH_CATALOG_TTL = 600;
 const PRODUCTOS_DEFAULT_PER_PAGE = 30;
 const PRODUCTOS_MAX_PER_PAGE = 60;
 
@@ -156,14 +157,14 @@ function obtenerRutaCache(string $mode, array $payload): string
     return $cacheDir . DIRECTORY_SEPARATOR . $cacheKey . '.json';
 }
 
-function obtenerDatosCacheados(string $cacheFile): ?array
+function obtenerDatosCacheados(string $cacheFile, int $ttl = PRODUCTOS_CACHE_TTL): ?array
 {
     if (!is_file($cacheFile)) {
         return null;
     }
 
     $age = time() - (int) filemtime($cacheFile);
-    if ($age > PRODUCTOS_CACHE_TTL) {
+    if ($age > $ttl) {
         return null;
     }
 
@@ -281,6 +282,506 @@ function filtrarProductosPorIdArticulo(array $productos, string $idArticulo): ar
     }));
 }
 
+function normalizarTextoBusqueda($value): string
+{
+    $text = trim((string) $value);
+    if ($text === '') {
+        return '';
+    }
+
+    $text = html_entity_decode($text, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+    $text = strtr($text, [
+        'Á' => 'A',
+        'À' => 'A',
+        'Â' => 'A',
+        'Ä' => 'A',
+        'Ã' => 'A',
+        'á' => 'a',
+        'à' => 'a',
+        'â' => 'a',
+        'ä' => 'a',
+        'ã' => 'a',
+        'É' => 'E',
+        'È' => 'E',
+        'Ê' => 'E',
+        'Ë' => 'E',
+        'é' => 'e',
+        'è' => 'e',
+        'ê' => 'e',
+        'ë' => 'e',
+        'Í' => 'I',
+        'Ì' => 'I',
+        'Î' => 'I',
+        'Ï' => 'I',
+        'í' => 'i',
+        'ì' => 'i',
+        'î' => 'i',
+        'ï' => 'i',
+        'Ó' => 'O',
+        'Ò' => 'O',
+        'Ô' => 'O',
+        'Ö' => 'O',
+        'Õ' => 'O',
+        'ó' => 'o',
+        'ò' => 'o',
+        'ô' => 'o',
+        'ö' => 'o',
+        'õ' => 'o',
+        'Ú' => 'U',
+        'Ù' => 'U',
+        'Û' => 'U',
+        'Ü' => 'U',
+        'ú' => 'u',
+        'ù' => 'u',
+        'û' => 'u',
+        'ü' => 'u',
+        'Ñ' => 'N',
+        'ñ' => 'n',
+    ]);
+    $text = function_exists('mb_strtolower') ? mb_strtolower($text, 'UTF-8') : strtolower($text);
+
+    if (function_exists('iconv')) {
+        $transliterated = @iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $text);
+        if ($transliterated !== false) {
+            $text = $transliterated;
+        }
+    }
+
+    $text = preg_replace('/[^a-z0-9]+/i', ' ', $text) ?? '';
+    $text = preg_replace('/\s+/', ' ', $text) ?? '';
+
+    return trim(strtolower($text));
+}
+
+function obtenerTokensBusqueda(string $search): array
+{
+    $normalized = normalizarTextoBusqueda($search);
+    if ($normalized === '') {
+        return [];
+    }
+
+    $stopWords = array_flip([
+        'a', 'al', 'con', 'de', 'del', 'el', 'en', 'la', 'las', 'los', 'para', 'por', 'un', 'una', 'y',
+    ]);
+
+    $tokens = [];
+    foreach (explode(' ', $normalized) as $token) {
+        if ($token === '' || isset($stopWords[$token])) {
+            continue;
+        }
+
+        if (strlen($token) < 2) {
+            continue;
+        }
+
+        $tokens[$token] = true;
+    }
+
+    if (empty($tokens)) {
+        foreach (explode(' ', $normalized) as $token) {
+            if ($token !== '') {
+                $tokens[$token] = true;
+            }
+        }
+    }
+
+    return array_keys($tokens);
+}
+
+function obtenerClaveProductoBusqueda(array $producto): string
+{
+    $id = trim((string) ($producto['idarticulo'] ?? ''));
+    if ($id !== '') {
+        return 'id:' . $id;
+    }
+
+    $codigo = normalizarTextoBusqueda($producto['codigo'] ?? '');
+    if ($codigo !== '') {
+        return 'codigo:' . $codigo;
+    }
+
+    return 'producto:' . md5(json_encode([
+        $producto['nombre'] ?? '',
+        $producto['precio_venta'] ?? '',
+        $producto['imagen'] ?? '',
+    ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
+}
+
+function agregarProductosUnicosBusqueda(array &$productosPorClave, array $productos): void
+{
+    foreach ($productos as $producto) {
+        if (!is_array($producto)) {
+            continue;
+        }
+
+        $clave = obtenerClaveProductoBusqueda($producto);
+        if (!isset($productosPorClave[$clave])) {
+            $productosPorClave[$clave] = $producto;
+        }
+    }
+}
+
+function obtenerTextoProductoBusqueda(array $producto): array
+{
+    $campos = [
+        'idarticulo',
+        'codigo',
+        'nombre',
+        'descripcion',
+        'categoria',
+        'marca',
+        'editorial',
+        'autor',
+        'sku',
+    ];
+
+    $normalizados = [];
+    foreach ($campos as $campo) {
+        $normalizados[$campo] = normalizarTextoBusqueda($producto[$campo] ?? '');
+    }
+
+    $texto = trim(implode(' ', array_filter($normalizados)));
+    $palabras = $texto === '' ? [] : array_values(array_unique(explode(' ', $texto)));
+
+    return [
+        'campos' => $normalizados,
+        'texto' => $texto,
+        'palabras' => $palabras,
+    ];
+}
+
+function palabraCoincideConToken(string $palabra, string $token): bool
+{
+    if ($palabra === '' || $token === '') {
+        return false;
+    }
+
+    if (strpos($palabra, $token) !== false) {
+        return true;
+    }
+
+    if (strlen($token) > 3 && substr($token, -1) === 's' && strpos($palabra, substr($token, 0, -1)) !== false) {
+        return true;
+    }
+
+    if (strlen($palabra) > 3 && substr($palabra, -1) === 's' && strpos(substr($palabra, 0, -1), $token) !== false) {
+        return true;
+    }
+
+    $tokenLength = strlen($token);
+    if ($tokenLength >= 4) {
+        $maxDistance = $tokenLength >= 7 ? 2 : 1;
+        return levenshtein($token, $palabra) <= $maxDistance;
+    }
+
+    return false;
+}
+
+function productoContieneToken(string $texto, array $palabras, string $token): bool
+{
+    if ($token === '') {
+        return false;
+    }
+
+    if (strpos($texto, $token) !== false) {
+        return true;
+    }
+
+    foreach ($palabras as $palabra) {
+        if (palabraCoincideConToken($palabra, $token)) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+function obtenerCoincidenciasExactasBusqueda(array $productos, string $search): array
+{
+    $normalizedSearch = normalizarTextoBusqueda($search);
+    if ($normalizedSearch === '') {
+        return [];
+    }
+
+    $exactas = [];
+    foreach ($productos as $producto) {
+        if (!is_array($producto)) {
+            continue;
+        }
+
+        $textoProducto = obtenerTextoProductoBusqueda($producto);
+        $campos = $textoProducto['campos'];
+
+        if (
+            $campos['idarticulo'] === $normalizedSearch
+            || $campos['codigo'] === $normalizedSearch
+            || $campos['nombre'] === $normalizedSearch
+        ) {
+            $exactas[] = $producto;
+        }
+    }
+
+    return $exactas;
+}
+
+function puntuarProductoBusqueda(array $producto, string $normalizedSearch, array $tokens, array $preferredKeys): int
+{
+    $textoProducto = obtenerTextoProductoBusqueda($producto);
+    $campos = $textoProducto['campos'];
+    $texto = $textoProducto['texto'];
+    $palabras = $textoProducto['palabras'];
+
+    if ($texto === '') {
+        return 0;
+    }
+
+    $score = isset($preferredKeys[obtenerClaveProductoBusqueda($producto)]) ? 25000 : 0;
+
+    if ($normalizedSearch !== '') {
+        if ($campos['idarticulo'] === $normalizedSearch || $campos['codigo'] === $normalizedSearch) {
+            return 100000 + $score;
+        }
+
+        if ($campos['nombre'] === $normalizedSearch) {
+            return 90000 + $score;
+        }
+
+        if ($campos['codigo'] !== '' && strpos($campos['codigo'], $normalizedSearch) === 0) {
+            $score += 60000;
+        }
+
+        if ($campos['idarticulo'] !== '' && strpos($campos['idarticulo'], $normalizedSearch) === 0) {
+            $score += 55000;
+        }
+
+        if ($campos['nombre'] !== '' && strpos($campos['nombre'], $normalizedSearch) === 0) {
+            $score += 50000;
+        }
+
+        if ($campos['nombre'] !== '' && strpos($campos['nombre'], $normalizedSearch) !== false) {
+            $score += 30000;
+        } elseif (strpos($texto, $normalizedSearch) !== false) {
+            $score += 15000;
+        }
+    }
+
+    if (empty($tokens)) {
+        return $score;
+    }
+
+    $matched = 0;
+    $nameMatches = 0;
+    $codeMatches = 0;
+    $categoryMatches = 0;
+
+    foreach ($tokens as $token) {
+        if (!productoContieneToken($texto, $palabras, $token)) {
+            continue;
+        }
+
+        $matched++;
+
+        if (productoContieneToken($campos['nombre'], $campos['nombre'] === '' ? [] : explode(' ', $campos['nombre']), $token)) {
+            $nameMatches++;
+        }
+
+        if (productoContieneToken($campos['codigo'], $campos['codigo'] === '' ? [] : explode(' ', $campos['codigo']), $token)) {
+            $codeMatches++;
+        }
+
+        if (productoContieneToken($campos['categoria'], $campos['categoria'] === '' ? [] : explode(' ', $campos['categoria']), $token)) {
+            $categoryMatches++;
+        }
+    }
+
+    $requiredMatches = count($tokens) >= 6
+        ? count($tokens)
+        : (count($tokens) <= 2 ? count($tokens) : (int) ceil(count($tokens) * 0.75));
+    if ($matched < $requiredMatches && $score < 15000) {
+        return 0;
+    }
+
+    $score += $matched * 1000;
+    $score += $nameMatches * 350;
+    $score += $codeMatches * 500;
+    $score += $categoryMatches * 150;
+
+    if ($matched === count($tokens)) {
+        $score += 5000;
+    }
+
+    if ($nameMatches === count($tokens)) {
+        $score += 3000;
+    }
+
+    return $score;
+}
+
+function ordenarProductosPorBusqueda(array $productos, string $search, array $preferredKeys = []): array
+{
+    $normalizedSearch = normalizarTextoBusqueda($search);
+    $tokens = obtenerTokensBusqueda($search);
+    $scored = [];
+
+    foreach ($productos as $producto) {
+        if (!is_array($producto)) {
+            continue;
+        }
+
+        $score = puntuarProductoBusqueda($producto, $normalizedSearch, $tokens, $preferredKeys);
+        if ($score <= 0) {
+            continue;
+        }
+
+        $scored[] = [
+            'score' => $score,
+            'nombre' => normalizarTextoBusqueda($producto['nombre'] ?? ''),
+            'idarticulo' => (int) ($producto['idarticulo'] ?? 0),
+            'producto' => $producto,
+        ];
+    }
+
+    usort($scored, static function (array $a, array $b): int {
+        if ($a['score'] !== $b['score']) {
+            return $b['score'] <=> $a['score'];
+        }
+
+        if ($a['nombre'] !== $b['nombre']) {
+            return $a['nombre'] <=> $b['nombre'];
+        }
+
+        return $b['idarticulo'] <=> $a['idarticulo'];
+    });
+
+    return array_column($scored, 'producto');
+}
+
+function consultarProductosPorCategorias(string $baseApi, array $idsCategorias): array
+{
+    $productos = [];
+    $idsCategorias = array_values(array_unique(array_filter($idsCategorias)));
+
+    foreach (array_chunk($idsCategorias, 8) as $chunk) {
+        $multiHandle = curl_multi_init();
+        $handles = [];
+
+        foreach ($chunk as $idCategoria) {
+            $payload = ['idcategoria' => (string) $idCategoria];
+            $ch = curl_init();
+            curl_setopt_array($ch, [
+                CURLOPT_URL => $baseApi . 'api_tienda_articulos_listarProductosxCategoria.php',
+                CURLOPT_POST => true,
+                CURLOPT_POSTFIELDS => json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
+                CURLOPT_HTTPHEADER => ['Content-Type: application/json'],
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_SSL_VERIFYPEER => false,
+                CURLOPT_SSL_VERIFYHOST => false,
+                CURLOPT_CONNECTTIMEOUT => 4,
+                CURLOPT_TIMEOUT => 12,
+            ]);
+
+            $handles[] = $ch;
+            curl_multi_add_handle($multiHandle, $ch);
+        }
+
+        do {
+            $status = curl_multi_exec($multiHandle, $active);
+            if ($active) {
+                curl_multi_select($multiHandle, 1.0);
+            }
+        } while ($active && $status === CURLM_OK);
+
+        foreach ($handles as $ch) {
+            $decoded = json_decode((string) curl_multi_getcontent($ch), true);
+            if (!empty($decoded['success']) && isset($decoded['data']) && is_array($decoded['data'])) {
+                foreach ($decoded['data'] as $producto) {
+                    if (is_array($producto)) {
+                        $productos[] = $producto;
+                    }
+                }
+            }
+
+            curl_multi_remove_handle($multiHandle, $ch);
+            curl_close($ch);
+        }
+
+        curl_multi_close($multiHandle);
+    }
+
+    return $productos;
+}
+
+function obtenerCatalogoCompletoBusqueda(string $baseApi): array
+{
+    $cacheFile = obtenerRutaCache('catalogo_busqueda_completo', []);
+    $cached = obtenerDatosCacheados($cacheFile, PRODUCTOS_SEARCH_CATALOG_TTL);
+
+    if (!empty($cached['success']) && isset($cached['data']) && is_array($cached['data'])) {
+        return array_values(array_filter($cached['data'], 'is_array'));
+    }
+
+    $productosPorClave = [];
+
+    $productosNuevos = consultarApiRemota($baseApi . 'api_tienda_articulos_listarProductosnuevos.php', []);
+    if (!empty($productosNuevos['success']) && isset($productosNuevos['data']) && is_array($productosNuevos['data'])) {
+        agregarProductosUnicosBusqueda($productosPorClave, $productosNuevos['data']);
+    }
+
+    if (count($productosPorClave) < 200) {
+        $categorias = consultarApiRemota($baseApi . 'api_tienda_categorias_listar.php', []);
+        $idsCategorias = [];
+
+        if (!empty($categorias['success']) && isset($categorias['data']) && is_array($categorias['data'])) {
+            foreach ($categorias['data'] as $categoria) {
+                if (!is_array($categoria)) {
+                    continue;
+                }
+
+                $idCategoria = trim((string) ($categoria['idcategoria'] ?? ''));
+                $activa = !isset($categoria['condicion']) || (int) $categoria['condicion'] === 1;
+                if ($activa && preg_match('/^\d{1,10}$/', $idCategoria)) {
+                    $idsCategorias[] = $idCategoria;
+                }
+            }
+        }
+
+        agregarProductosUnicosBusqueda($productosPorClave, consultarProductosPorCategorias($baseApi, $idsCategorias));
+    }
+
+    $catalogo = array_values($productosPorClave);
+    guardarDatosCacheados($cacheFile, [
+        'success' => true,
+        'data' => $catalogo,
+    ]);
+
+    return $catalogo;
+}
+
+function construirResultadosBusquedaCompleta(string $baseApi, string $search, array $directApiData): array
+{
+    $productosPorClave = [];
+    $preferredKeys = [];
+
+    if (!empty($directApiData['success']) && isset($directApiData['data']) && is_array($directApiData['data'])) {
+        agregarProductosUnicosBusqueda($productosPorClave, $directApiData['data']);
+
+        foreach ($directApiData['data'] as $producto) {
+            if (is_array($producto)) {
+                $preferredKeys[obtenerClaveProductoBusqueda($producto)] = true;
+            }
+        }
+    }
+
+    agregarProductosUnicosBusqueda($productosPorClave, obtenerCatalogoCompletoBusqueda($baseApi));
+
+    $productos = array_values($productosPorClave);
+    $exactas = obtenerCoincidenciasExactasBusqueda($productos, $search);
+
+    return !empty($exactas)
+        ? $exactas
+        : ordenarProductosPorBusqueda($productos, $search, $preferredKeys);
+}
+
 $input = leerEntradaJson();
 $sourceConfig = obtenerConfiguracionFuente($BASE_API, $input);
 $validationError = validarConfiguracionFuente($sourceConfig);
@@ -299,13 +800,28 @@ $selectedPriceMin = normalizarFloatOpcional($input['price_min'] ?? null);
 $selectedPriceMax = normalizarFloatOpcional($input['price_max'] ?? null);
 $selectedIdArticulo = trim((string) ($input['idarticulo'] ?? ''));
 
-$cacheFile = obtenerRutaCache((string) $sourceConfig['mode'], (array) $sourceConfig['payload']);
-$apiData = obtenerDatosCacheados($cacheFile);
+if (($sourceConfig['mode'] ?? '') === 'busqueda') {
+    $search = (string) ($sourceConfig['payload']['search'] ?? '');
+    $resultadosBusqueda = construirResultadosBusquedaCompleta($BASE_API, $search, []);
 
-if ($apiData === null) {
-    $apiData = consultarApiRemota((string) $sourceConfig['url'], (array) $sourceConfig['payload']);
-    if (!empty($apiData['success'])) {
-        guardarDatosCacheados($cacheFile, $apiData);
+    if (empty($resultadosBusqueda)) {
+        $directApiData = consultarApiRemota((string) $sourceConfig['url'], (array) $sourceConfig['payload']);
+        $resultadosBusqueda = construirResultadosBusquedaCompleta($BASE_API, $search, $directApiData);
+    }
+
+    $apiData = [
+        'success' => true,
+        'data' => $resultadosBusqueda,
+    ];
+} else {
+    $cacheFile = obtenerRutaCache((string) $sourceConfig['mode'], (array) $sourceConfig['payload']);
+    $apiData = obtenerDatosCacheados($cacheFile);
+
+    if ($apiData === null) {
+        $apiData = consultarApiRemota((string) $sourceConfig['url'], (array) $sourceConfig['payload']);
+        if (!empty($apiData['success'])) {
+            guardarDatosCacheados($cacheFile, $apiData);
+        }
     }
 }
 

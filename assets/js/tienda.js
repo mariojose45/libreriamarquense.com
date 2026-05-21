@@ -898,6 +898,12 @@ function tiendaActualizarUrl() {
     window.history.replaceState({}, "", nextUrl);
 }
 
+function tiendaEscaparHtml(valor) {
+    const div = document.createElement("div");
+    div.textContent = valor ?? "";
+    return div.innerHTML;
+}
+
 function tiendaObtenerContexto() {
     return "Tienda";
 }
@@ -1017,9 +1023,13 @@ function tiendaRenderizarProductos(productos) {
     if (!contenedor) return;
 
     if (!Array.isArray(productos) || productos.length === 0) {
+        const mensaje = tiendaEstadoPaginacion.mode === "busqueda" && tiendaEstadoPaginacion.search
+            ? `No se encontraron productos para "${tiendaEscaparHtml(tiendaEstadoPaginacion.search)}". Prueba con nombre, codigo, categoria o SKU.`
+            : "No hay productos disponibles para mostrar.";
+
         contenedor.innerHTML = `
             <div class="col-12">
-                <div class="catalog-empty-state">No hay productos disponibles para mostrar.</div>
+                <div class="catalog-empty-state">${mensaje}</div>
             </div>`;
         return;
     }
@@ -1116,7 +1126,7 @@ window.cargarProductosPorBusqueda = function (termino) {
 
     tiendaEstadoPaginacion.mode = "busqueda";
     tiendaEstadoPaginacion.search = termino;
-    tiendaEstadoPaginacion.page = tiendaPaginaDesdeUrl();
+    tiendaEstadoPaginacion.page = 1;
     return tiendaCargarListadoPaginado(true);
 };
 

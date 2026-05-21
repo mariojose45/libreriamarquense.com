@@ -187,7 +187,7 @@ $categorias = $data["data"] ?? [];
                     "url": <?php echo json_encode($site_url); ?>,
                     "potentialAction": {
                         "@type": "SearchAction",
-                        "target": <?php echo json_encode($site_url . "/?search={search_term_string}"); ?>,
+                        "target": <?php echo json_encode($site_url . "/tienda.php?buscar={search_term_string}"); ?>,
                         "query-input": "required name=search_term_string"
                     }
                     }
@@ -219,7 +219,7 @@ $categorias = $data["data"] ?? [];
 
                 <div class="col-lg-10">
                     <div class="middle-header-search">
-                        <form>
+                        <form role="search" onsubmit="buscarProductos(event)">
                             <div class="row align-items-center">
                                 <div class="col-md-4">
                                     <div class="form-group">
@@ -238,9 +238,10 @@ $categorias = $data["data"] ?? [];
 
                                 <div class="col-md-8">
                                     <div class="search-box">
-                                        <input type="text" id="search" name="search" class="form-control"
-                                            placeholder="Busqueda de productos...">
-                                        <button type="button" onclick="buscarProductos()"><i
+                                        <input type="search" id="search" name="buscar" class="form-control"
+                                            placeholder="Busqueda de productos..." autocomplete="off"
+                                            aria-label="Busqueda de productos">
+                                        <button type="submit" aria-label="Buscar productos"><i
                                                 class='bx bx-search'></i></button>
                                     </div>
                                 </div>
@@ -265,7 +266,7 @@ $categorias = $data["data"] ?? [];
     <!-- End Middle Header Area -->
     <style>
         .logo-grande {
-            width: 95px !important;
+            width: clamp(104px, 16vw, 132px) !important;
             height: auto !important;
             max-width: 100% !important;
             display: block;
@@ -274,13 +275,13 @@ $categorias = $data["data"] ?? [];
 
         @media (max-width: 768px) {
             .logo-grande {
-                width: 80px !important;
+                width: 112px !important;
             }
         }
 
         @media (max-width: 480px) {
             .logo-grande {
-                width: 68px !important;
+                width: 98px !important;
             }
         }
 
@@ -356,8 +357,8 @@ $categorias = $data["data"] ?? [];
         }
 
         .main-navbar .navbar {
-            min-height: 72px;
-            padding: 8px 0;
+            min-height: 96px;
+            padding: 10px 0;
             align-items: center;
         }
 
@@ -370,9 +371,21 @@ $categorias = $data["data"] ?? [];
         }
 
         .logo-navbar {
-            max-width: 92px;
+            width: clamp(128px, 10vw, 154px);
+            max-width: 154px;
             height: auto;
             display: block;
+        }
+
+        @media (min-width: 992px) and (max-width: 1199px) {
+            .logo-navbar {
+                width: 132px;
+            }
+
+            .main-navbar .navbar .navbar-nav .nav-item a {
+                padding-left: 14px;
+                padding-right: 14px;
+            }
         }
 
         @media (max-width: 991px) {

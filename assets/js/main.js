@@ -389,11 +389,26 @@ jQuery(function ($) {
 // ============================================================
 // FUNCIÓN GLOBAL PARA BUSCAR PRODUCTOS
 // ============================================================
-function buscarProductos() {
+function normalizarTerminoBusqueda(valor) {
+    return (valor || '').toString().replace(/\s+/g, ' ').trim();
+}
+
+function buscarProductos(event) {
+    if (event && typeof event.preventDefault === 'function') {
+        event.preventDefault();
+    }
+
     const searchInput = document.getElementById('search');
-    const termino = searchInput.value.trim();
+    const categoriaSelect = document.getElementById('select-categoria-header');
+    const termino = normalizarTerminoBusqueda(searchInput ? searchInput.value : '');
+    const categoriaId = categoriaSelect ? categoriaSelect.value : '';
     
     if (!termino) {
+        if (categoriaId) {
+            window.location.href = 'tienda.php?categoria=' + encodeURIComponent(categoriaId);
+            return;
+        }
+
         alert('Por favor ingresa un término de búsqueda');
         return;
     }
@@ -414,10 +429,9 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         // Permitir búsqueda con Enter
-        searchInput.addEventListener('keypress', function(e) {
+        searchInput.addEventListener('keydown', function(e) {
             if (e.key === 'Enter') {
-                e.preventDefault();
-                buscarProductos();
+                buscarProductos(e);
             }
         });
     }

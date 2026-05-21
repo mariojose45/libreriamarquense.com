@@ -9,6 +9,7 @@
 # Runtime logs and payment sessions
 /logs/*.log
 /storage/cybersource/*.json
+/assets/cache/productos_paginados/*.json
 
 # Credential/key material and local backups
 *.pem
