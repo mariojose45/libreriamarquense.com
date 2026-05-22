@@ -10,8 +10,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
 const PRODUCTO_IMG_BASE = "https://ssl.sol.sistemasolgt.com/libremarquenseDos/files/articulos/";
 const PRODUCTO_IMG_PLACEHOLDER = "assets/img/404.png";
-const INICIO_PRODUCTOS_POR_SECCION = 9;
-const INICIO_PRODUCTOS_COMPLEMENTO_ENDPOINT = "assets/php/productos_paginados.php";
 
 function construirUrlImagenProducto(nombreArchivo) {
     const nombre = (nombreArchivo ?? "").toString().trim();
@@ -22,82 +20,13 @@ function obtenerImagenProducto(producto) {
     return construirUrlImagenProducto(producto?.imagen) || PRODUCTO_IMG_PLACEHOLDER;
 }
 
-function obtenerClaveProductoInicio(producto) {
-    return (producto?.idarticulo || producto?.codigo || producto?.nombre || "").toString().trim().toLowerCase();
-}
-
-function agregarProductosUnicosInicio(destino, vistos, productos) {
-    if (!Array.isArray(productos)) {
-        return;
-    }
-
-    productos.forEach(producto => {
-        if (!producto || destino.length >= INICIO_PRODUCTOS_POR_SECCION) {
-            return;
-        }
-
-        const clave = obtenerClaveProductoInicio(producto);
-        if (!clave || vistos.has(clave)) {
-            return;
-        }
-
-        vistos.add(clave);
-        destino.push(producto);
-    });
-}
-
-async function obtenerProductosComplementoInicio(modo) {
-    const response = await fetch(INICIO_PRODUCTOS_COMPLEMENTO_ENDPOINT, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-            mode: modo,
-            page: 1,
-            per_page: 30
-        })
-    });
-
-    if (!response.ok) {
-        throw new Error(`HTTP ${response.status}`);
-    }
-
-    const data = await response.json();
-    return data.success && Array.isArray(data.data) ? data.data : [];
-}
-
-async function completarProductosInicio(productosBase) {
-    const productos = [];
-    const vistos = new Set();
-
-    agregarProductosUnicosInicio(productos, vistos, productosBase);
-
-    if (productos.length < INICIO_PRODUCTOS_POR_SECCION) {
-        try {
-            const complementoOfertas = await obtenerProductosComplementoInicio("ofertas");
-            agregarProductosUnicosInicio(productos, vistos, complementoOfertas);
-        } catch (error) {
-            console.warn("No se pudo completar productos desde ofertas.", error);
-        }
-    }
-
-    if (productos.length < INICIO_PRODUCTOS_POR_SECCION) {
-        try {
-            const complementoMenosDe100 = await obtenerProductosComplementoInicio("menosde100");
-            agregarProductosUnicosInicio(productos, vistos, complementoMenosDe100);
-        } catch (error) {
-            console.warn("No se pudo completar productos desde menos de 100.", error);
-        }
-    }
-
-    return productos.slice(0, INICIO_PRODUCTOS_POR_SECCION);
-}
-
 /* ============================================================
    🔥 CARGAR PRODUCTOS NUEVOS DESDE TU API
 ============================================================ */
 function cargarProductosPromociones() {
+
+    const contenedor = document.getElementById("contenedor-promociones-productos");
+    if (!contenedor) return;
 
     fetch("https://ssl.sol.sistemasolgt.com/libremarquenseDos/api/api_tienda_articulos_listarProductospromociones.php", {
         method: "POST",
@@ -109,7 +38,6 @@ function cargarProductosPromociones() {
         .then(response => response.json())
         .then(async data => {
 
-            let contenedor = document.getElementById("contenedor-promociones-productos");
             contenedor.innerHTML = "";
 
             if (!data.success || !Array.isArray(data.data)) {
@@ -120,7 +48,7 @@ function cargarProductosPromociones() {
                 return;
             }
 
-            let productos = await completarProductosInicio(data.data);
+            let productos = data.data;
 
             productos.forEach(producto => {
 
@@ -138,7 +66,7 @@ function cargarProductosPromociones() {
                                 '${producto.precio_venta}',
                                 '${producto.idarticulo}',
                                 '${producto.codigo || ""}',
-                                '${producto.descripcion.replace(/'/g, "\\'")}',
+                                '${(producto.descripcion || "").replace(/'/g, "\\'")}',
                                 '${producto.stock || "N/A"}'
                             )">
                                 <img src="${imagen}" alt="${producto.nombre}" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='${PRODUCTO_IMG_PLACEHOLDER}';">
@@ -168,7 +96,7 @@ function cargarProductosPromociones() {
                                         '${producto.precio_venta}',
                                         '${producto.idarticulo}',
                                         '${producto.codigo || ""}',
-                                        '${producto.descripcion.replace(/'/g, "\\'")}',
+                                        '${(producto.descripcion || "").replace(/'/g, "\\'")}',
                                         '${producto.stock || "N/A"}'
                                     )">
                                         <i class="flaticon-view"></i>
@@ -216,6 +144,9 @@ function cargarProductosPromociones() {
 ============================================================ */
 function cargarProductosNuevos() {
 
+    const contenedor = document.getElementById("contenedor-nuevos-productos");
+    if (!contenedor) return;
+
     fetch("https://ssl.sol.sistemasolgt.com/libremarquenseDos/api/api_tienda_articulos_listarProductosnuevos.php", {
         method: "POST",
         headers: {
@@ -226,7 +157,6 @@ function cargarProductosNuevos() {
         .then(response => response.json())
         .then(async data => {
 
-            let contenedor = document.getElementById("contenedor-nuevos-productos");
             contenedor.innerHTML = "";
 
             if (!data.success || !Array.isArray(data.data)) {
@@ -237,7 +167,7 @@ function cargarProductosNuevos() {
                 return;
             }
 
-            let productos = await completarProductosInicio(data.data);
+            let productos = data.data;
 
             productos.forEach(producto => {
 
@@ -255,7 +185,7 @@ function cargarProductosNuevos() {
                                 '${producto.precio_venta}',
                                 '${producto.idarticulo}',
                                 '${producto.codigo || ""}',
-                                '${producto.descripcion.replace(/'/g, "\\'")}',
+                                '${(producto.descripcion || "").replace(/'/g, "\\'")}',
                                 '${producto.stock || "N/A"}'
                             )">
                                     <img src="${imagen}" alt="${producto.nombre}" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='${PRODUCTO_IMG_PLACEHOLDER}';">
@@ -285,7 +215,7 @@ function cargarProductosNuevos() {
                                         '${producto.precio_venta}',
                                         '${producto.idarticulo}',
                                         '${producto.codigo || ""}',
-                                        '${producto.descripcion.replace(/'/g, "\\'")}',
+                                        '${(producto.descripcion || "").replace(/'/g, "\\'")}',
                                         '${producto.stock || "N/A"}'
                                     )">
                                         <i class="flaticon-view"></i>
@@ -448,9 +378,12 @@ function mpMostrar(i) {
         this.src = PRODUCTO_IMG_PLACEHOLDER;
     };
 
-    let thumbs = document.querySelectorAll(".mp-thumb");
+    let thumbs = document.querySelectorAll(".mp-thumb-item");
     thumbs.forEach(t => t.classList.remove("active"));
-    thumbs[mpIndex].classList.add("active");
+
+    if (thumbs[mpIndex]) {
+        thumbs[mpIndex].classList.add("active");
+    }
 }
 
 /* ===============================
@@ -551,6 +484,9 @@ window.compartirWhatsApp = function (e) {
 // ===========================================================
 function cargarProductosMasVendidos() {
 
+    const contenedor = document.getElementById("productos-mas-vendidos");
+    if (!contenedor) return;
+
     fetch("https://ssl.sol.sistemasolgt.com/libremarquenseDos/api/api_tienda_articulos_listarProductosnuevos_lomasvendido.php", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -558,8 +494,6 @@ function cargarProductosMasVendidos() {
     })
         .then(response => response.json())
         .then(async data => {
-
-            let contenedor = document.getElementById("productos-mas-vendidos");
 
             contenedor.innerHTML = "";
 
@@ -571,7 +505,7 @@ function cargarProductosMasVendidos() {
                 return;
             }
 
-            let productos = await completarProductosInicio(data.data);
+            let productos = data.data;
 
             productos.forEach(producto => {
 
@@ -589,7 +523,7 @@ function cargarProductosMasVendidos() {
                                 '${producto.precio_venta}',
                                 '${producto.idarticulo}',
                                 '${producto.codigo}',
-                                '${producto.descripcion.replace(/'/g, "\\'")}',
+                                '${(producto.descripcion || "").replace(/'/g, "\\'")}',
                                 '${producto.stock}'
                             )">
                                 <img src="${imagen}" alt="${producto.nombre}" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='${PRODUCTO_IMG_PLACEHOLDER}';">
@@ -616,7 +550,7 @@ function cargarProductosMasVendidos() {
                                         '${producto.precio_venta}',
                                         '${producto.idarticulo}',
                                         '${producto.codigo}',
-                                        '${producto.descripcion.replace(/'/g, "\\'")}',
+                                        '${(producto.descripcion || "").replace(/'/g, "\\'")}',
                                         '${producto.stock}'
                                     )">
                                     <i class="flaticon-view"></i></a>
@@ -648,7 +582,7 @@ function cargarProductosMasVendidos() {
         })
         .catch(error => {
             console.error("❌ Error:", error);
-            document.getElementById("productos-mas-vendidos").innerHTML = `
+            contenedor.innerHTML = `
             <div class="col-12">
                 <div class="alert alert-danger">Error al cargar los productos.</div>
             </div>`;
