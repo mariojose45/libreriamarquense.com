@@ -203,7 +203,7 @@ $categorias = $data["data"] ?? [];
     <!-- Start Preloader Area -->
     <div class="preloader">
         <div class="loader">
-            <img src="assets/img/LogoLibreriaMarquense.jpeg" alt="Cargando..." style="max-width: 300px; border-radius: 10px;">
+            <img src="assets/img/LogoLibreriaMarquense.jpeg" alt="Cargando..." class="preloader-logo">
         </div>
     </div>
     <!-- End Preloader Area -->
@@ -239,7 +239,7 @@ $categorias = $data["data"] ?? [];
                                 <div class="col-md-8">
                                     <div class="search-box">
                                         <input type="search" id="search" name="buscar" class="form-control"
-                                            placeholder="Busqueda de productos..." autocomplete="off"
+                                            autocomplete="off"
                                             aria-label="Busqueda de productos">
                                         <button type="submit" aria-label="Buscar productos"><i
                                                 class='bx bx-search'></i></button>

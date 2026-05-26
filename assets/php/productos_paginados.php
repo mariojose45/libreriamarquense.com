@@ -73,21 +73,25 @@ function obtenerConfiguracionFuente(string $baseApi, array $input): array
             ];
         case 'categoria':
             $idCategoria = trim((string) ($input['idcategoria'] ?? ''));
+            $idSucursal = trim((string) ($input['idsucursal'] ?? '4'));
             return [
             'mode' => $mode,
             'url' => $baseApi . 'api_tienda_articulos_listarProductosxCategoria.php',
             'payload' => [
                 'idcategoria' => preg_match('/^\d{1,10}$/', $idCategoria) ? $idCategoria : '',
+                'idsucursal' => preg_match('/^\d{1,10}$/', $idSucursal) ? $idSucursal : '4',
             ],
             ];
         case 'busqueda':
             $search = trim((string) ($input['search'] ?? ''));
+            $idSucursal = trim((string) ($input['idsucursal'] ?? '4'));
             $search = preg_replace('/[\x00-\x1F\x7F]/u', '', $search);
             return [
             'mode' => $mode,
             'url' => $baseApi . 'api_tienda_articulos_listarProductosxSearch.php',
             'payload' => [
                 'search' => function_exists('mb_substr') ? mb_substr($search, 0, 80, 'UTF-8') : substr($search, 0, 80),
+                'idsucursal' => preg_match('/^\d{1,10}$/', $idSucursal) ? $idSucursal : '4',
             ],
             ];
         case 'marca':
@@ -421,23 +425,66 @@ function agregarProductosUnicosBusqueda(array &$productosPorClave, array $produc
     }
 }
 
+function obtenerValorProductoBusqueda(array $producto, array $keys): string
+{
+    $valores = [];
+
+    foreach ($keys as $key) {
+        if (!array_key_exists($key, $producto) || !is_scalar($producto[$key])) {
+            continue;
+        }
+
+        $normalizado = normalizarTextoBusqueda($producto[$key]);
+        if ($normalizado !== '' && $normalizado !== '0') {
+            $valores[$normalizado] = true;
+        }
+    }
+
+    return trim(implode(' ', array_keys($valores)));
+}
+
+function obtenerTextoDinamicoProductoBusqueda(array $producto): string
+{
+    $valores = [];
+
+    foreach ($producto as $key => $value) {
+        if (!is_scalar($value)) {
+            continue;
+        }
+
+        if (!preg_match('/(autor|author|editorial|isbn|barra|proveedor|marca|categoria|descripcion|nombre|titulo|sku|codigo|cod)/i', (string) $key)) {
+            continue;
+        }
+
+        $normalizado = normalizarTextoBusqueda($value);
+        if ($normalizado !== '' && $normalizado !== '0') {
+            $valores[$normalizado] = true;
+        }
+    }
+
+    return trim(implode(' ', array_keys($valores)));
+}
+
 function obtenerTextoProductoBusqueda(array $producto): array
 {
-    $campos = [
-        'idarticulo',
-        'codigo',
-        'nombre',
-        'descripcion',
-        'categoria',
-        'marca',
-        'editorial',
-        'autor',
-        'sku',
+    $fieldGroups = [
+        'idarticulo' => ['idarticulo', 'id_articulo', 'articulo_id', 'id'],
+        'codigo' => ['codigo', 'codarticulo', 'cod_articulo', 'codigo_articulo', 'codigobarra', 'codigo_barra', 'codigobarras', 'isbn', 'isbn13'],
+        'nombre' => ['nombre', 'titulo', 'title', 'nombre_articulo', 'nombrearticulo', 'producto'],
+        'descripcion' => ['descripcion', 'description', 'detalle', 'sinopsis', 'resumen'],
+        'categoria' => ['categoria', 'nombrecategoria', 'nom_categoria', 'categoria_nombre', 'nombre_categoria'],
+        'marca' => ['marca', 'nombremarca', 'nombre_marca', 'marca_nombre'],
+        'editorial' => ['editorial', 'nombreeditorial', 'nombre_editorial', 'editorial_nombre', 'publisher'],
+        'autor' => ['autor', 'author', 'autores', 'authors', 'nombreautor', 'nombre_autor', 'autor_nombre', 'autorlibro', 'autor_libro', 'escritor'],
+        'sku' => ['sku', 'referencia', 'ref'],
+        'extra' => [],
     ];
 
     $normalizados = [];
-    foreach ($campos as $campo) {
-        $normalizados[$campo] = normalizarTextoBusqueda($producto[$campo] ?? '');
+    foreach ($fieldGroups as $campo => $keys) {
+        $normalizados[$campo] = $campo === 'extra'
+            ? obtenerTextoDinamicoProductoBusqueda($producto)
+            : obtenerValorProductoBusqueda($producto, $keys);
     }
 
     $texto = trim(implode(' ', array_filter($normalizados)));
@@ -516,6 +563,8 @@ function obtenerCoincidenciasExactasBusqueda(array $productos, string $search): 
             $campos['idarticulo'] === $normalizedSearch
             || $campos['codigo'] === $normalizedSearch
             || $campos['nombre'] === $normalizedSearch
+            || $campos['autor'] === $normalizedSearch
+            || $campos['editorial'] === $normalizedSearch
         ) {
             $exactas[] = $producto;
         }
@@ -546,6 +595,14 @@ function puntuarProductoBusqueda(array $producto, string $normalizedSearch, arra
             return 90000 + $score;
         }
 
+        if ($campos['autor'] !== '' && $campos['autor'] === $normalizedSearch) {
+            return 88000 + $score;
+        }
+
+        if ($campos['editorial'] !== '' && $campos['editorial'] === $normalizedSearch) {
+            return 82000 + $score;
+        }
+
         if ($campos['codigo'] !== '' && strpos($campos['codigo'], $normalizedSearch) === 0) {
             $score += 60000;
         }
@@ -560,6 +617,10 @@ function puntuarProductoBusqueda(array $producto, string $normalizedSearch, arra
 
         if ($campos['nombre'] !== '' && strpos($campos['nombre'], $normalizedSearch) !== false) {
             $score += 30000;
+        } elseif ($campos['autor'] !== '' && strpos($campos['autor'], $normalizedSearch) !== false) {
+            $score += 28000;
+        } elseif ($campos['editorial'] !== '' && strpos($campos['editorial'], $normalizedSearch) !== false) {
+            $score += 22000;
         } elseif (strpos($texto, $normalizedSearch) !== false) {
             $score += 15000;
         }
@@ -573,6 +634,8 @@ function puntuarProductoBusqueda(array $producto, string $normalizedSearch, arra
     $nameMatches = 0;
     $codeMatches = 0;
     $categoryMatches = 0;
+    $authorMatches = 0;
+    $editorialMatches = 0;
 
     foreach ($tokens as $token) {
         if (!productoContieneToken($texto, $palabras, $token)) {
@@ -592,6 +655,14 @@ function puntuarProductoBusqueda(array $producto, string $normalizedSearch, arra
         if (productoContieneToken($campos['categoria'], $campos['categoria'] === '' ? [] : explode(' ', $campos['categoria']), $token)) {
             $categoryMatches++;
         }
+
+        if (productoContieneToken($campos['autor'], $campos['autor'] === '' ? [] : explode(' ', $campos['autor']), $token)) {
+            $authorMatches++;
+        }
+
+        if (productoContieneToken($campos['editorial'], $campos['editorial'] === '' ? [] : explode(' ', $campos['editorial']), $token)) {
+            $editorialMatches++;
+        }
     }
 
     $requiredMatches = count($tokens) >= 6
@@ -605,6 +676,8 @@ function puntuarProductoBusqueda(array $producto, string $normalizedSearch, arra
     $score += $nameMatches * 350;
     $score += $codeMatches * 500;
     $score += $categoryMatches * 150;
+    $score += $authorMatches * 650;
+    $score += $editorialMatches * 300;
 
     if ($matched === count($tokens)) {
         $score += 5000;
@@ -612,6 +685,10 @@ function puntuarProductoBusqueda(array $producto, string $normalizedSearch, arra
 
     if ($nameMatches === count($tokens)) {
         $score += 3000;
+    }
+
+    if ($authorMatches === count($tokens)) {
+        $score += 4500;
     }
 
     return $score;
@@ -666,7 +743,10 @@ function consultarProductosPorCategorias(string $baseApi, array $idsCategorias):
         $handles = [];
 
         foreach ($chunk as $idCategoria) {
-            $payload = ['idcategoria' => (string) $idCategoria];
+            $payload = [
+                'idcategoria' => (string) $idCategoria,
+                'idsucursal' => '4',
+            ];
             $ch = curl_init();
             curl_setopt_array($ch, [
                 CURLOPT_URL => $baseApi . 'api_tienda_articulos_listarProductosxCategoria.php',
@@ -802,12 +882,8 @@ $selectedIdArticulo = trim((string) ($input['idarticulo'] ?? ''));
 
 if (($sourceConfig['mode'] ?? '') === 'busqueda') {
     $search = (string) ($sourceConfig['payload']['search'] ?? '');
-    $resultadosBusqueda = construirResultadosBusquedaCompleta($BASE_API, $search, []);
-
-    if (empty($resultadosBusqueda)) {
-        $directApiData = consultarApiRemota((string) $sourceConfig['url'], (array) $sourceConfig['payload']);
-        $resultadosBusqueda = construirResultadosBusquedaCompleta($BASE_API, $search, $directApiData);
-    }
+    $directApiData = consultarApiRemota((string) $sourceConfig['url'], (array) $sourceConfig['payload']);
+    $resultadosBusqueda = construirResultadosBusquedaCompleta($BASE_API, $search, $directApiData);
 
     $apiData = [
         'success' => true,

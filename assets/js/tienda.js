@@ -843,10 +843,12 @@ function tiendaConstruirPayload() {
 
     if (tiendaEstadoPaginacion.mode === "categoria") {
         payload.idcategoria = tiendaEstadoPaginacion.idcategoria;
+        payload.idsucursal = tiendaEstadoPaginacion.idsucursal || "4";
     }
 
     if (tiendaEstadoPaginacion.mode === "busqueda") {
         payload.search = tiendaEstadoPaginacion.search;
+        payload.idsucursal = tiendaEstadoPaginacion.idsucursal || "4";
     }
 
     if (tiendaEstadoPaginacion.mode === "marca") {
@@ -1024,7 +1026,7 @@ function tiendaRenderizarProductos(productos) {
 
     if (!Array.isArray(productos) || productos.length === 0) {
         const mensaje = tiendaEstadoPaginacion.mode === "busqueda" && tiendaEstadoPaginacion.search
-            ? `No se encontraron productos para "${tiendaEscaparHtml(tiendaEstadoPaginacion.search)}". Prueba con nombre, codigo, categoria o SKU.`
+            ? `No se encontraron productos para "${tiendaEscaparHtml(tiendaEstadoPaginacion.search)}". Prueba con nombre, autor, editorial, ISBN, codigo o categoria.`
             : "No hay productos disponibles para mostrar.";
 
         contenedor.innerHTML = `
