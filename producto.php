@@ -347,145 +347,145 @@ include 'head.php';
 
                         <ul class="categories">
                             <?php
-                                // Iconos por categoría - Librería Marquense
-                                $iconosPorCategoria = [
-                                    "BOLIGRAFOS" => "bx bx-pen",
-                                    "PAPELERIA" => "bx bx-file",
-                                    "TEXTO ESCOLAR" => "bx bx-book",
-                                    "DIDACTICO INFANTIL" => "bx bx-book",
-                                    "MARCADOR" => "bx bx-pencil",
-                                    "TECNOLOGIA" => "bx bx-laptop",
-                                    "CONTABILIDAD Y AUDITORIA" => "bx bx-calculator",
-                                    "NOVELA Y LITERATURA GENERAL" => "bx bx-book-open",
-                                    "JURIDICOS" => "bx bx-shield",
-                                    "AUTOAYUDA" => "bx bx-heart",
-                                    "ARTICULOS DE CORTE" => "bx bx-cut",
-                                    "ADHESIVOS" => "bx bx-purchase-tag",
-                                    "OFICINA" => "bx bx-briefcase",
-                                    "BIBLIAS" => "bx bx-book-reader",
-                                    "TINTAS Y SUMINISTROS" => "bx bx-printer",
-                                    "LIBRO INFANTIL" => "bx bx-happy",
-                                    "MANUALIDADES" => "bx bx-palette",
-                                    "ESCOLAR" => "bx bx-library",
-                                    "OTROS" => "bx bx-category",
-                                    "CUADERNOS" => "bx bx-notepad",
-                                    "IDIOMAS" => "bx bx-globe",
-                                    "SOCIOLOGIA" => "bx bx-group",
-                                    "FACTURACION" => "bx bx-receipt",
-                                    "POLITICA" => "bx bx-building",
-                                    "FIESTA Y DECORACION" => "bx bx-party",
-                                    "DICCIONARIO" => "bx bx-book-content",
-                                    "SEXOLOGIA" => "bx bx-heart-circle",
-                                    "LIBROS DE COLOREAR" => "bx bx-brush",
-                                    "ENTRETENIMIENTO" => "bx bx-joystick",
-                                    "EDICIONES ANTIGUAS" => "bx bx-time-five",
-                                    "LIMPIEZA Y CAFETERIA" => "bx bx-coffee",
-                                    "TEMPORADA" => "bx bx-calendar-star",
-                                    "ANTROPOLOGIA/MAYA" => "bx bx-map-alt",
-                                    "LITERATURA" => "bx bx-book-open",
-                                    "ADMINISTRACION, LIDERAZGO Y MARKETING" => "bx bx-line-chart",
-                                    "EDICIONES ATRASADAS" => "bx bx-history",
-                                    "FISICA" => "bx bx-atom",
-                                    "TEATRO" => "bx bx-mask",
-                                    "POESIA" => "bx bx-edit",
-                                    "ECONOMIA" => "bx bx-bar-chart-alt-2",
-                                    "HISTORIA DE GUATEMALA" => "bx bx-landscape",
-                                    "METODOLOGIA" => "bx bx-list-check",
-                                    "RELIGIOSOS" => "bx bx-church",
-                                    "QUIMICA" => "bx bx-test-tube",
-                                    "ESTADISTICA" => "bx bx-pie-chart-alt-2",
-                                    "MATEMATICA" => "bx bx-math",
-                                    "TEXTOS EN INGLES" => "bx bx-world",
-                                    "GASTRONOMIA" => "bx bx-dish",
-                                    "PSICOLOGIA" => "bx bx-brain",
-                                    "COMUNICACION" => "bx bx-message-dots",
-                                    "FILOSOFIA" => "bx bx-bulb",
-                                    "BOTANICA" => "bx bx-leaf",
-                                    "GRAMATICA" => "bx bx-text",
-                                    "HISTORIA GENERAL" => "bx bx-history",
-                                    "EMPAQUE" => "bx bx-package",
-                                    "ARTE Y DIBUJO ESCOLAR" => "bx bx-palette",
-                                    "PROMOCIONALES" => "bx bx-gift",
-                                    "BIOGRAFIA" => "bx bx-user",
-                                    "ESPIRITUALIDAD" => "bx bx-donate-heart",
-                                    "ARQUITECTURA" => "bx bx-building-house",
-                                    "PEDAGOGIA" => "bx bx-chalkboard",
-                                    "MONOGRAFIA" => "bx bx-file-find",
-                                    "INGENIERIA" => "bx bx-cog",
-                                    "ETICA Y MORAL" => "bx bx-check-shield",
-                                    "SALUD Y BIENESTAR" => "bx bx-plus-medical",
-                                    "BIOLOGIA" => "bx bx-dna",
-                                    "LIBROS DE ARTE" => "bx bx-paint",
-                                    "TURISMO" => "bx bx-map",
-                                    "FOTOGRAFIA" => "bx bx-camera",
-                                    "VARIOS" => "bx bx-category-alt",
-                                    "MANGA COMICS" => "bx bx-book-heart",
-                                    "MUSICA" => "bx bx-music",
-                                    "TECNICO" => "bx bx-wrench",
-                                    "MEDICINA" => "bx bx-plus-medical",
-                                    "N/A" => "bx bx-category",
-                                    "HIGIENE CUIDADO PERSONAL" => "bx bx-health"
-                                ];
+                            // Iconos por categoría - Librería Marquense
+                            $iconosPorCategoria = [
+                                "BOLIGRAFOS" => "bx bx-pen",
+                                "PAPELERIA" => "bx bx-file",
+                                "TEXTO ESCOLAR" => "bx bx-book",
+                                "DIDACTICO INFANTIL" => "bx bx-book",
+                                "MARCADOR" => "bx bx-pencil",
+                                "TECNOLOGIA" => "bx bx-laptop",
+                                "CONTABILIDAD Y AUDITORIA" => "bx bx-calculator",
+                                "NOVELA Y LITERATURA GENERAL" => "bx bx-book-open",
+                                "JURIDICOS" => "bx bx-shield",
+                                "AUTOAYUDA" => "bx bx-heart",
+                                "ARTICULOS DE CORTE" => "bx bx-cut",
+                                "ADHESIVOS" => "bx bx-purchase-tag",
+                                "OFICINA" => "bx bx-briefcase",
+                                "BIBLIAS" => "bx bx-book-reader",
+                                "TINTAS Y SUMINISTROS" => "bx bx-printer",
+                                "LIBRO INFANTIL" => "bx bx-happy",
+                                "MANUALIDADES" => "bx bx-palette",
+                                "ESCOLAR" => "bx bx-library",
+                                "OTROS" => "bx bx-category",
+                                "CUADERNOS" => "bx bx-notepad",
+                                "IDIOMAS" => "bx bx-globe",
+                                "SOCIOLOGIA" => "bx bx-group",
+                                "FACTURACION" => "bx bx-receipt",
+                                "POLITICA" => "bx bx-building",
+                                "FIESTA Y DECORACION" => "bx bx-party",
+                                "DICCIONARIO" => "bx bx-book-content",
+                                "SEXOLOGIA" => "bx bx-heart-circle",
+                                "LIBROS DE COLOREAR" => "bx bx-brush",
+                                "ENTRETENIMIENTO" => "bx bx-joystick",
+                                "EDICIONES ANTIGUAS" => "bx bx-time-five",
+                                "LIMPIEZA Y CAFETERIA" => "bx bx-coffee",
+                                "TEMPORADA" => "bx bx-calendar-star",
+                                "ANTROPOLOGIA/MAYA" => "bx bx-map-alt",
+                                "LITERATURA" => "bx bx-book-open",
+                                "ADMINISTRACION, LIDERAZGO Y MARKETING" => "bx bx-line-chart",
+                                "EDICIONES ATRASADAS" => "bx bx-history",
+                                "FISICA" => "bx bx-atom",
+                                "TEATRO" => "bx bx-mask",
+                                "POESIA" => "bx bx-edit",
+                                "ECONOMIA" => "bx bx-bar-chart-alt-2",
+                                "HISTORIA DE GUATEMALA" => "bx bx-landscape",
+                                "METODOLOGIA" => "bx bx-list-check",
+                                "RELIGIOSOS" => "bx bx-church",
+                                "QUIMICA" => "bx bx-test-tube",
+                                "ESTADISTICA" => "bx bx-pie-chart-alt-2",
+                                "MATEMATICA" => "bx bx-math",
+                                "TEXTOS EN INGLES" => "bx bx-world",
+                                "GASTRONOMIA" => "bx bx-dish",
+                                "PSICOLOGIA" => "bx bx-brain",
+                                "COMUNICACION" => "bx bx-message-dots",
+                                "FILOSOFIA" => "bx bx-bulb",
+                                "BOTANICA" => "bx bx-leaf",
+                                "GRAMATICA" => "bx bx-text",
+                                "HISTORIA GENERAL" => "bx bx-history",
+                                "EMPAQUE" => "bx bx-package",
+                                "ARTE Y DIBUJO ESCOLAR" => "bx bx-palette",
+                                "PROMOCIONALES" => "bx bx-gift",
+                                "BIOGRAFIA" => "bx bx-user",
+                                "ESPIRITUALIDAD" => "bx bx-donate-heart",
+                                "ARQUITECTURA" => "bx bx-building-house",
+                                "PEDAGOGIA" => "bx bx-chalkboard",
+                                "MONOGRAFIA" => "bx bx-file-find",
+                                "INGENIERIA" => "bx bx-cog",
+                                "ETICA Y MORAL" => "bx bx-check-shield",
+                                "SALUD Y BIENESTAR" => "bx bx-plus-medical",
+                                "BIOLOGIA" => "bx bx-dna",
+                                "LIBROS DE ARTE" => "bx bx-paint",
+                                "TURISMO" => "bx bx-map",
+                                "FOTOGRAFIA" => "bx bx-camera",
+                                "VARIOS" => "bx bx-category-alt",
+                                "MANGA COMICS" => "bx bx-book-heart",
+                                "MUSICA" => "bx bx-music",
+                                "TECNICO" => "bx bx-wrench",
+                                "MEDICINA" => "bx bx-plus-medical",
+                                "N/A" => "bx bx-category",
+                                "HIGIENE CUIDADO PERSONAL" => "bx bx-health"
+                            ];
 
-                                $index = 0;
-                                $limiteCategoriasSidebar = 60;
-                                $categoriasMostradas = [];
+                            $index = 0;
+                            $limiteCategoriasSidebar = 60;
+                            $categoriasMostradas = [];
 
-                                foreach ($categorias as $cat):
-                                    if (isset($cat['condicion']) && $cat['condicion'] == 1):
+                            foreach ($categorias as $cat):
+                                if (isset($cat['condicion']) && $cat['condicion'] == 1):
 
-                                        $nombreOriginal = trim((string) ($cat['nombre'] ?? ''));
+                                    $nombreOriginal = trim((string) ($cat['nombre'] ?? ''));
 
-                                        $nombreCategoria = strtoupper($nombreOriginal);
-                                        $nombreCategoria = strtr($nombreCategoria, [
-                                            'Á' => 'A',
-                                            'É' => 'E',
-                                            'Í' => 'I',
-                                            'Ó' => 'O',
-                                            'Ú' => 'U',
-                                            'Ü' => 'U',
-                                            'Ñ' => 'N',
-                                            'á' => 'A',
-                                            'é' => 'E',
-                                            'í' => 'I',
-                                            'ó' => 'O',
-                                            'ú' => 'U',
-                                            'ü' => 'U',
-                                            'ñ' => 'N'
-                                        ]);
+                                    $nombreCategoria = strtoupper($nombreOriginal);
+                                    $nombreCategoria = strtr($nombreCategoria, [
+                                        'Á' => 'A',
+                                        'É' => 'E',
+                                        'Í' => 'I',
+                                        'Ó' => 'O',
+                                        'Ú' => 'U',
+                                        'Ü' => 'U',
+                                        'Ñ' => 'N',
+                                        'á' => 'A',
+                                        'é' => 'E',
+                                        'í' => 'I',
+                                        'ó' => 'O',
+                                        'ú' => 'U',
+                                        'ü' => 'U',
+                                        'ñ' => 'N'
+                                    ]);
 
-                                        $nombreCategoria = preg_replace('/\s+/', ' ', $nombreCategoria);
+                                    $nombreCategoria = preg_replace('/\s+/', ' ', $nombreCategoria);
 
-                                        if ($nombreCategoria === '' || isset($categoriasMostradas[$nombreCategoria])) {
-                                            continue;
-                                        }
+                                    if ($nombreCategoria === '' || isset($categoriasMostradas[$nombreCategoria])) {
+                                        continue;
+                                    }
 
-                                        if ($index >= $limiteCategoriasSidebar) {
-                                            break;
-                                        }
+                                    if ($index >= $limiteCategoriasSidebar) {
+                                        break;
+                                    }
 
-                                        $categoriasMostradas[$nombreCategoria] = true;
-                                        $icono = $iconosPorCategoria[$nombreCategoria] ?? "bx bx-category";
-                                ?>
-                                        <li>
-                                            <a href="tienda.php?categoria=<?= $cat['idcategoria'] ?>" class="nav-link">
-                                                <i class="<?= $icono ?>"></i>
-                                                <?= htmlspecialchars($nombreOriginal) ?>
-                                            </a>
-                                        </li>
-                                <?php
-                                        $index++;
-                                    endif;
-                                endforeach;
-
-                                if (empty($categorias) || $index == 0):
-                                ?>
+                                    $categoriasMostradas[$nombreCategoria] = true;
+                                    $icono = $iconosPorCategoria[$nombreCategoria] ?? "bx bx-category";
+                            ?>
                                     <li>
-                                        <div class="alert alert-info" style="padding: 10px; margin: 0;">
-                                            No hay categorías disponibles.
-                                        </div>
+                                        <a href="tienda.php?categoria=<?= $cat['idcategoria'] ?>" class="nav-link">
+                                            <i class="<?= $icono ?>"></i>
+                                            <?= htmlspecialchars($nombreOriginal) ?>
+                                        </a>
                                     </li>
-                                <?php endif; ?>
+                                <?php
+                                    $index++;
+                                endif;
+                            endforeach;
+
+                            if (empty($categorias) || $index == 0):
+                                ?>
+                                <li>
+                                    <div class="alert alert-info" style="padding: 10px; margin: 0;">
+                                        No hay categorías disponibles.
+                                    </div>
+                                </li>
+                            <?php endif; ?>
                         </ul>
                     </div>
 
@@ -692,7 +692,7 @@ include 'head.php';
     // ============================================================
     // CARGAR PRODUCTO AL INICIAR LA PÁGINA
     // ============================================================
-    document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('DOMContentLoaded', function() {
         const urlParams = new URLSearchParams(window.location.search);
         const idarticulo = urlParams.get('id');
 
@@ -760,7 +760,9 @@ include 'head.php';
             headers: {
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify({ idarticulo })
+            body: JSON.stringify({
+                idarticulo
+            })
         });
 
         if (!response.ok) {
@@ -859,10 +861,14 @@ include 'head.php';
 
         // Cargar fotos desde la API
         fetch(PRODUCTO_FOTOS_API, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ idarticulo: idSanitizado })
-        })
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    idarticulo: idSanitizado
+                })
+            })
             .then(r => r.json())
             .then(data => {
                 if (data.success && data.imagenes && Array.isArray(data.imagenes)) {
@@ -1015,7 +1021,7 @@ include 'head.php';
         imgPrincipal.style.maxHeight = '500px';
         imgPrincipal.style.objectFit = 'contain';
         imgPrincipal.style.display = 'block';
-        imgPrincipal.onerror = function () {
+        imgPrincipal.onerror = function() {
             console.error('❌ Error al cargar imagen principal:', imagenPrincipal);
             this.onerror = null;
             this.src = IMAGEN_PRODUCTO_PLACEHOLDER;
@@ -1031,10 +1037,10 @@ include 'head.php';
         let imgNavPrincipal = document.createElement('img');
         imgNavPrincipal.src = imagenPrincipal;
         imgNavPrincipal.alt = 'Imagen principal';
-        imgNavPrincipal.onclick = function () {
+        imgNavPrincipal.onclick = function() {
             cambiarImagen(-1); // -1 indica imagen principal
         };
-        imgNavPrincipal.onerror = function () {
+        imgNavPrincipal.onerror = function() {
             this.onerror = null;
             this.src = IMAGEN_PRODUCTO_PLACEHOLDER;
         };
@@ -1048,10 +1054,10 @@ include 'head.php';
             let imgNav = document.createElement('img');
             imgNav.src = img;
             imgNav.alt = `Foto ${index + 1}`;
-            imgNav.onclick = function () {
+            imgNav.onclick = function() {
                 cambiarImagen(index);
             };
-            imgNav.onerror = function () {
+            imgNav.onerror = function() {
                 console.error('❌ Error al cargar miniatura:', img);
                 this.onerror = null;
                 this.src = IMAGEN_PRODUCTO_PLACEHOLDER;
@@ -1226,10 +1232,10 @@ include 'head.php';
     }
 
     // Permitir búsqueda con Enter en el sidebar
-    document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('DOMContentLoaded', function() {
         const searchInputSidebar = document.getElementById('search-sidebar');
         if (searchInputSidebar) {
-            searchInputSidebar.addEventListener('keypress', function (e) {
+            searchInputSidebar.addEventListener('keypress', function(e) {
                 if (e.key === 'Enter') {
                     e.preventDefault();
                     buscarProductosSidebar(e);
