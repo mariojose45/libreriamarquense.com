@@ -2,7 +2,7 @@
 require_once __DIR__ . '/assets/php/security.php';
 
 // SEO para la pagina de contacto
-$seo_title = "Contacto - Librería Marquense | Útiles escolares y papelería";
+$seo_title = "Contacto - Librería Marquense | Libros, Papelería, Artículos Escolares y de Oficina";
 $seo_description = "Contacta a Librería Marquense para consultas sobre útiles escolares, papelería, listas escolares, sucursales y pedidos.";
 $seo_keywords = "contacto Librería Marquense, librería Guatemala, útiles escolares, papelería, listas escolares";
 $contact_csrf_token = lm_csrf_token('contact_form');

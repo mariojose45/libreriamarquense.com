@@ -1,6 +1,6 @@
 <?php
 // SEO para la pagina de producto
-$seo_title = "Producto - Librería Marquense | Útiles escolares y papelería";
+$seo_title = "Producto - Librería Marquense | Libros, Papelería, Artículos Escolares y de Oficina";
 $seo_description = "Consulta detalles de productos en Librería Marquense: útiles escolares, papelería, libros, material didáctico y artículos de oficina.";
 $seo_keywords = "Librería Marquense, producto escolar, útiles escolares, papelería, libros, material didáctico, productos de oficina Guatemala";
 $current_page = basename($_SERVER['PHP_SELF']);

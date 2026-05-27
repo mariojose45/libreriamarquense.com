@@ -1,8 +1,8 @@
 <?php
 // SEO para la pagina de inicio
-$seo_title = "Librería Marquense | Útiles escolares y papelería en Guatemala";
-$seo_description = "Librería Marquense ofrece útiles escolares, papelería, libros, material didáctico, productos de oficina y artículos para estudiantes en Guatemala.";
-$seo_keywords = "Librería Marquense, útiles escolares Guatemala, papelería Guatemala, libros, material didáctico, productos de oficina, artículos escolares";
+$seo_title = "Librería Marquense | Libros, Papelería, Artículos Escolares y de Oficina";
+$seo_description = "Librería Marquense ofrece libros, papelería, artículos escolares, material didáctico y productos de oficina para estudiantes, familias y empresas en Guatemala.";
+$seo_keywords = "Librería Marquense, libros Guatemala, papelería Guatemala, artículos escolares, útiles escolares, productos de oficina";
 
 include 'head.php';
 $current_page = basename($_SERVER['PHP_SELF']);
