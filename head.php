@@ -103,17 +103,18 @@ $categorias = $data["data"] ?? [];
     $current_url = $site_url . $_SERVER['REQUEST_URI'];
 
     // SEO por defecto (puedes personalizar por pagina)
-    $seo_title = isset($seo_title) ? $seo_title : "Librería Marquense | Útiles escolares y papelería";
-    $seo_description = isset($seo_description) ? $seo_description : "Librería Marquense ofrece útiles escolares, papelería, libros, material didáctico y productos de oficina con atención confiable en Guatemala.";
-    $seo_keywords = isset($seo_keywords) ? $seo_keywords : "Librería Marquense, útiles escolares Guatemala, papelería, libros, material didáctico, productos escolares";
+    $site_primary_title = "Librería Marquense | Libros, Papelería, Artículos Escolares y de Oficina";
+    $seo_title = isset($seo_title) ? $seo_title : $site_primary_title;
+    $seo_description = isset($seo_description) ? $seo_description : "Librería Marquense ofrece libros, papelería, artículos escolares, material didáctico y productos de oficina con atención confiable en Guatemala.";
+    $seo_keywords = isset($seo_keywords) ? $seo_keywords : "Librería Marquense, libros Guatemala, papelería, artículos escolares, útiles escolares, productos de oficina";
     $seo_image = isset($seo_image) ? $seo_image : $site_url . "/assets/img/LogoLibreriaMarquense.jpeg";
-    $browser_title = "Librería Marquense | Útiles escolares y papelería";
+    $browser_title = $site_primary_title;
     $site_name = isset($site_name) ? $site_name : "Librería Marquense";
     $site_phone_number = isset($site_phone_number) ? $site_phone_number : "+502 2232-8537 / +502 2253-6302 / +502 2372-3286 / +502 2372-3287";
     $site_whatsapp_number = isset($site_whatsapp_number) ? $site_whatsapp_number : "+502 5591-0533";
     $site_whatsapp_url = isset($site_whatsapp_url) ? $site_whatsapp_url : "https://wa.me/50255910533";
     $site_email = isset($site_email) ? $site_email : "servicioslcliente@libreriamarquense.com";
-    $site_business_description = isset($site_business_description) ? $site_business_description : "Venta de útiles escolares, papelería, libros, material didáctico y productos de oficina en Guatemala.";
+    $site_business_description = isset($site_business_description) ? $site_business_description : "Venta de libros, papelería, artículos escolares, material didáctico y productos de oficina en Guatemala.";
     $site_social_links = isset($site_social_links) ? $site_social_links : [
         'facebook' => 'https://www.facebook.com/LibreriaMarquenseSA?locale=es_LA',
         'instagram' => 'https://www.instagram.com/libreriamarquense/?hl=es',
@@ -203,7 +204,7 @@ $categorias = $data["data"] ?? [];
     <!-- Start Preloader Area -->
     <div class="preloader">
         <div class="loader">
-            <img src="assets/img/LogoLibreriaMarquense.jpeg" alt="Cargando..." style="max-width: 300px; border-radius: 10px;">
+            <img src="assets/img/LogoLibreriaMarquense.jpeg" alt="Cargando..." class="preloader-logo">
         </div>
     </div>
     <!-- End Preloader Area -->
@@ -239,7 +240,7 @@ $categorias = $data["data"] ?? [];
                                 <div class="col-md-8">
                                     <div class="search-box">
                                         <input type="search" id="search" name="buscar" class="form-control"
-                                            placeholder="Busqueda de productos..." autocomplete="off"
+                                            autocomplete="off"
                                             aria-label="Busqueda de productos">
                                         <button type="submit" aria-label="Buscar productos"><i
                                                 class='bx bx-search'></i></button>

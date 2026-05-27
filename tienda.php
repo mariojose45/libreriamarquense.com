@@ -1,6 +1,6 @@
 <?php
 // SEO para la pagina de tienda
-$seo_title = "Tienda - Librería Marquense | Útiles escolares y papelería";
+$seo_title = "Tienda - Librería Marquense | Libros, Papelería, Artículos Escolares y de Oficina";
 $seo_description = "Explora la tienda en línea de Librería Marquense con útiles escolares, papelería, libros, material didáctico y productos de oficina.";
 $seo_keywords = "tienda Librería Marquense, útiles escolares, papelería, libros, material didáctico, productos escolares Guatemala";
 

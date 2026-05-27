@@ -219,9 +219,19 @@ Preloader Area CSS
 }
 .preloader .loader {
   left: 50%;
-  top: 45%;
-  transform: translateX(-50%) translateY(-45%);
+  top: 50%;
+  transform: translateX(-50%) translateY(-50%);
   position: absolute;
+  width: min(82vw, 430px);
+  text-align: center;
+}
+.preloader .loader .preloader-logo {
+  width: 100%;
+  max-width: 430px;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+  border-radius: 10px;
 }
 .preloader .loader .sbl-half-circle-spin {
   height: 80px;

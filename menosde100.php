@@ -1,6 +1,6 @@
 <?php
 // SEO para la pagina menos de Q100
-$seo_title = "Menos de Q100 - Librería Marquense | Productos escolares económicos";
+$seo_title = "Menos de Q100 - Librería Marquense | Libros, Papelería, Artículos Escolares y de Oficina";
 $seo_description = "Descubre productos escolares, útiles, papelería y artículos de oficina por menos de Q100 en Librería Marquense.";
 $seo_keywords = "Librería Marquense, productos menos de Q100, útiles escolares económicos, papelería económica, Guatemala";
 
