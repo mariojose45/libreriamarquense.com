@@ -5,7 +5,7 @@ header('Content-Type: application/json; charset=UTF-8');
 header('X-Content-Type-Options: nosniff');
 
 const PRODUCTOS_CACHE_TTL = 120;
-const PRODUCTOS_SEARCH_CATALOG_TTL = 600;
+const PRODUCTOS_SEARCH_CATALOG_TTL = 21600;
 const PRODUCTOS_DEFAULT_PER_PAGE = 30;
 const PRODUCTOS_MAX_PER_PAGE = 60;
 
@@ -60,6 +60,18 @@ function normalizarFloatOpcional($value): ?float
     return (float) $value;
 }
 
+function normalizarTipoBusqueda($value): string
+{
+    $tipo = strtolower(trim((string) $value));
+    if ($tipo === '' || in_array($tipo, ['general', 'todos', 'todo', 'automatico'], true)) {
+        return 'general';
+    }
+
+    $permitidos = ['nombre', 'descripcion', 'autor', 'editorial', 'marca'];
+
+    return in_array($tipo, $permitidos, true) ? $tipo : 'general';
+}
+
 function obtenerConfiguracionFuente(string $baseApi, array $input): array
 {
     $mode = (string) ($input['mode'] ?? '');
@@ -85,6 +97,7 @@ function obtenerConfiguracionFuente(string $baseApi, array $input): array
         case 'busqueda':
             $search = trim((string) ($input['search'] ?? ''));
             $idSucursal = trim((string) ($input['idsucursal'] ?? '4'));
+            $tipoBusqueda = normalizarTipoBusqueda($input['tipoBusqueda'] ?? 'general');
             $search = preg_replace('/[\x00-\x1F\x7F]/u', '', $search);
             return [
             'mode' => $mode,
@@ -92,6 +105,7 @@ function obtenerConfiguracionFuente(string $baseApi, array $input): array
             'payload' => [
                 'search' => function_exists('mb_substr') ? mb_substr($search, 0, 80, 'UTF-8') : substr($search, 0, 80),
                 'idsucursal' => preg_match('/^\d{1,10}$/', $idSucursal) ? $idSucursal : '4',
+                'tipoBusqueda' => $tipoBusqueda,
             ],
             ];
         case 'marca':
@@ -286,6 +300,131 @@ function filtrarProductosPorIdArticulo(array $productos, string $idArticulo): ar
     }));
 }
 
+function normalizarNombrePresentacion($value): string
+{
+    $texto = trim((string) $value);
+    if ($texto === '') {
+        return '';
+    }
+
+    if (function_exists('iconv')) {
+        $sinAcentos = @iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $texto);
+        if ($sinAcentos !== false) {
+            $texto = $sinAcentos;
+        }
+    }
+
+    $texto = preg_replace('/\s+/', ' ', $texto) ?? '';
+    return strtoupper(trim($texto));
+}
+
+function presentacionEsVisible($nombre): bool
+{
+    $normalizado = normalizarNombrePresentacion($nombre);
+    if ($normalizado === '' || $normalizado === '0') {
+        return false;
+    }
+
+    return !in_array($normalizado, ['MAYORISTA', 'MINOREO', 'MINORISTA', 'MENUDEO'], true);
+}
+
+function primerValorProducto(array $producto, array $keys)
+{
+    foreach ($keys as $key) {
+        if (array_key_exists($key, $producto) && trim((string) $producto[$key]) !== '') {
+            return $producto[$key];
+        }
+    }
+
+    return null;
+}
+
+function crearPresentacionProducto($nombre, $tipo, $stock, $precio): ?array
+{
+    if (!presentacionEsVisible($nombre)) {
+        return null;
+    }
+
+    $precio = (float) ($precio ?? 0);
+    $stock = (float) ($stock ?? 0);
+
+    if ($precio <= 0 && $stock <= 0) {
+        return null;
+    }
+
+    return [
+        'nombre' => trim((string) $nombre),
+        'tipo' => $tipo,
+        'stock' => $stock,
+        'precio' => $precio,
+    ];
+}
+
+function obtenerPresentacionesProducto(array $producto): array
+{
+    $presentaciones = [];
+
+    if (isset($producto['presentaciones']) && is_array($producto['presentaciones'])) {
+        foreach ($producto['presentaciones'] as $presentacion) {
+            if (!is_array($presentacion)) {
+                continue;
+            }
+
+            $normalizada = crearPresentacionProducto(
+                $presentacion['nombre'] ?? $presentacion['presentacion'] ?? '',
+                (string) ($presentacion['tipo'] ?? ''),
+                $presentacion['stock'] ?? $presentacion['existencia'] ?? 0,
+                $presentacion['precio'] ?? $presentacion['precio_venta'] ?? 0
+            );
+
+            if ($normalizada !== null) {
+                $presentaciones[] = $normalizada;
+            }
+        }
+    }
+
+    $definiciones = [
+        ['nombre_01', 'unidad', ['stock_unidad', 'stock_01', 'stock'], ['precio_unidad', 'precio_01', 'precio_venta']],
+        ['nombre_02', 'blister', ['stock_blister', 'stock_02'], ['precio_blister', 'precio_02']],
+        ['nombre_03', 'caja', ['stock_caja', 'stock_03'], ['precio_caja', 'precio_03']],
+        ['nombre_04', 'fardo', ['stock_fardo', 'stock_04'], ['precio_fardo', 'precio_04']],
+        ['nombre_05', 'sacos', ['stock_sacos', 'stock_05'], ['precio_sacos', 'precio_05']],
+        ['nombre_06', 'paquete', ['stock_paquete', 'stock_06'], ['precio_paquete', 'precio_06']],
+    ];
+
+    for ($i = 7; $i <= 20; $i++) {
+        $idx = str_pad((string) $i, 2, '0', STR_PAD_LEFT);
+        $definiciones[] = ["nombre_$idx", "presentacion_$idx", ["stock_$idx"], ["precio_$idx"]];
+    }
+
+    foreach ($definiciones as [$nombreKey, $tipo, $stockKeys, $precioKeys]) {
+        $normalizada = crearPresentacionProducto(
+            $producto[$nombreKey] ?? '',
+            $tipo,
+            primerValorProducto($producto, $stockKeys),
+            primerValorProducto($producto, $precioKeys)
+        );
+
+        if ($normalizada !== null) {
+            $presentaciones[] = $normalizada;
+        }
+    }
+
+    $unicas = [];
+    foreach ($presentaciones as $presentacion) {
+        $clave = normalizarNombrePresentacion($presentacion['tipo'] . ':' . $presentacion['nombre']);
+        $unicas[$clave] = $presentacion;
+    }
+
+    return array_values($unicas);
+}
+
+function agregarPresentacionesNormalizadas(array $producto): array
+{
+    $producto['presentaciones'] = obtenerPresentacionesProducto($producto);
+    return $producto;
+}
+
 function normalizarTextoBusqueda($value): string
 {
     $text = trim((string) $value);
@@ -425,6 +564,81 @@ function agregarProductosUnicosBusqueda(array &$productosPorClave, array $produc
     }
 }
 
+function consultarBusquedaRemotaPorCampos(string $url, array $payload, array $tiposBusqueda): array
+{
+    $tiposBusqueda = array_values(array_unique(array_filter(array_map('normalizarTipoBusqueda', $tiposBusqueda))));
+    $tiposBusqueda = array_values(array_diff($tiposBusqueda, ['general']));
+
+    if (empty($tiposBusqueda)) {
+        return consultarApiRemota($url, $payload);
+    }
+
+    if (count($tiposBusqueda) === 1) {
+        $payload['tipoBusqueda'] = $tiposBusqueda[0];
+        return consultarApiRemota($url, $payload);
+    }
+
+    $multiHandle = curl_multi_init();
+    $handles = [];
+
+    foreach ($tiposBusqueda as $tipoBusqueda) {
+        $payloadCampo = $payload;
+        $payloadCampo['tipoBusqueda'] = $tipoBusqueda;
+
+        $ch = curl_init();
+        curl_setopt_array($ch, [
+            CURLOPT_URL => $url,
+            CURLOPT_POST => true,
+            CURLOPT_POSTFIELDS => json_encode($payloadCampo, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
+            CURLOPT_HTTPHEADER => ['Content-Type: application/json'],
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_SSL_VERIFYPEER => false,
+            CURLOPT_SSL_VERIFYHOST => false,
+            CURLOPT_CONNECTTIMEOUT => 4,
+            CURLOPT_TIMEOUT => 10,
+        ]);
+
+        $handles[] = $ch;
+        curl_multi_add_handle($multiHandle, $ch);
+    }
+
+    do {
+        $status = curl_multi_exec($multiHandle, $active);
+        if ($active) {
+            curl_multi_select($multiHandle, 1.0);
+        }
+    } while ($active && $status === CURLM_OK);
+
+    $productosPorClave = [];
+    $consultasExitosas = 0;
+
+    foreach ($handles as $ch) {
+        $decoded = json_decode((string) curl_multi_getcontent($ch), true);
+        if (!empty($decoded['success']) && isset($decoded['data']) && is_array($decoded['data'])) {
+            $consultasExitosas++;
+            agregarProductosUnicosBusqueda($productosPorClave, $decoded['data']);
+        }
+
+        curl_multi_remove_handle($multiHandle, $ch);
+        curl_close($ch);
+    }
+
+    curl_multi_close($multiHandle);
+
+    if ($consultasExitosas === 0) {
+        return [
+            'success' => false,
+            'message' => 'No fue posible consultar la búsqueda remota.',
+            'data' => [],
+        ];
+    }
+
+    return [
+        'success' => true,
+        'data' => array_values($productosPorClave),
+    ];
+}
+
 function obtenerValorProductoBusqueda(array $producto, array $keys): string
 {
     $valores = [];
@@ -473,8 +687,8 @@ function obtenerTextoProductoBusqueda(array $producto): array
         'nombre' => ['nombre', 'titulo', 'title', 'nombre_articulo', 'nombrearticulo', 'producto'],
         'descripcion' => ['descripcion', 'description', 'detalle', 'sinopsis', 'resumen'],
         'categoria' => ['categoria', 'nombrecategoria', 'nom_categoria', 'categoria_nombre', 'nombre_categoria'],
-        'marca' => ['marca', 'nombremarca', 'nombre_marca', 'marca_nombre'],
-        'editorial' => ['editorial', 'nombreeditorial', 'nombre_editorial', 'editorial_nombre', 'publisher'],
+        'marca' => ['marca', 'editorial_marca', 'nombremarca', 'nombre_marca', 'marca_nombre'],
+        'editorial' => ['editorial', 'editorial_marca', 'nombreeditorial', 'nombre_editorial', 'editorial_nombre', 'publisher'],
         'autor' => ['autor', 'author', 'autores', 'authors', 'nombreautor', 'nombre_autor', 'autor_nombre', 'autorlibro', 'autor_libro', 'escritor'],
         'sku' => ['sku', 'referencia', 'ref'],
         'extra' => [],
@@ -543,7 +757,45 @@ function productoContieneToken(string $texto, array $palabras, string $token): b
     return false;
 }
 
-function obtenerCoincidenciasExactasBusqueda(array $productos, string $search): array
+function obtenerCampoBusquedaSeleccionado(array $campos, string $tipoBusqueda): string
+{
+    $tipoBusqueda = normalizarTipoBusqueda($tipoBusqueda);
+    if ($tipoBusqueda === 'general') {
+        $valores = [];
+        foreach (['nombre', 'descripcion', 'autor', 'editorial', 'marca', 'codigo', 'categoria', 'extra'] as $campo) {
+            $valor = trim((string) ($campos[$campo] ?? ''));
+            if ($valor !== '') {
+                $valores[$valor] = true;
+            }
+        }
+
+        return trim(implode(' ', array_keys($valores)));
+    }
+
+    return (string) ($campos[$tipoBusqueda] ?? $campos['nombre'] ?? '');
+}
+
+function campoSeleccionadoCoincide(string $campo, string $normalizedSearch, array $tokens): bool
+{
+    if ($campo === '' || $normalizedSearch === '') {
+        return false;
+    }
+
+    $palabras = explode(' ', $campo);
+    if (productoContieneToken($campo, $palabras, $normalizedSearch)) {
+        return true;
+    }
+
+    foreach ($tokens as $token) {
+        if (!productoContieneToken($campo, $palabras, $token)) {
+            return false;
+        }
+    }
+
+    return !empty($tokens);
+}
+
+function obtenerCoincidenciasExactasBusqueda(array $productos, string $search, string $tipoBusqueda = 'general'): array
 {
     $normalizedSearch = normalizarTextoBusqueda($search);
     if ($normalizedSearch === '') {
@@ -558,71 +810,54 @@ function obtenerCoincidenciasExactasBusqueda(array $productos, string $search): 
 
         $textoProducto = obtenerTextoProductoBusqueda($producto);
         $campos = $textoProducto['campos'];
-
-        if (
-            $campos['idarticulo'] === $normalizedSearch
-            || $campos['codigo'] === $normalizedSearch
-            || $campos['nombre'] === $normalizedSearch
-            || $campos['autor'] === $normalizedSearch
-            || $campos['editorial'] === $normalizedSearch
-        ) {
-            $exactas[] = $producto;
+        $tipoNormalizado = normalizarTipoBusqueda($tipoBusqueda);
+        if ($tipoNormalizado === 'general') {
+            foreach (['nombre', 'descripcion', 'autor', 'editorial', 'marca', 'codigo', 'categoria'] as $campo) {
+                if ((string) ($campos[$campo] ?? '') === $normalizedSearch) {
+                    $exactas[] = $producto;
+                    break;
+                }
+            }
+        } else {
+            $campoSeleccionado = obtenerCampoBusquedaSeleccionado($campos, $tipoNormalizado);
+            if ($campoSeleccionado === $normalizedSearch) {
+                $exactas[] = $producto;
+            }
         }
     }
 
     return $exactas;
 }
 
-function puntuarProductoBusqueda(array $producto, string $normalizedSearch, array $tokens, array $preferredKeys): int
+function puntuarProductoBusqueda(array $producto, string $normalizedSearch, array $tokens, array $preferredKeys, string $tipoBusqueda = 'general'): int
 {
     $textoProducto = obtenerTextoProductoBusqueda($producto);
     $campos = $textoProducto['campos'];
-    $texto = $textoProducto['texto'];
-    $palabras = $textoProducto['palabras'];
-
-    if ($texto === '') {
-        return 0;
-    }
+    $tipoBusqueda = normalizarTipoBusqueda($tipoBusqueda);
+    $texto = obtenerCampoBusquedaSeleccionado($campos, $tipoBusqueda);
+    $palabras = $texto === '' ? [] : array_values(array_unique(explode(' ', $texto)));
 
     $score = isset($preferredKeys[obtenerClaveProductoBusqueda($producto)]) ? 25000 : 0;
 
-    if ($normalizedSearch !== '') {
-        if ($campos['idarticulo'] === $normalizedSearch || $campos['codigo'] === $normalizedSearch) {
-            return 100000 + $score;
-        }
+    if ($texto === '') {
+        return $score;
+    }
 
-        if ($campos['nombre'] === $normalizedSearch) {
+    if (!campoSeleccionadoCoincide($texto, $normalizedSearch, $tokens)) {
+        return isset($preferredKeys[obtenerClaveProductoBusqueda($producto)]) ? $score : 0;
+    }
+
+    if ($normalizedSearch !== '') {
+        if ($texto === $normalizedSearch) {
             return 90000 + $score;
         }
 
-        if ($campos['autor'] !== '' && $campos['autor'] === $normalizedSearch) {
-            return 88000 + $score;
-        }
-
-        if ($campos['editorial'] !== '' && $campos['editorial'] === $normalizedSearch) {
-            return 82000 + $score;
-        }
-
-        if ($campos['codigo'] !== '' && strpos($campos['codigo'], $normalizedSearch) === 0) {
-            $score += 60000;
-        }
-
-        if ($campos['idarticulo'] !== '' && strpos($campos['idarticulo'], $normalizedSearch) === 0) {
-            $score += 55000;
-        }
-
-        if ($campos['nombre'] !== '' && strpos($campos['nombre'], $normalizedSearch) === 0) {
+        if (strpos($texto, $normalizedSearch) === 0) {
             $score += 50000;
         }
 
-        if ($campos['nombre'] !== '' && strpos($campos['nombre'], $normalizedSearch) !== false) {
+        if (strpos($texto, $normalizedSearch) !== false) {
             $score += 30000;
-        } elseif ($campos['autor'] !== '' && strpos($campos['autor'], $normalizedSearch) !== false) {
-            $score += 28000;
-        } elseif ($campos['editorial'] !== '' && strpos($campos['editorial'], $normalizedSearch) !== false) {
-            $score += 22000;
-        } elseif (strpos($texto, $normalizedSearch) !== false) {
-            $score += 15000;
         }
     }
 
@@ -631,11 +866,7 @@ function puntuarProductoBusqueda(array $producto, string $normalizedSearch, arra
     }
 
     $matched = 0;
-    $nameMatches = 0;
-    $codeMatches = 0;
-    $categoryMatches = 0;
-    $authorMatches = 0;
-    $editorialMatches = 0;
+    $fieldMatches = 0;
 
     foreach ($tokens as $token) {
         if (!productoContieneToken($texto, $palabras, $token)) {
@@ -643,26 +874,7 @@ function puntuarProductoBusqueda(array $producto, string $normalizedSearch, arra
         }
 
         $matched++;
-
-        if (productoContieneToken($campos['nombre'], $campos['nombre'] === '' ? [] : explode(' ', $campos['nombre']), $token)) {
-            $nameMatches++;
-        }
-
-        if (productoContieneToken($campos['codigo'], $campos['codigo'] === '' ? [] : explode(' ', $campos['codigo']), $token)) {
-            $codeMatches++;
-        }
-
-        if (productoContieneToken($campos['categoria'], $campos['categoria'] === '' ? [] : explode(' ', $campos['categoria']), $token)) {
-            $categoryMatches++;
-        }
-
-        if (productoContieneToken($campos['autor'], $campos['autor'] === '' ? [] : explode(' ', $campos['autor']), $token)) {
-            $authorMatches++;
-        }
-
-        if (productoContieneToken($campos['editorial'], $campos['editorial'] === '' ? [] : explode(' ', $campos['editorial']), $token)) {
-            $editorialMatches++;
-        }
+        $fieldMatches++;
     }
 
     $requiredMatches = count($tokens) >= 6
@@ -673,28 +885,20 @@ function puntuarProductoBusqueda(array $producto, string $normalizedSearch, arra
     }
 
     $score += $matched * 1000;
-    $score += $nameMatches * 350;
-    $score += $codeMatches * 500;
-    $score += $categoryMatches * 150;
-    $score += $authorMatches * 650;
-    $score += $editorialMatches * 300;
+    $score += $fieldMatches * 500;
 
     if ($matched === count($tokens)) {
         $score += 5000;
     }
 
-    if ($nameMatches === count($tokens)) {
+    if ($fieldMatches === count($tokens)) {
         $score += 3000;
-    }
-
-    if ($authorMatches === count($tokens)) {
-        $score += 4500;
     }
 
     return $score;
 }
 
-function ordenarProductosPorBusqueda(array $productos, string $search, array $preferredKeys = []): array
+function ordenarProductosPorBusqueda(array $productos, string $search, array $preferredKeys = [], string $tipoBusqueda = 'general'): array
 {
     $normalizedSearch = normalizarTextoBusqueda($search);
     $tokens = obtenerTokensBusqueda($search);
@@ -705,7 +909,7 @@ function ordenarProductosPorBusqueda(array $productos, string $search, array $pr
             continue;
         }
 
-        $score = puntuarProductoBusqueda($producto, $normalizedSearch, $tokens, $preferredKeys);
+        $score = puntuarProductoBusqueda($producto, $normalizedSearch, $tokens, $preferredKeys, $tipoBusqueda);
         if ($score <= 0) {
             continue;
         }
@@ -837,7 +1041,7 @@ function obtenerCatalogoCompletoBusqueda(string $baseApi): array
     return $catalogo;
 }
 
-function construirResultadosBusquedaCompleta(string $baseApi, string $search, array $directApiData): array
+function construirResultadosBusquedaCompleta(string $baseApi, string $search, array $directApiData, string $tipoBusqueda = 'general'): array
 {
     $productosPorClave = [];
     $preferredKeys = [];
@@ -852,14 +1056,24 @@ function construirResultadosBusquedaCompleta(string $baseApi, string $search, ar
         }
     }
 
+    $productosDirectos = array_values($productosPorClave);
+    if (!empty($productosDirectos)) {
+        $exactasDirectas = obtenerCoincidenciasExactasBusqueda($productosDirectos, $search, $tipoBusqueda);
+        $ordenadosDirectos = !empty($exactasDirectas)
+            ? $exactasDirectas
+            : ordenarProductosPorBusqueda($productosDirectos, $search, $preferredKeys, $tipoBusqueda);
+
+        return !empty($ordenadosDirectos) ? $ordenadosDirectos : $productosDirectos;
+    }
+
     agregarProductosUnicosBusqueda($productosPorClave, obtenerCatalogoCompletoBusqueda($baseApi));
 
     $productos = array_values($productosPorClave);
-    $exactas = obtenerCoincidenciasExactasBusqueda($productos, $search);
+    $exactas = obtenerCoincidenciasExactasBusqueda($productos, $search, $tipoBusqueda);
 
     return !empty($exactas)
         ? $exactas
-        : ordenarProductosPorBusqueda($productos, $search, $preferredKeys);
+        : ordenarProductosPorBusqueda($productos, $search, $preferredKeys, $tipoBusqueda);
 }
 
 $input = leerEntradaJson();
@@ -882,8 +1096,16 @@ $selectedIdArticulo = trim((string) ($input['idarticulo'] ?? ''));
 
 if (($sourceConfig['mode'] ?? '') === 'busqueda') {
     $search = (string) ($sourceConfig['payload']['search'] ?? '');
-    $directApiData = consultarApiRemota((string) $sourceConfig['url'], (array) $sourceConfig['payload']);
-    $resultadosBusqueda = construirResultadosBusquedaCompleta($BASE_API, $search, $directApiData);
+    $tipoBusqueda = (string) ($sourceConfig['payload']['tipoBusqueda'] ?? 'general');
+    $remotePayload = (array) $sourceConfig['payload'];
+    $directApiData = normalizarTipoBusqueda($tipoBusqueda) === 'general'
+        ? consultarBusquedaRemotaPorCampos(
+            (string) $sourceConfig['url'],
+            $remotePayload,
+            ['nombre', 'descripcion', 'autor', 'editorial', 'marca']
+        )
+        : consultarApiRemota((string) $sourceConfig['url'], $remotePayload);
+    $resultadosBusqueda = construirResultadosBusquedaCompleta($BASE_API, $search, $directApiData, $tipoBusqueda);
 
     $apiData = [
         'success' => true,
@@ -931,6 +1153,7 @@ $totalPages = $totalProducts > 0 ? (int) ceil($totalProducts / $perPage) : 1;
 $currentPage = min($requestedPage, $totalPages);
 $offset = ($currentPage - 1) * $perPage;
 $pageProducts = array_slice($filteredProducts, $offset, $perPage);
+$pageProducts = array_map('agregarPresentacionesNormalizadas', $pageProducts);
 $from = $totalProducts > 0 ? $offset + 1 : 0;
 $to = $totalProducts > 0 ? $offset + count($pageProducts) : 0;
 
@@ -945,6 +1168,7 @@ responderJson([
         'from' => $from,
         'to' => $to,
         'mode' => $sourceConfig['mode'],
+        'tipoBusqueda' => $sourceConfig['payload']['tipoBusqueda'] ?? null,
     ],
     'filters' => [
         'price_range' => $priceRange,

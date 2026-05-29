@@ -70,6 +70,9 @@ function cargarProductosPromociones() {
                 const idArticulo = escaparTextoProducto(producto?.idarticulo ?? "");
 
                 const imagen = obtenerImagenProducto(producto);
+                const presentacionCarrito = window.LMProductPresentations
+                    ? window.LMProductPresentations.registerForCart(producto)
+                    : "";
 
                 let html = `
                 <div class="col-lg-3 col-sm-6">
@@ -99,7 +102,9 @@ function cargarProductosPromociones() {
                                         '${nombre}',
                                         '${precioVenta}',
                                         '${imagen}',
-                                        '${descripcion}'
+                                        '${descripcion}',
+                                        1,
+                                        '${presentacionCarrito}'
                                     )">
                                         <i class="flaticon-shopping-cart"></i>
                                     </a>
@@ -353,7 +358,6 @@ window.compartirWhatsApp = function (e) {
         const mensaje = encodeURIComponent(
             `🛍️ *${mpProductoActual.nombre}*\n\n` +
             `💰 Precio: *Q${mpProductoActual.precio}*\n\n` +
-            `📦 Disponibilidad: ${mpProductoActual.stocksucursal || 'Consultar'}\n\n` +
             `🔗 Ver más detalles:\n${url}\n\n` +
             `_Librería Marquense - Útiles escolares y papelería_`
         );
@@ -491,6 +495,9 @@ function ofertasRenderizarCardProducto(producto) {
     const precioVenta = producto?.precio_venta ?? 0;
     const idArticulo = escaparTextoProducto(producto?.idarticulo ?? "");
     const imagen = obtenerImagenProducto(producto);
+    const presentacionCarrito = window.LMProductPresentations
+        ? window.LMProductPresentations.registerForCart(producto)
+        : "";
 
     return `
         <div class="col-lg-3 col-sm-6">
@@ -517,7 +524,9 @@ function ofertasRenderizarCardProducto(producto) {
                                 '${nombre}',
                                 '${precioVenta}',
                                 '${imagen}',
-                                '${descripcion}'
+                                '${descripcion}',
+                                1,
+                                '${presentacionCarrito}'
                             )">
                                 <i class="flaticon-shopping-cart"></i>
                             </a>

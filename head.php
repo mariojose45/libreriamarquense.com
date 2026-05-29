@@ -241,7 +241,7 @@ $categorias = $data["data"] ?? [];
                                     <div class="search-box">
                                         <input type="search" id="search" name="buscar" class="form-control"
                                             autocomplete="off"
-                                            aria-label="Busqueda de productos">
+                                            aria-label="Búsqueda de productos">
                                         <button type="submit" aria-label="Buscar productos"><i
                                                 class='bx bx-search'></i></button>
                                     </div>

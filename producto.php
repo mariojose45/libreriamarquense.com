@@ -294,6 +294,51 @@ include 'head.php';
         box-shadow: 0 2px 8px rgba(26, 38, 151, .35);
     }
 
+    .product-presentations {
+        margin: 18px 0 20px;
+    }
+
+    .product-presentations__label {
+        display: block;
+        color: #222;
+        font-weight: 700;
+        margin-bottom: 10px;
+    }
+
+    .product-presentations__options {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .product-presentation-option {
+        border: 1px solid #166B38;
+        background: #fff;
+        color: #166B38;
+        border-radius: 6px;
+        padding: 9px 14px;
+        font-size: 14px;
+        font-weight: 700;
+        line-height: 1.2;
+        cursor: pointer;
+        transition: background-color .2s ease, color .2s ease, border-color .2s ease, box-shadow .2s ease;
+    }
+
+    .product-presentation-option:hover:not(:disabled),
+    .product-presentation-option.is-selected {
+        background: #166B38;
+        color: #fff;
+        box-shadow: 0 6px 16px rgba(22, 107, 56, .18);
+    }
+
+    .product-presentation-option:disabled {
+        border-color: #b8c5bd;
+        color: #7b8b81;
+        background: #f4f7f5;
+        cursor: not-allowed;
+        opacity: .72;
+    }
+
     /* Mobile */
     @media (max-width: 768px) {
         #slider-nav {
@@ -548,12 +593,17 @@ include 'head.php';
                                         <p id="producto-descripcion"></p>
 
                                         <ul class="products-info">
-                                            <li><span>Disponibilidad:</span> <span id="producto-stock">En stock</span>
+                                            <li hidden><span id="producto-stock"></span>
                                             </li>
                                             <li><span>SKU:</span> <span id="producto-sku"></span></li>
                                             <li><span>Código:</span> <span id="producto-codigo"></span></li>
                                             <li><span>Categoría:</span> <span id="producto-categoria"></span></li>
                                         </ul>
+
+                                        <div id="producto-presentaciones-wrapper" class="product-presentations" hidden>
+                                            <span class="product-presentations__label">Presentación:</span>
+                                            <div id="producto-presentaciones" class="product-presentations__options"></div>
+                                        </div>
 
                                         <div class="product-quantities">
                                             <span>Cantidad:</span>
@@ -633,16 +683,19 @@ include 'head.php';
 
 <?php include 'footer.php'; ?>
 <script type="text/javascript" src="assets/js/sweatlert.js"></script>
-<script type="text/javascript" src="assets/js/producto.js"></script>
+<script type="text/javascript" src="assets/js/producto.js?v=<?php echo filemtime('assets/js/producto.js'); ?>"></script>
 <script>
     // Variables globales para el producto
     let productoActual = null;
     let imagenPrincipal = null; // Imagen principal del producto
     let imagenesProducto = []; // Fotos adicionales de la API
+    let presentacionesProducto = [];
+    let presentacionSeleccionada = null;
+    let avisoProductoNoDisponibleMostrado = false;
     let imagenIndex = 0; // Índice de la imagen actual mostrada
 
     // ============================================================
-    // 🔒 VALIDAR ID DEL PRODUCTO
+    //  VALIDAR ID DEL PRODUCTO
     // ============================================================
     const IMAGEN_PRODUCTO_BASE = "https://ssl.sol.sistemasolgt.com/libremarquenseDos/files/articulos/";
     const IMAGEN_PRODUCTO_PLACEHOLDER = "assets/img/404.png";
@@ -828,6 +881,10 @@ include 'head.php';
         const descripcion = (producto.descripcion ?? '').toString().trim();
         const descripcionValida = descripcion && descripcion !== '0' ? descripcion : '';
 
+        const presentaciones = window.LMProductPresentations
+            ? window.LMProductPresentations.extract(producto)
+            : [];
+
         return {
             ...producto,
             idarticulo: producto.idarticulo || idarticulo,
@@ -837,8 +894,172 @@ include 'head.php';
             precio_venta: producto.precio_venta ?? producto.precio ?? producto.preciofinal ?? 0,
             stock,
             categoria: producto.categoria || producto.nombrecategoria || producto.nom_categoria || 'N/A',
-            imagen: producto.imagen || producto.foto || producto.ruta_imagen || ''
+            imagen: producto.imagen || producto.foto || producto.ruta_imagen || '',
+            presentaciones
         };
+    }
+
+    function obtenerPresentacionActiva() {
+        if (presentacionSeleccionada) {
+            return presentacionSeleccionada;
+        }
+
+        if (presentacionesProducto.length > 0) {
+            return presentacionesProducto[0];
+        }
+
+        if (window.LMProductPresentations) {
+            return window.LMProductPresentations.defaultUnit(productoActual || {});
+        }
+
+        return {
+            nombre: 'UNIDAD',
+            tipo: 'unidad',
+            precio: parseFloat(productoActual?.precio_venta || 0),
+            stock: parseFloat(productoActual?.stock || 0)
+        };
+    }
+
+    function mostrarToastProductoNoDisponible(mensaje = 'Producto no disponible.') {
+        if (window.Carrito && typeof Carrito.mostrarNotificacion === 'function') {
+            Carrito.mostrarNotificacion(mensaje);
+            return;
+        }
+
+        if (typeof Swal !== 'undefined') {
+            Swal.fire({
+                icon: 'warning',
+                title: mensaje,
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 1800,
+                timerProgressBar: true
+            });
+        }
+    }
+
+    function normalizarTipoPresentacionProducto(presentacion) {
+        const texto = String(presentacion?.tipo || presentacion?.nombre || '').trim();
+        if (window.LMProductPresentations && typeof window.LMProductPresentations.normalizeName === 'function') {
+            return window.LMProductPresentations.normalizeName(texto).toLowerCase();
+        }
+
+        return texto.toLowerCase();
+    }
+
+    function esPresentacionUnidadProducto(presentacion) {
+        const tipo = normalizarTipoPresentacionProducto(presentacion);
+        return tipo === 'unidad' || tipo === 'unit' || tipo === 'unidades';
+    }
+
+    function filtrarPresentacionesMostrables(presentaciones) {
+        const disponibles = presentaciones.filter((presentacion) => {
+            const precio = parseFloat(presentacion?.precio || 0);
+            const stock = presentacion?.stock === null || presentacion?.stock === undefined
+                ? null
+                : parseFloat(presentacion.stock || 0);
+
+            return precio > 0 && (stock === null || stock > 0);
+        });
+
+        const tienePresentacionNoUnidad = disponibles.some((presentacion) => !esPresentacionUnidadProducto(presentacion));
+        return tienePresentacionNoUnidad ? disponibles : [];
+    }
+
+    function actualizarVistaPresentacion() {
+        if (!productoActual) return;
+
+        const presentacion = obtenerPresentacionActiva();
+        const precio = parseFloat(presentacion.precio ?? productoActual.precio_venta ?? 0);
+        const stock = presentacion.stock === null || presentacion.stock === undefined
+            ? parseFloat(productoActual.stock || 0)
+            : parseFloat(presentacion.stock || 0);
+
+        productoActual.precio_venta = precio;
+        productoActual.stock = stock;
+
+        document.getElementById('producto-precio').textContent = 'Q' + precio.toFixed(2);
+        const stockElement = document.getElementById('producto-stock');
+        if (stockElement) {
+            stockElement.textContent = '';
+        }
+
+        const inputCantidad = document.getElementById('producto-cantidad');
+        if (inputCantidad) {
+            inputCantidad.max = '99';
+        }
+
+        normalizarCantidadProducto();
+
+        const botonAgregar = document.querySelector('.product-add-to-cart .default-btn');
+        if (botonAgregar) {
+            botonAgregar.disabled = precio <= 0;
+            botonAgregar.style.opacity = botonAgregar.disabled ? '.65' : '';
+            botonAgregar.style.cursor = botonAgregar.disabled ? 'not-allowed' : '';
+        }
+
+        if (precio > 0) {
+            avisoProductoNoDisponibleMostrado = false;
+        } else if (!avisoProductoNoDisponibleMostrado) {
+            avisoProductoNoDisponibleMostrado = true;
+            mostrarToastProductoNoDisponible();
+        }
+    }
+
+    function seleccionarPresentacionProducto(index) {
+        const presentacion = presentacionesProducto[index];
+        if (!presentacion || presentacion.disabled) {
+            return;
+        }
+
+        presentacionSeleccionada = presentacion;
+
+        document.querySelectorAll('.product-presentation-option').forEach((button, buttonIndex) => {
+            button.classList.toggle('is-selected', buttonIndex === index);
+        });
+
+        actualizarVistaPresentacion();
+    }
+
+    function renderizarPresentacionesProducto() {
+        const wrapper = document.getElementById('producto-presentaciones-wrapper');
+        const contenedor = document.getElementById('producto-presentaciones');
+
+        if (!wrapper || !contenedor) {
+            return;
+        }
+
+        const presentacionesApi = Array.isArray(productoActual?.presentaciones)
+            ? productoActual.presentaciones
+            : [];
+        presentacionesProducto = filtrarPresentacionesMostrables(presentacionesApi);
+
+        if (presentacionesProducto.length === 0) {
+            wrapper.hidden = true;
+            contenedor.innerHTML = '';
+            presentacionSeleccionada = null;
+            actualizarVistaPresentacion();
+            return;
+        }
+
+        const primeraDisponible = presentacionesProducto.findIndex(item => !item.disabled);
+        presentacionSeleccionada = primeraDisponible >= 0 ? presentacionesProducto[primeraDisponible] : null;
+
+        contenedor.innerHTML = presentacionesProducto.map((presentacion, index) => {
+            const selected = presentacionSeleccionada === presentacion ? ' is-selected' : '';
+            const disabled = presentacion.disabled ? ' disabled' : '';
+            const title = presentacion.disabled ? 'No disponible' : `Q${parseFloat(presentacion.precio || 0).toFixed(2)}`;
+
+            return `
+                <button type="button" class="product-presentation-option${selected}" onclick="seleccionarPresentacionProducto(${index})" title="${escaparHTMLProducto(title)}"${disabled}>
+                    ${escaparHTMLProducto(presentacion.nombre)}
+                </button>
+            `;
+        }).join('');
+
+        wrapper.hidden = false;
+        actualizarVistaPresentacion();
     }
 
     // ============================================================
@@ -965,10 +1186,11 @@ include 'head.php';
         document.getElementById('producto-nombre').textContent = productoActual.nombre || 'Sin nombre';
         document.getElementById('producto-precio').textContent = 'Q' + parseFloat(productoActual.precio_venta || 0).toFixed(2);
         document.getElementById('producto-descripcion').textContent = productoActual.descripcion || 'Sin descripción disponible.';
-        document.getElementById('producto-stock').textContent = parseFloat(productoActual.stock || 0) > 0 ? 'En stock' : 'Agotado';
+        document.getElementById('producto-stock').textContent = '';
         document.getElementById('producto-sku').textContent = productoActual.idarticulo || 'N/A';
         document.getElementById('producto-codigo').textContent = productoActual.codigo || 'N/A';
         document.getElementById('producto-categoria').textContent = productoActual.categoria || 'N/A';
+        renderizarPresentacionesProducto();
 
         // Llenar descripción completa
         const descripcionCompletaSegura = escaparHTMLProducto(productoActual.descripcion || '');
@@ -980,7 +1202,6 @@ include 'head.php';
         <li><strong>Nombre:</strong> <span>${escaparHTMLProducto(productoActual.nombre || 'N/A')}</span></li>
         <li><strong>Código:</strong> <span>${escaparHTMLProducto(productoActual.codigo || 'N/A')}</span></li>
         <li><strong>Categoría:</strong> <span>${escaparHTMLProducto(productoActual.categoria || 'N/A')}</span></li>
-        <li><strong>Stock:</strong> <span>${escaparHTMLProducto(productoActual.stock || '0')}</span></li>
         <li><strong>Precio:</strong> <span>Q${parseFloat(productoActual.precio_venta || 0).toFixed(2)}</span></li>
     `;
         document.getElementById('producto-informacion').innerHTML = infoHtml;
@@ -1130,6 +1351,7 @@ include 'head.php';
         const cambio = n > 0 ? 1 : -1;
         const nuevaCantidad = Math.max(1, cantidadActual + cambio);
         input.value = String(nuevaCantidad);
+        normalizarCantidadProducto();
     }
 
     // ============================================================
@@ -1140,26 +1362,37 @@ include 'head.php';
 
         let cantidad = normalizarCantidadProducto();
         let imagen = imagenesProducto[0] || imagenPrincipal || IMAGEN_PRODUCTO_PLACEHOLDER;
+        const presentacion = obtenerPresentacionActiva();
+        const precio = parseFloat(presentacion.precio ?? productoActual.precio_venta ?? 0);
+        const stock = presentacion.stock === null || presentacion.stock === undefined
+            ? parseFloat(productoActual.stock || 0)
+            : parseFloat(presentacion.stock || 0);
 
-        agregarAlCarrito(
+        if (precio <= 0) {
+            mostrarToastProductoNoDisponible();
+            return;
+        }
+
+        const agregado = agregarAlCarrito(
             productoActual.idarticulo,
             productoActual.nombre,
-            productoActual.precio_venta,
+            precio,
             imagen,
             productoActual.descripcion || '',
-            cantidad
+            cantidad,
+            {
+                presentacion: presentacion.nombre,
+                tipo_presentacion: presentacion.tipo,
+                precio_presentacion: precio,
+                stock_presentacion: stock,
+                cantidadpresentacion: presentacion.cantidadpresentacion || 1
+            }
         );
 
-        // Mostrar mensaje 
-        if (typeof Swal !== 'undefined') {
-            Swal.fire({
-                icon: 'success',
-                title: '¡Agregado!',
-                text: 'El producto se agregó al carrito',
-                timer: 2000,
-                showConfirmButton: false
-            });
+        if (!agregado) {
+            return;
         }
+
     }
 
     // ============================================================
@@ -1177,8 +1410,7 @@ include 'head.php';
         const mensaje = encodeURIComponent(
             `🛍️ *${productoActual.nombre}*\n\n` +
             `💰 Precio: *Q${parseFloat(productoActual.precio_venta || 0).toFixed(2)}*\n\n` +
-            `📦 Disponibilidad: ${parseFloat(productoActual.stock || 0) > 0 ? 'En stock' : 'Agotado'}\n\n` +
-            `🔗 Ver más detalles:\n${url}\n\n` +
+            `Ver más detalles:\n${url}\n\n` +
             `_Librería Marquense - Útiles escolares y papelería_`
         );
 

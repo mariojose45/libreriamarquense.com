@@ -50,6 +50,71 @@ const Carrito = {
     PRECIO_MINIMO: 0.01,
     PRECIO_MAXIMO: 999999.99,
     CANTIDAD_MAXIMA: 99,
+    MENSAJE_RESERVA: 'Producto bajo reserva. Nos comunicaremos contigo para confirmar disponibilidad.',
+
+    normalizarPresentacion(producto, precioBase) {
+        if (window.LMProductPresentations && typeof window.LMProductPresentations.normalizeCartPresentation === 'function') {
+            return window.LMProductPresentations.normalizeCartPresentation(producto, precioBase);
+        }
+
+        return {
+            presentacion: producto.presentacion || 'UNIDAD',
+            tipo_presentacion: producto.tipo_presentacion || 'unidad',
+            precio_presentacion: parseFloat(producto.precio_presentacion || precioBase || 0),
+            stock_presentacion: producto.stock_presentacion ?? producto.stock ?? null,
+            cantidadpresentacion: parseInt(producto.cantidadpresentacion || 1, 10) || 1
+        };
+    },
+
+    obtenerClaveProducto(item) {
+        if (item?.cart_key) {
+            return String(item.cart_key);
+        }
+
+        if (window.LMProductPresentations && typeof window.LMProductPresentations.cartKey === 'function') {
+            return window.LMProductPresentations.cartKey(item);
+        }
+
+        const id = String(item?.idarticulo ?? item?.id ?? '').trim();
+        const tipo = String(item?.tipo_presentacion || item?.presentacion || 'unidad')
+            .trim()
+            .toLowerCase()
+            .replace(/[^a-z0-9]+/g, '_')
+            .replace(/^_+|_+$/g, '') || 'unidad';
+
+        return `${id}::${tipo}`;
+    },
+
+    itemCoincideConClave(item, clave) {
+        const claveTexto = String(clave ?? '').trim();
+        if (!claveTexto) {
+            return false;
+        }
+
+        if (String(item?.cart_key ?? '') === claveTexto || this.obtenerClaveProducto(item) === claveTexto) {
+            return true;
+        }
+
+        return !claveTexto.includes('::') && String(item?.idarticulo ?? '') === claveTexto;
+    },
+
+    obtenerStockPresentacion(item) {
+        if (item?.stock_presentacion === null || item?.stock_presentacion === undefined || item?.stock_presentacion === '') {
+            return null;
+        }
+
+        const stock = Number(String(item.stock_presentacion).replace(',', '.'));
+        return Number.isFinite(stock) ? Math.max(0, stock) : null;
+    },
+
+    requiereReservaPorStock(stockPresentacion, cantidad) {
+        if (stockPresentacion === null || stockPresentacion === undefined) {
+            return false;
+        }
+
+        const cantidadNum = parseInt(cantidad, 10);
+        return Number.isInteger(cantidadNum) && cantidadNum >= 1 && cantidadNum > stockPresentacion;
+    },
 
     // ============================================================
     // GENERAR HASH DE INTEGRIDAD DEL CARRITO
@@ -58,9 +123,10 @@ const Carrito = {
         // Crear una cadena única basada en los datos del carrito
         const datos = JSON.stringify(carrito.map(item => ({
             id: item.idarticulo,
+            presentacion: item.tipo_presentacion || item.presentacion || 'unidad',
             precio: parseFloat(item.precio || 0).toFixed(2),
             cantidad: String(item.cantidad ?? '1').trim()
-        })).sort((a, b) => a.id - b.id));
+        })).sort((a, b) => String(a.id + a.presentacion).localeCompare(String(b.id + b.presentacion))));
         
         // Hash simple pero efectivo (no es criptográficamente seguro, pero detecta cambios)
         let hash = 0;
@@ -68,6 +134,22 @@ const Carrito = {
             const char = datos.charCodeAt(i);
             hash = ((hash << 5) - hash) + char;
             hash = hash & hash; // Convertir a entero de 32 bits
+        }
+        return Math.abs(hash).toString(36);
+    },
+
+    generarHashLegacy(carrito) {
+        const datos = JSON.stringify(carrito.map(item => ({
+            id: item.idarticulo,
+            precio: parseFloat(item.precio || 0).toFixed(2),
+            cantidad: String(item.cantidad ?? '1').trim()
+        })).sort((a, b) => a.id - b.id));
+
+        let hash = 0;
+        for (let i = 0; i < datos.length; i++) {
+            const char = datos.charCodeAt(i);
+            hash = ((hash << 5) - hash) + char;
+            hash = hash & hash;
         }
         return Math.abs(hash).toString(36);
     },
@@ -86,8 +168,9 @@ const Carrito = {
             
             const carritoParsed = JSON.parse(carrito);
             const hashCalculado = this.generarHash(carritoParsed);
+            const hashLegacy = this.generarHashLegacy(carritoParsed);
             
-            if (hashGuardado !== hashCalculado) {
+            if (hashGuardado !== hashCalculado && hashGuardado !== hashLegacy) {
                 console.warn('⚠️ ADVERTENCIA: El carrito ha sido modificado. Se limpiará por seguridad.');
                 this.limpiarCarrito();
                 if (typeof Swal !== 'undefined') {
@@ -203,6 +286,11 @@ const Carrito = {
             return { valido: false, mensaje: `La cantidad del producto "${nombre}" no es valida.` };
         }
 
+        const presentacion = typeof item.presentacion === 'string' ? item.presentacion.trim() : 'UNIDAD';
+        if (presentacion.length > 60) {
+            return { valido: false, mensaje: `La presentacion del producto "${nombre}" no es valida.` };
+        }
+
         return { valido: true, mensaje: 'Producto valido' };
     },
 
@@ -262,8 +350,8 @@ const Carrito = {
             return false;
         }
         
-        // Validar y obtener precio
-        const precio = parseFloat(producto.precio || producto.precio_venta || 0);
+        const presentacion = this.normalizarPresentacion(producto, producto.precio || producto.precio_venta || 0);
+        const precio = parseFloat(presentacion.precio_presentacion || producto.precio || producto.precio_venta || 0);
         if (!this.validarPrecio(precio)) {
             console.error('⚠️ No se puede agregar producto con precio inválido');
             if (typeof Swal !== 'undefined') {
@@ -277,11 +365,19 @@ const Carrito = {
             return false;
         }
 
+        const stockPresentacion = this.obtenerStockPresentacion(presentacion);
+        let requiereReserva = this.requiereReservaPorStock(stockPresentacion, cantidad);
+
         const carrito = this.obtenerCarrito();
         const idarticulo = producto.idarticulo || producto.id;
+        const claveProducto = this.obtenerClaveProducto({
+            idarticulo,
+            presentacion: presentacion.presentacion,
+            tipo_presentacion: presentacion.tipo_presentacion
+        });
 
         // Buscar si el producto ya existe en el carrito
-        const productoExistente = carrito.find(item => item.idarticulo == idarticulo);
+        const productoExistente = carrito.find(item => this.obtenerClaveProducto(item) === claveProducto);
 
         if (productoExistente) {
             // Si existe, aumentar la cantidad (pero mantener el precio original)
@@ -291,7 +387,10 @@ const Carrito = {
                 this.mostrarNotificacion(`La cantidad maxima por producto es ${this.CANTIDAD_MAXIMA}.`);
                 return false;
             }
+
             productoExistente.cantidad = cantidadFinal;
+            requiereReserva = this.requiereReservaPorStock(stockPresentacion, cantidadFinal);
+            productoExistente.requiere_reserva = requiereReserva;
             // IMPORTANTE: No permitir cambiar el precio de productos existentes
             // El precio se mantiene como estaba cuando se agregó por primera vez
         } else {
@@ -302,7 +401,14 @@ const Carrito = {
                 precio: precio, // Precio validado
                 imagen: producto.imagen || '',
                 cantidad: cantidad,
-                descripcion: producto.descripcion || ''
+                descripcion: producto.descripcion || '',
+                presentacion: presentacion.presentacion,
+                tipo_presentacion: presentacion.tipo_presentacion,
+                precio_presentacion: precio,
+                stock_presentacion: stockPresentacion,
+                cantidadpresentacion: presentacion.cantidadpresentacion || 1,
+                requiere_reserva: requiereReserva,
+                cart_key: claveProducto
             };
             carrito.push(nuevoProducto);
         }
@@ -312,7 +418,7 @@ const Carrito = {
         }
         
         // Mostrar notificación
-        this.mostrarNotificacion('Producto agregado al carrito');
+        this.mostrarNotificacion(requiereReserva ? this.MENSAJE_RESERVA : 'Producto agregado al carrito');
         
         return true;
     },
@@ -322,7 +428,7 @@ const Carrito = {
     // ============================================================
     eliminarProducto(idarticulo) {
         const carrito = this.obtenerCarrito();
-        const nuevoCarrito = carrito.filter(item => item.idarticulo != idarticulo);
+        const nuevoCarrito = carrito.filter(item => !this.itemCoincideConClave(item, idarticulo));
         this.guardarCarrito(nuevoCarrito);
         this.mostrarNotificacion('Producto eliminado del carrito');
         return true;
@@ -349,7 +455,7 @@ const Carrito = {
         }
 
         const carrito = this.obtenerCarrito();
-        const producto = carrito.find(item => item.idarticulo == idarticulo);
+        const producto = carrito.find(item => this.itemCoincideConClave(item, idarticulo));
 
         if (producto) {
             // Validar que el precio no haya sido modificado
@@ -359,13 +465,19 @@ const Carrito = {
                 this.eliminarProducto(idarticulo);
                 return false;
             }
-            
+
+            const stockPresentacion = this.obtenerStockPresentacion(producto);
             producto.cantidad = cantidadNormalizada;
+            producto.requiere_reserva = this.requiereReservaPorStock(stockPresentacion, cantidadNormalizada);
             // Asegurar que el precio no se modifique
             producto.precio = precioOriginal;
             
             if (!this.guardarCarrito(carrito)) {
                 return false;
+            }
+
+            if (producto.requiere_reserva) {
+                this.mostrarNotificacion(this.MENSAJE_RESERVA);
             }
             return true;
         }
@@ -533,8 +645,9 @@ const Carrito = {
     mostrarNotificacion(mensaje) {
         // Si existe SweetAlert, usarlo
         if (typeof Swal !== 'undefined') {
+            const icono = /^(Producto bajo reserva|Producto no disponible|Cantidad no disponible|Ingrese|La cantidad|El precio)/i.test(String(mensaje)) ? 'warning' : 'success';
             Swal.fire({
-                icon: 'success',
+                icon: icono,
                 title: mensaje,
                 showConfirmButton: false,
                 timer: 1500,
@@ -545,16 +658,28 @@ const Carrito = {
     }
 };
 
+window.Carrito = Carrito;
+
 // ============================================================
 // FUNCIÓN GLOBAL PARA AGREGAR AL CARRITO
 // ============================================================
-function agregarAlCarrito(idarticulo, nombre, precio, imagen, descripcion = '', cantidad = 1) {
+function agregarAlCarrito(idarticulo, nombre, precio, imagen, descripcion = '', cantidad = 1, presentacion = null) {
+    if (cantidad && typeof cantidad === 'object') {
+        presentacion = cantidad;
+        cantidad = 1;
+    }
+
+    if (typeof presentacion === 'string' && window.LMProductPresentations && typeof window.LMProductPresentations.getRegisteredPresentation === 'function') {
+        presentacion = window.LMProductPresentations.getRegisteredPresentation(presentacion);
+    }
+
     const producto = {
         idarticulo: idarticulo,
         nombre: nombre,
         precio: precio,
         imagen: imagen,
-        descripcion: descripcion
+        descripcion: descripcion,
+        ...(presentacion && typeof presentacion === 'object' ? presentacion : {})
     };
     
     return Carrito.agregarProducto(producto, cantidad);

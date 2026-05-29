@@ -1098,7 +1098,7 @@ $categoria_actual = isset($_GET['categoria']) && preg_match('/^\d{1,10}$/', (str
 
                 <p id="mp-descripcion"></p>
 
-                <p><b>Disponibilidad:</b> <span id="mp-stock"></span></p>
+                <span id="mp-stock" hidden></span>
                 <p><b>SKU:</b> <span id="mp-sku"></span></p>
 
                 <div class="mp-cantidad-box">
@@ -1161,7 +1161,9 @@ $categoria_actual = isset($_GET['categoria']) && preg_match('/^\d{1,10}$/', (str
 function buscarProductosSidebar(event) {
     event.preventDefault();
     const searchInput = document.getElementById('search-sidebar');
+    const tipoBusquedaSelect = document.getElementById('tipoBusqueda');
     const termino = searchInput.value.trim();
+    const tipoBusqueda = tipoBusquedaSelect ? tipoBusquedaSelect.value : 'nombre';
 
     if (!termino) {
         alert('Por favor ingresa un término de búsqueda');
@@ -1169,7 +1171,8 @@ function buscarProductosSidebar(event) {
     }
 
     // Redirigir a tienda.php con el parámetro de búsqueda
-    window.location.href = 'tienda.php?buscar=' + encodeURIComponent(termino);
+    window.location.href = 'tienda.php?buscar=' + encodeURIComponent(termino)
+        + '&tipoBusqueda=' + encodeURIComponent(tipoBusqueda || 'nombre');
 }
 
 // ============================================================

@@ -35,6 +35,42 @@ function normalizarCantidadPedido(valor) {
     return cantidad >= 1 && cantidad <= CANTIDAD_MAXIMA_CARRITO ? cantidad : null;
 }
 
+function escaparAtributoJs(valor) {
+    return String(valor ?? '')
+        .replace(/\\/g, '\\\\')
+        .replace(/'/g, "\\'")
+        .replace(/\r?\n/g, ' ');
+}
+
+function obtenerClaveCarrito(producto, idFallback = '') {
+    if (producto?.cart_key) {
+        return String(producto.cart_key);
+    }
+
+    if (window.Carrito && typeof Carrito.obtenerClaveProducto === 'function') {
+        return Carrito.obtenerClaveProducto(producto);
+    }
+
+    return String(idFallback);
+}
+
+function obtenerIdHtmlSeguro(valor) {
+    return String(valor ?? '').replace(/[^A-Za-z0-9_-]+/g, '-');
+}
+
+function obtenerStockPresentacionCarrito(producto) {
+    if (window.Carrito && typeof Carrito.obtenerStockPresentacion === 'function') {
+        return Carrito.obtenerStockPresentacion(producto);
+    }
+
+    if (producto?.stock_presentacion === null || producto?.stock_presentacion === undefined || producto?.stock_presentacion === '') {
+        return null;
+    }
+
+    const stock = Number(String(producto.stock_presentacion).replace(',', '.'));
+    return Number.isFinite(stock) ? Math.max(0, stock) : null;
+}
+
 function obtenerImagenProductoSegura(valor) {
     const fallback = 'assets/img/cart/cart-1.png';
     const texto = String(valor ?? '').trim();
@@ -98,11 +134,15 @@ function cargarCarrito() {
         const precio = parseFloat(producto.precio) || 0;
         const cantidad = normalizarCantidadPedido(producto.cantidad) || 1;
         const total = precio * cantidad;
+        const claveCarrito = obtenerClaveCarrito(producto, idarticulo);
+        const claveJs = escaparAtributoJs(claveCarrito);
+        const inputId = `cantidad-${obtenerIdHtmlSeguro(claveCarrito)}`;
+        const presentacion = escaparHTML(producto.presentacion || 'UNIDAD');
 
         const tr = document.createElement('tr');
         tr.innerHTML = `
             <td class="product-thumbnail">
-                <a href="javascript:void(0)" class="remove" onclick="eliminarDelCarrito('${idarticulo}')">
+                <a href="javascript:void(0)" class="remove" onclick="eliminarDelCarrito('${claveJs}')">
                     <i class='bx bx-x'></i>
                 </a>
                 <a href="#">
@@ -111,18 +151,19 @@ function cargarCarrito() {
             </td>
             <td class="product-name">
                 <a href="producto.php?id=${idarticulo}">${nombre}</a>
+                <span class="cart-product-presentation">${presentacion}</span>
             </td>
             <td class="product-price">
                 <span class="unit-amount">Q${precio.toFixed(2)}</span>
             </td>
             <td class="product-quantity">
                 <div class="input-counter">
-                    <span class="minus-btn" onclick="cambiarCantidad('${idarticulo}', -1)">
+                    <span class="minus-btn" onclick="cambiarCantidad('${claveJs}', -1)">
                         <i class='bx bx-minus'></i>
                     </span>
-                    <input type="text" value="${cantidad}" id="cantidad-${idarticulo}" inputmode="numeric" pattern="[0-9]*" maxlength="2"
-                           onchange="actualizarCantidadInput('${idarticulo}', this.value)">
-                    <span class="plus-btn" onclick="cambiarCantidad('${idarticulo}', 1)">
+                    <input type="text" value="${cantidad}" id="${inputId}" inputmode="numeric" pattern="[0-9]*" maxlength="2"
+                           onchange="actualizarCantidadInput('${claveJs}', this.value)">
+                    <span class="plus-btn" onclick="cambiarCantidad('${claveJs}', 1)">
                         <i class='bx bx-plus'></i>
                     </span>
                 </div>
@@ -272,11 +313,18 @@ function eliminarDelCarrito(idarticulo) {
 // ============================================================
 function cambiarCantidad(idarticulo, cambio) {
     const carrito = Carrito.obtenerCarrito();
-    const producto = carrito.find(item => item.idarticulo == idarticulo);
+    const producto = carrito.find(item => {
+        if (window.Carrito && typeof Carrito.itemCoincideConClave === 'function') {
+            return Carrito.itemCoincideConClave(item, idarticulo);
+        }
+
+        return item.idarticulo == idarticulo;
+    });
 
     if (producto) {
         const cantidadActual = normalizarCantidadPedido(producto.cantidad) || 1;
         const nuevaCantidad = cantidadActual + cambio;
+
         if (nuevaCantidad < 1) {
             eliminarDelCarrito(idarticulo);
         } else if (nuevaCantidad > CANTIDAD_MAXIMA_CARRITO) {
@@ -299,6 +347,14 @@ function actualizarCantidadInput(idarticulo, valor) {
         return;
     }
 
+    const carrito = Carrito.obtenerCarrito();
+    const producto = carrito.find(item => {
+        if (window.Carrito && typeof Carrito.itemCoincideConClave === 'function') {
+            return Carrito.itemCoincideConClave(item, idarticulo);
+        }
+
+        return item.idarticulo == idarticulo;
+    });
     Carrito.actualizarCantidad(idarticulo, cantidad);
     cargarCarrito();
 }
@@ -917,6 +973,12 @@ function procesarPedido(event) {
     const precio_venta = [];
     const subtotal1 = [];
     const subtotaldes1 = [];
+    const presen = [];
+    const tipo_presentacion = [];
+    const cantidadpresentacion = [];
+    const stock_validado = [];
+    const subtotal_presentacion = [];
+    const requiere_reserva = [];
 
     carrito.forEach(producto => {
         idarticulo.push(parseInt(producto.idarticulo));
@@ -927,6 +989,13 @@ function procesarPedido(event) {
         const subtotalItem = precio * cantidadProducto;
         subtotal1.push(subtotalItem);
         subtotaldes1.push(subtotalItem);
+        presen.push(producto.presentacion || 'UNIDAD');
+        tipo_presentacion.push(producto.tipo_presentacion || 'unidad');
+        cantidadpresentacion.push(parseInt(producto.cantidadpresentacion || 1, 10) || 1);
+        const stockProducto = obtenerStockPresentacionCarrito(producto);
+        stock_validado.push(stockProducto);
+        requiere_reserva.push(!!producto.requiere_reserva || (stockProducto !== null && cantidadProducto > stockProducto));
+        subtotal_presentacion.push(subtotalItem);
     });
 
     // Construir objeto para la API (con datos sanitizados)
@@ -947,13 +1016,34 @@ function procesarPedido(event) {
         destino: "VENTA",
         no_auto_tarjeta: "",
         envio: formData.shipping,
+        presen: presen,
+        cantidadpresentacion: cantidadpresentacion,
+        requiere_reserva: requiere_reserva,
+        presentaciones: carrito.map((producto, index) => ({
+            idarticulo: idarticulo[index],
+            presentacion: presen[index],
+            tipo_presentacion: tipo_presentacion[index],
+            precio_presentacion: precio_venta[index],
+            cantidad: cantidad[index],
+            stock_validado: stock_validado[index],
+            requiere_reserva: requiere_reserva[index],
+            subtotal_presentacion: subtotal_presentacion[index]
+        })),
         datosArticulos: {
             articulos: {
                 idarticulo: idarticulo,
                 cantidad: cantidad,
                 precio_venta: precio_venta,
                 subtotal1: subtotal1,
-                subtotaldes1: subtotaldes1
+                subtotaldes1: subtotaldes1,
+                presen: presen,
+                presentacion: presen,
+                tipo_presentacion: tipo_presentacion,
+                cantidadpresentacion: cantidadpresentacion,
+                precio_presentacion: precio_venta,
+                stock_validado: stock_validado,
+                requiere_reserva: requiere_reserva,
+                subtotal_presentacion: subtotal_presentacion
             }
         }
     };

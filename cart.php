@@ -657,6 +657,19 @@ $current_page = basename($_SERVER['PHP_SELF']);
                 white-space: normal !important;
             }
 
+            .cart-product-presentation {
+                display: inline-flex;
+                align-items: center;
+                margin-top: 7px;
+                padding: 4px 9px;
+                border-radius: 5px;
+                background: rgba(22, 107, 56, .08);
+                color: #166B38;
+                font-size: 12px;
+                font-weight: 700;
+                line-height: 1.2;
+            }
+
             @media (max-width:768px){
 
                 .cart-table td:nth-child(2){

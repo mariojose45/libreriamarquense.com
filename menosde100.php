@@ -1080,7 +1080,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
 
                 <p id="mp-descripcion"></p>
 
-                <p><b>Disponibilidad:</b> <span id="mp-stock"></span></p>
+                <span id="mp-stock" hidden></span>
                 <p><b>SKU:</b> <span id="mp-sku"></span></p>
 
                 <div class="mp-cantidad-box">

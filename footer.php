@@ -229,6 +229,8 @@ $footer_social_links = array_filter($site_social_links ?? []);
 <script src="assets/js/contact-form-script.js"></script>
 <!-- Wow JS -->
 <script src="assets/js/wow.min.js"></script>
+<?php $productPresentationsScript = __DIR__ . '/assets/js/product-presentations.js'; ?>
+<script src="assets/js/product-presentations.js?v=<?php echo file_exists($productPresentationsScript) ? filemtime($productPresentationsScript) : time(); ?>"></script>
 <!-- Carrito JS -->
 <script src="assets/js/carrito.js"></script>
 <!-- Custom JS -->

@@ -27,6 +27,9 @@ function renderProductoCard(producto, columnClass = "col-lg-4 col-sm-6") {
     const codigo = escaparTextoProducto(producto.codigo || "");
     const stock = escaparTextoProducto(producto.stock || "N/A");
     const precio = parseFloat(producto.precio_venta || 0).toFixed(2);
+    const presentacionCarrito = window.LMProductPresentations
+        ? window.LMProductPresentations.registerForCart(producto)
+        : "";
 
     return `
         <div class="${columnClass}">
@@ -53,7 +56,9 @@ function renderProductoCard(producto, columnClass = "col-lg-4 col-sm-6") {
                                 '${nombre}',
                                 '${producto.precio_venta}',
                                 '${imagen}',
-                                '${descripcion}'
+                                '${descripcion}',
+                                1,
+                                '${presentacionCarrito}'
                             )">
                                 <i class="flaticon-shopping-cart"></i>
                             </a>
@@ -94,27 +99,33 @@ function renderProductoCard(producto, columnClass = "col-lg-4 col-sm-6") {
 // Inicialización
 // ------------------------------------------------------------
 document.addEventListener("DOMContentLoaded", function () {
+    if (!document.getElementById("products-collections-filter")
+        && !document.getElementById("contenedor-nuevos-productos")) {
+        return;
+    }
+
     // Detectar parámetros en la URL
     const urlParams = new URLSearchParams(window.location.search);
     const categoriaId = urlParams.get('categoria');
     const buscar = urlParams.get('buscar');
+    const tipoBusqueda = 'general';
 
     const idmarca = urlParams.get('idmarca');
     const idsucursal = urlParams.get('idsucursal') || 4;
 
     if (buscar) {
         // Si hay búsqueda, cargar productos por búsqueda
-        cargarProductosPorBusqueda(buscar);
+        window.cargarProductosPorBusqueda(buscar, tipoBusqueda);
     } else if (categoriaId) {
         // Si hay categoría, cargar productos por categoría
-        cargarProductosPorCategoria(categoriaId);
+        window.cargarProductosPorCategoria(categoriaId);
     } else if (idmarca) {
 
-        cargarProductosPorMarca(idmarca, idsucursal);
+        window.cargarProductosPorMarca(idmarca, idsucursal);
 
     } else {
         // Si no hay parámetros, cargar todos los productos nuevos
-        cargarProductosNuevos();
+        window.cargarProductosNuevos();
     }
 
     // Inicializar el filtro de precio después de que jQuery esté listo
@@ -300,7 +311,7 @@ function abrirModalProducto(producto) {
     document.getElementById("mp-titulo").innerText = producto.nombre;
     document.getElementById("mp-precio").innerText = "Q" + producto.precio;
     document.getElementById("mp-descripcion").innerText = producto.descripcion;
-    document.getElementById("mp-stock").innerText = "En stock";
+    document.getElementById("mp-stock").innerText = "";
     document.getElementById("mp-sku").innerText = producto.sku;
 
     // Imagen principal
@@ -465,7 +476,6 @@ window.compartirWhatsApp = function (e) {
         const mensaje = encodeURIComponent(
             `🛍️ *${mpProductoActual.nombre}*\n\n` +
             `💰 Precio: *Q${mpProductoActual.precio}*\n\n` +
-            `📦 Disponibilidad: ${mpProductoActual.stocksucursal || 'Consultar'}\n\n` +
             `🔗 Ver más detalles:\n${url}\n\n` +
             `_Librería Marquense - Útiles escolares y papelería_`
         );
@@ -657,14 +667,18 @@ function aplicarFiltroPrecio() {
 /* ============================================================
    🔥 CARGAR PRODUCTOS POR BÚSQUEDA
 ============================================================ */
-function cargarProductosPorBusqueda(termino) {
+function cargarProductosPorBusqueda(termino, tipoBusqueda = "general") {
 
     fetch("https://ssl.sol.sistemasolgt.com/libremarquenseDos/api/api_tienda_articulos_listarProductosxSearch.php", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
         },
-        body: JSON.stringify({ search: termino })
+        body: JSON.stringify({
+            idsucursal: 4,
+            search: termino,
+            tipoBusqueda: tipoBusqueda || "general"
+        })
     })
         .then(response => response.json())
         .then(data => {
@@ -800,6 +814,7 @@ let tiendaEstadoPaginacion = {
     search: "",
     idmarca: "",
     idsucursal: "4",
+    tipoBusqueda: "general",
     priceMin: null,
     priceMax: null
 };
@@ -820,6 +835,7 @@ function tiendaConfigurarEstadoDesdeUrl() {
     tiendaEstadoPaginacion.search = params.get("buscar") || "";
     tiendaEstadoPaginacion.idmarca = params.get("idmarca") || "";
     tiendaEstadoPaginacion.idsucursal = params.get("idsucursal") || "4";
+    tiendaEstadoPaginacion.tipoBusqueda = "general";
     tiendaEstadoPaginacion.priceMin = params.get("precio_min");
     tiendaEstadoPaginacion.priceMax = params.get("precio_max");
 
@@ -849,6 +865,7 @@ function tiendaConstruirPayload() {
     if (tiendaEstadoPaginacion.mode === "busqueda") {
         payload.search = tiendaEstadoPaginacion.search;
         payload.idsucursal = tiendaEstadoPaginacion.idsucursal || "4";
+        payload.tipoBusqueda = tiendaEstadoPaginacion.tipoBusqueda || "general";
     }
 
     if (tiendaEstadoPaginacion.mode === "marca") {
@@ -1121,13 +1138,14 @@ window.cargarProductosPorCategoria = function (idcategoria) {
     return tiendaCargarListadoPaginado(true);
 };
 
-window.cargarProductosPorBusqueda = function (termino) {
+window.cargarProductosPorBusqueda = function (termino, tipoBusqueda = "general") {
     if (!tiendaTieneListadoPaginado()) {
-        return tiendaCargarProductosBusquedaOriginal(termino);
+        return tiendaCargarProductosBusquedaOriginal(termino, tipoBusqueda);
     }
 
     tiendaEstadoPaginacion.mode = "busqueda";
     tiendaEstadoPaginacion.search = termino;
+    tiendaEstadoPaginacion.tipoBusqueda = tipoBusqueda || "general";
     tiendaEstadoPaginacion.page = 1;
     return tiendaCargarListadoPaginado(true);
 };

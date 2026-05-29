@@ -20,6 +20,12 @@ function obtenerImagenProducto(producto) {
     return construirUrlImagenProducto(producto?.imagen) || PRODUCTO_IMG_PLACEHOLDER;
 }
 
+function registrarPresentacionCarrito(producto) {
+    return window.LMProductPresentations
+        ? window.LMProductPresentations.registerForCart(producto)
+        : "";
+}
+
 /* ============================================================
    🔥 CARGAR PRODUCTOS NUEVOS DESDE TU API
 ============================================================ */
@@ -53,6 +59,7 @@ function cargarProductosPromociones() {
             productos.forEach(producto => {
 
                 const imagen = obtenerImagenProducto(producto);
+                const presentacionCarrito = registrarPresentacionCarrito(producto);
 
                 let html = `
                 <div class="col-lg-3 col-sm-6">
@@ -82,7 +89,9 @@ function cargarProductosPromociones() {
                                         '${producto.nombre.replace(/'/g, "\\'")}',
                                         '${producto.precio_venta}',
                                         '${imagen}',
-                                        '${producto.descripcion ? producto.descripcion.replace(/'/g, "\\'") : ""}'
+                                        '${producto.descripcion ? producto.descripcion.replace(/'/g, "\\'") : ""}',
+                                        1,
+                                        '${presentacionCarrito}'
                                     )">
                                         <i class="flaticon-shopping-cart"></i>
                                     </a>
@@ -172,6 +181,7 @@ function cargarProductosNuevos() {
             productos.forEach(producto => {
 
                 const imagen = obtenerImagenProducto(producto);
+                const presentacionCarrito = registrarPresentacionCarrito(producto);
 
                 let html = `
                 <div class="col-lg-3 col-sm-6">
@@ -201,7 +211,9 @@ function cargarProductosNuevos() {
                                         '${producto.nombre.replace(/'/g, "\\'")}',
                                         '${producto.precio_venta}',
                                         '${imagen}',
-                                        '${producto.descripcion ? producto.descripcion.replace(/'/g, "\\'") : ""}'
+                                        '${producto.descripcion ? producto.descripcion.replace(/'/g, "\\'") : ""}',
+                                        1,
+                                        '${presentacionCarrito}'
                                     )">
                                         <i class="flaticon-shopping-cart"></i>
                                     </a>
@@ -451,7 +463,6 @@ window.compartirWhatsApp = function (e) {
         const mensaje = encodeURIComponent(
             `🛍️ *${mpProductoActual.nombre}*\n\n` +
             `💰 Precio: *Q${mpProductoActual.precio}*\n\n` +
-            `📦 Disponibilidad: ${mpProductoActual.stocksucursal || 'Consultar'}\n\n` +
             `🔗 Ver más detalles:\n${url}\n\n` +
             `_Librería Marquense - Útiles escolares y papelería_`
         );
@@ -510,6 +521,7 @@ function cargarProductosMasVendidos() {
             productos.forEach(producto => {
 
                 const imagen = obtenerImagenProducto(producto);
+                const presentacionCarrito = registrarPresentacionCarrito(producto);
 
                 let html = `
                 <div class="col-lg-3 col-sm-6">
@@ -538,7 +550,9 @@ function cargarProductosMasVendidos() {
                                         '${producto.nombre.replace(/'/g, "\\'")}',
                                         '${producto.precio_venta}',
                                         '${imagen}',
-                                        '${producto.descripcion ? producto.descripcion.replace(/'/g, "\\'") : ""}'
+                                        '${producto.descripcion ? producto.descripcion.replace(/'/g, "\\'") : ""}',
+                                        1,
+                                        '${presentacionCarrito}'
                                     )">
                                         <i class="flaticon-shopping-cart"></i>
                                     </a>

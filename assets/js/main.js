@@ -413,7 +413,7 @@ function buscarProductos(event) {
         return;
     }
     
-    // Redirigir a tienda.php con el parámetro de búsqueda
+    // Redirigir a tienda.php con el parámetro de búsqueda.
     window.location.href = 'tienda.php?buscar=' + encodeURIComponent(termino);
 }
 
