@@ -5,20 +5,109 @@ header('Content-Type: application/json; charset=UTF-8');
 header('X-Content-Type-Options: nosniff');
 
 const PRODUCTOS_CACHE_TTL = 120;
+const PRODUCTOS_LARGE_RESPONSE_CACHE_TTL = 900;
 const PRODUCTOS_SEARCH_CATALOG_TTL = 21600;
 const PRODUCTOS_DEFAULT_PER_PAGE = 30;
 const PRODUCTOS_MAX_PER_PAGE = 60;
+const PRODUCTOS_ERROR_MEMORY_RESERVE = 524288;
 
-require_once __DIR__ . '/rutas.php';
+$GLOBALS['productos_respuesta_enviada'] = false;
+$GLOBALS['productos_memoria_reservada'] = str_repeat('x', PRODUCTOS_ERROR_MEMORY_RESERVE);
 
 function responderJson(array $payload, int $statusCode = 200): void
 {
+    $GLOBALS['productos_respuesta_enviada'] = true;
     http_response_code($statusCode);
-    echo json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+    $json = json_encode(
+        $payload,
+        JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PARTIAL_OUTPUT_ON_ERROR
+    );
+
+    if ($json === false) {
+        $json = '{"success":false,"message":"No fue posible generar la respuesta JSON.","data":[]}';
+    }
+
+    echo $json;
     exit;
 }
 
-if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+function registrarErrorProductos(string $message): void
+{
+    error_log('[productos_paginados] ' . $message);
+}
+
+set_exception_handler(static function ($exception): void {
+    registrarErrorProductos(
+        get_class($exception) . ': ' . $exception->getMessage()
+        . ' en ' . $exception->getFile() . ':' . $exception->getLine()
+    );
+
+    responderJson([
+        'success' => false,
+        'message' => 'Ocurrio un error interno al procesar los productos.',
+        'data' => [],
+    ], 500);
+});
+
+register_shutdown_function(static function (): void {
+    $GLOBALS['productos_memoria_reservada'] = null;
+    $error = error_get_last();
+    $fatalTypes = [E_ERROR, E_PARSE, E_CORE_ERROR, E_COMPILE_ERROR, E_USER_ERROR];
+
+    if (
+        !is_array($error)
+        || !in_array($error['type'], $fatalTypes, true)
+        || !empty($GLOBALS['productos_respuesta_enviada'])
+    ) {
+        return;
+    }
+
+    registrarErrorProductos(
+        'Error fatal: ' . $error['message']
+        . ' en ' . $error['file'] . ':' . $error['line']
+    );
+
+    if (!headers_sent()) {
+        header('Content-Type: application/json; charset=UTF-8');
+        header('X-Content-Type-Options: nosniff');
+        http_response_code(500);
+    }
+
+    echo '{"success":false,"message":"Ocurrio un error interno al procesar los productos.","data":[]}';
+});
+
+$rutasFile = __DIR__ . '/rutas.php';
+if (!is_file($rutasFile) || !is_readable($rutasFile)) {
+    registrarErrorProductos('No se encontro un archivo de rutas legible.');
+    responderJson([
+        'success' => false,
+        'message' => 'La configuracion del servicio no esta disponible.',
+        'data' => [],
+    ], 500);
+}
+
+require_once $rutasFile;
+
+if (!isset($BASE_API) || !is_string($BASE_API) || trim($BASE_API) === '') {
+    registrarErrorProductos('La variable BASE_API no esta definida correctamente.');
+    responderJson([
+        'success' => false,
+        'message' => 'La configuracion del servicio no es valida.',
+        'data' => [],
+    ], 500);
+}
+
+$BASE_API = rtrim(trim($BASE_API), '/') . '/';
+
+if (!function_exists('curl_init')) {
+    responderJson([
+        'success' => false,
+        'message' => 'El servidor no tiene habilitada la extension cURL.',
+        'data' => [],
+    ], 503);
+}
+
+if (($_SERVER['REQUEST_METHOD'] ?? '') !== 'POST') {
     responderJson([
         'success' => false,
         'message' => 'Metodo no permitido.',
@@ -34,7 +123,15 @@ function leerEntradaJson(): array
     }
 
     $decoded = json_decode($raw, true);
-    return is_array($decoded) ? $decoded : [];
+    if (!is_array($decoded) || json_last_error() !== JSON_ERROR_NONE) {
+        responderJson([
+            'success' => false,
+            'message' => 'El cuerpo de la solicitud no contiene JSON valido.',
+            'data' => [],
+        ], 400);
+    }
+
+    return $decoded;
 }
 
 function normalizarEntero($value, int $default, int $min, int $max): int
@@ -164,7 +261,15 @@ function obtenerRutaCache(string $mode, array $payload): string
 {
     $cacheDir = dirname(__DIR__) . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR . 'productos_paginados';
     if (!is_dir($cacheDir)) {
-        mkdir($cacheDir, 0777, true);
+        if (!@mkdir($cacheDir, 0755, true) && !is_dir($cacheDir)) {
+            registrarErrorProductos('No fue posible crear el directorio de cache.');
+            return '';
+        }
+    }
+
+    if (!is_writable($cacheDir)) {
+        registrarErrorProductos('El directorio de cache no tiene permisos de escritura.');
+        return '';
     }
 
     $cacheKey = md5(json_encode([
@@ -177,35 +282,95 @@ function obtenerRutaCache(string $mode, array $payload): string
 
 function obtenerDatosCacheados(string $cacheFile, int $ttl = PRODUCTOS_CACHE_TTL): ?array
 {
-    if (!is_file($cacheFile)) {
+    if ($cacheFile === '' || !is_file($cacheFile) || !is_readable($cacheFile)) {
         return null;
     }
 
-    $age = time() - (int) filemtime($cacheFile);
+    $modifiedAt = @filemtime($cacheFile);
+    if ($modifiedAt === false) {
+        return null;
+    }
+
+    $age = time() - (int) $modifiedAt;
     if ($age > $ttl) {
         return null;
     }
 
-    $cached = json_decode((string) file_get_contents($cacheFile), true);
-    return is_array($cached) ? $cached : null;
+    $contents = @file_get_contents($cacheFile);
+    if ($contents === false) {
+        registrarErrorProductos('No fue posible leer un archivo de cache.');
+        return null;
+    }
+
+    $cached = json_decode($contents, true);
+    if (!is_array($cached) || json_last_error() !== JSON_ERROR_NONE) {
+        registrarErrorProductos('Se ignoro un archivo de cache con JSON invalido.');
+        return null;
+    }
+
+    return $cached;
 }
 
-function guardarDatosCacheados(string $cacheFile, array $data): void
+function guardarDatosCacheados(string $cacheFile, array $data): bool
 {
-    file_put_contents(
+    if ($cacheFile === '') {
+        return false;
+    }
+
+    $json = json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+    if ($json === false) {
+        registrarErrorProductos('No fue posible serializar los datos para cache.');
+        return false;
+    }
+
+    $written = @file_put_contents(
         $cacheFile,
-        json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
+        $json,
         LOCK_EX
     );
+
+    if ($written === false) {
+        registrarErrorProductos('No fue posible escribir el archivo de cache.');
+        return false;
+    }
+
+    return true;
 }
 
 function consultarApiRemota(string $url, array $payload): array
 {
+    if (!function_exists('curl_init')) {
+        return [
+            'success' => false,
+            'message' => 'El servidor no tiene habilitada la extension cURL.',
+            'data' => [],
+        ];
+    }
+
+    $requestBody = json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+    if ($requestBody === false) {
+        registrarErrorProductos('No fue posible serializar el payload remoto.');
+        return [
+            'success' => false,
+            'message' => 'No fue posible preparar la consulta de productos.',
+            'data' => [],
+        ];
+    }
+
     $ch = curl_init();
+    if ($ch === false) {
+        registrarErrorProductos('curl_init no pudo crear un manejador.');
+        return [
+            'success' => false,
+            'message' => 'No fue posible iniciar la consulta de productos.',
+            'data' => [],
+        ];
+    }
+
     curl_setopt_array($ch, [
         CURLOPT_URL => $url,
         CURLOPT_POST => true,
-        CURLOPT_POSTFIELDS => json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
+        CURLOPT_POSTFIELDS => $requestBody,
         CURLOPT_HTTPHEADER => ['Content-Type: application/json'],
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_SSL_VERIFYPEER => false,
@@ -216,23 +381,46 @@ function consultarApiRemota(string $url, array $payload): array
 
     $response = curl_exec($ch);
     $error = curl_error($ch);
+    $errorNumber = curl_errno($ch);
     $httpCode = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
     curl_close($ch);
 
-    if ($response === false) {
+    if ($response === false || $errorNumber !== 0) {
+        registrarErrorProductos(
+            'Error cURL ' . $errorNumber . ' al consultar la fuente remota: ' . $error
+        );
         return [
             'success' => false,
             'message' => 'No fue posible consultar la fuente remota.',
-            'error' => $error,
+            'data' => [],
+        ];
+    }
+
+    if ($httpCode < 200 || $httpCode >= 300) {
+        registrarErrorProductos('La fuente remota respondio HTTP ' . $httpCode . '.');
+        return [
+            'success' => false,
+            'message' => 'La fuente remota no pudo procesar la solicitud.',
+            'data' => [],
         ];
     }
 
     $decoded = json_decode($response, true);
-    if (!is_array($decoded)) {
+    if (!is_array($decoded) || json_last_error() !== JSON_ERROR_NONE) {
+        registrarErrorProductos('La fuente remota devolvio JSON invalido.');
         return [
             'success' => false,
             'message' => 'La fuente remota devolvio una respuesta no valida.',
-            'http_code' => $httpCode,
+            'data' => [],
+        ];
+    }
+
+    if (!array_key_exists('success', $decoded) || !array_key_exists('data', $decoded) || !is_array($decoded['data'])) {
+        registrarErrorProductos('La fuente remota devolvio una estructura inesperada.');
+        return [
+            'success' => false,
+            'message' => 'La fuente remota devolvio una estructura no valida.',
+            'data' => [],
         ];
     }
 
@@ -348,7 +536,7 @@ function crearPresentacionProducto($nombre, $tipo, $stock, $precio): ?array
     $precio = (float) ($precio ?? 0);
     $stock = (float) ($stock ?? 0);
 
-    if ($precio <= 0 && $stock <= 0) {
+    if ($precio <= 0 || $stock <= 0) {
         return null;
     }
 
@@ -423,6 +611,547 @@ function agregarPresentacionesNormalizadas(array $producto): array
 {
     $producto['presentaciones'] = obtenerPresentacionesProducto($producto);
     return $producto;
+}
+
+function abrirRespuestaRemotaComoStream(string $url, array $payload, string $cacheFile): array
+{
+    if ($cacheFile !== '' && is_file($cacheFile) && is_readable($cacheFile)) {
+        $modifiedAt = @filemtime($cacheFile);
+        if (
+            $modifiedAt !== false
+            && (time() - (int) $modifiedAt) <= PRODUCTOS_LARGE_RESPONSE_CACHE_TTL
+        ) {
+            $cachedStream = @fopen($cacheFile, 'rb');
+            if (is_resource($cachedStream)) {
+                return [
+                    'success' => true,
+                    'stream' => $cachedStream,
+                    'cache_target' => '',
+                    'temporary_path' => '',
+                    'cache_file' => $cacheFile,
+                ];
+            }
+        }
+    }
+
+    if (!function_exists('curl_init')) {
+        return [
+            'success' => false,
+            'message' => 'El servidor no tiene habilitada la extension cURL.',
+        ];
+    }
+
+    $requestBody = json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+    if ($requestBody === false) {
+        registrarErrorProductos('No fue posible serializar el payload de menos de 100.');
+        return [
+            'success' => false,
+            'message' => 'No fue posible preparar la consulta de productos.',
+        ];
+    }
+
+    $temporaryPath = '';
+    $stream = false;
+
+    if ($cacheFile !== '') {
+        $temporaryPath = $cacheFile . '.' . getmypid() . '.' . uniqid('', true) . '.tmp';
+        $stream = @fopen($temporaryPath, 'w+b');
+    }
+
+    if (!is_resource($stream)) {
+        $temporaryPath = '';
+        $stream = @tmpfile();
+    }
+
+    if (!is_resource($stream)) {
+        registrarErrorProductos('No fue posible crear un archivo temporal para la respuesta remota.');
+        return [
+            'success' => false,
+            'message' => 'No fue posible preparar el almacenamiento temporal de productos.',
+        ];
+    }
+
+    $ch = curl_init();
+    if ($ch === false) {
+        fclose($stream);
+        if ($temporaryPath !== '') {
+            @unlink($temporaryPath);
+        }
+
+        registrarErrorProductos('curl_init no pudo crear el manejador de menos de 100.');
+        return [
+            'success' => false,
+            'message' => 'No fue posible iniciar la consulta de productos.',
+        ];
+    }
+
+    curl_setopt_array($ch, [
+        CURLOPT_URL => $url,
+        CURLOPT_POST => true,
+        CURLOPT_POSTFIELDS => $requestBody,
+        CURLOPT_HTTPHEADER => ['Content-Type: application/json'],
+        CURLOPT_FILE => $stream,
+        CURLOPT_SSL_VERIFYPEER => false,
+        CURLOPT_SSL_VERIFYHOST => false,
+        CURLOPT_CONNECTTIMEOUT => 10,
+        CURLOPT_TIMEOUT => 45,
+    ]);
+
+    $executed = curl_exec($ch);
+    $error = curl_error($ch);
+    $errorNumber = curl_errno($ch);
+    $httpCode = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+
+    if ($executed === false || $errorNumber !== 0) {
+        fclose($stream);
+        if ($temporaryPath !== '') {
+            @unlink($temporaryPath);
+        }
+
+        registrarErrorProductos(
+            'Error cURL ' . $errorNumber . ' al consultar menos de 100: ' . $error
+        );
+        return [
+            'success' => false,
+            'message' => 'No fue posible consultar la fuente remota.',
+        ];
+    }
+
+    if ($httpCode < 200 || $httpCode >= 300) {
+        fclose($stream);
+        if ($temporaryPath !== '') {
+            @unlink($temporaryPath);
+        }
+
+        registrarErrorProductos('La fuente de menos de 100 respondio HTTP ' . $httpCode . '.');
+        return [
+            'success' => false,
+            'message' => 'La fuente remota no pudo procesar la solicitud.',
+        ];
+    }
+
+    rewind($stream);
+
+    return [
+        'success' => true,
+        'stream' => $stream,
+        'cache_target' => $temporaryPath !== '' ? $cacheFile : '',
+        'temporary_path' => $temporaryPath,
+        'cache_file' => $cacheFile,
+    ];
+}
+
+function cerrarRespuestaRemotaStream(array $context, bool $guardarCache): void
+{
+    if (isset($context['stream']) && is_resource($context['stream'])) {
+        fclose($context['stream']);
+    }
+
+    $temporaryPath = (string) ($context['temporary_path'] ?? '');
+    $cacheTarget = (string) ($context['cache_target'] ?? '');
+
+    if ($temporaryPath === '') {
+        return;
+    }
+
+    if ($guardarCache && $cacheTarget !== '') {
+        if (!@copy($temporaryPath, $cacheTarget)) {
+            registrarErrorProductos('No fue posible publicar la cache de menos de 100.');
+        }
+    }
+
+    @unlink($temporaryPath);
+}
+
+function procesarProductosDesdeJsonStream($stream, callable $onProduct): int
+{
+    if (!is_resource($stream)) {
+        throw new RuntimeException('La respuesta remota no esta disponible.');
+    }
+
+    rewind($stream);
+    $json = stream_get_contents($stream);
+    if ($json === false || $json === '') {
+        throw new UnexpectedValueException('La fuente remota devolvio una respuesta vacia.');
+    }
+
+    if (!preg_match('/"success"\s*:\s*(true|false)/i', $json, $successMatch)) {
+        throw new UnexpectedValueException('La fuente remota no informo el estado de la solicitud.');
+    }
+
+    if (strtolower($successMatch[1]) !== 'true') {
+        throw new UnexpectedValueException('La fuente remota rechazo la solicitud de productos.');
+    }
+
+    if (!preg_match('/"data"\s*:\s*\[/', $json, $dataMatch, PREG_OFFSET_CAPTURE)) {
+        throw new UnexpectedValueException('La fuente remota no devolvio una lista de productos.');
+    }
+
+    $position = $dataMatch[0][1] + strlen($dataMatch[0][0]);
+    $jsonLength = strlen($json);
+    $count = 0;
+    $arrayClosed = false;
+
+    while ($position < $jsonLength) {
+        while ($position < $jsonLength && ord($json[$position]) <= 32) {
+            $position++;
+        }
+
+        if ($position >= $jsonLength) {
+            break;
+        }
+
+        $char = $json[$position];
+        if ($char === ']') {
+            $arrayClosed = true;
+            $position++;
+            break;
+        }
+
+        if ($char !== '{') {
+            throw new UnexpectedValueException('La lista remota contiene un producto no valido.');
+        }
+
+        $itemStart = $position;
+        $depth = 0;
+        $inString = false;
+        $escaped = false;
+        $itemEnd = null;
+
+        for (; $position < $jsonLength; $position++) {
+            $char = $json[$position];
+            if ($inString) {
+                if ($escaped) {
+                    $escaped = false;
+                } elseif ($char === '\\') {
+                    $escaped = true;
+                } elseif ($char === '"') {
+                    $inString = false;
+                }
+
+                continue;
+            }
+
+            if ($char === '"') {
+                $inString = true;
+            } elseif ($char === '{' || $char === '[') {
+                $depth++;
+            } elseif ($char === '}' || $char === ']') {
+                $depth--;
+                if ($depth === 0) {
+                    $itemEnd = $position;
+                    $position++;
+                    break;
+                }
+            }
+        }
+
+        if ($itemEnd === null) {
+            throw new UnexpectedValueException('La respuesta remota termino antes de completar un producto.');
+        }
+
+        $itemJson = substr($json, $itemStart, $itemEnd - $itemStart + 1);
+        $product = json_decode($itemJson, true);
+        if (!is_array($product) || json_last_error() !== JSON_ERROR_NONE) {
+            throw new UnexpectedValueException('La fuente remota devolvio un producto con JSON no valido.');
+        }
+
+        $onProduct($product, $count, $itemStart, $itemEnd - $itemStart + 1);
+        $count++;
+
+        while ($position < $jsonLength && ord($json[$position]) <= 32) {
+            $position++;
+        }
+
+        if ($position >= $jsonLength) {
+            break;
+        }
+
+        $char = $json[$position];
+        if ($char === ']') {
+            $arrayClosed = true;
+            $position++;
+            break;
+        }
+
+        if ($char !== ',') {
+            throw new UnexpectedValueException('La lista remota tiene una separacion de productos no valida.');
+        }
+
+        $position++;
+    }
+
+    if (!$arrayClosed) {
+        throw new UnexpectedValueException('La lista remota de productos esta incompleta.');
+    }
+
+    $tail = substr($json, $position);
+    if (trim($tail) !== '}') {
+        throw new UnexpectedValueException('La fuente remota devolvio una estructura JSON inesperada.');
+    }
+
+    return $count;
+}
+
+function obtenerTamanoStream($stream): int
+{
+    if (!is_resource($stream)) {
+        return 0;
+    }
+
+    $stats = fstat($stream);
+    return is_array($stats) ? (int) ($stats['size'] ?? 0) : 0;
+}
+
+function cargarIndiceProductosStream(string $cacheFile, int $sourceSize): ?array
+{
+    if ($cacheFile === '' || $sourceSize <= 0) {
+        return null;
+    }
+
+    $indexFile = $cacheFile . '.index.json';
+    if (!is_file($indexFile) || !is_readable($indexFile) || !is_file($cacheFile)) {
+        return null;
+    }
+
+    $indexModifiedAt = @filemtime($indexFile);
+    $sourceModifiedAt = @filemtime($cacheFile);
+    if (
+        $indexModifiedAt === false
+        || $sourceModifiedAt === false
+        || $indexModifiedAt < $sourceModifiedAt
+    ) {
+        return null;
+    }
+
+    $index = obtenerDatosCacheados($indexFile, PHP_INT_MAX);
+    if (
+        !is_array($index)
+        || empty($index['success'])
+        || (int) ($index['source_size'] ?? 0) !== $sourceSize
+        || !isset($index['items'])
+        || !is_array($index['items'])
+    ) {
+        return null;
+    }
+
+    return $index;
+}
+
+function construirIndiceProductosStream($stream): array
+{
+    $items = [];
+    $minimumPrice = null;
+    $maximumPrice = null;
+
+    $total = procesarProductosDesdeJsonStream(
+        $stream,
+        static function (
+            array $producto,
+            int $index,
+            int $offset,
+            int $length
+        ) use (&$items, &$minimumPrice, &$maximumPrice): void {
+            $price = (float) ($producto['precio_venta'] ?? 0);
+            $minimumPrice = $minimumPrice === null ? $price : min($minimumPrice, $price);
+            $maximumPrice = $maximumPrice === null ? $price : max($maximumPrice, $price);
+
+            $items[] = [
+                'offset' => $offset,
+                'length' => $length,
+                'idarticulo' => (string) ($producto['idarticulo'] ?? ''),
+                'price' => $price,
+            ];
+        }
+    );
+
+    return [
+        'success' => true,
+        'source_size' => obtenerTamanoStream($stream),
+        'total' => $total,
+        'minimum_price' => $minimumPrice,
+        'maximum_price' => $maximumPrice,
+        'items' => $items,
+    ];
+}
+
+function guardarIndiceProductosStream(string $cacheFile, array $index): void
+{
+    if ($cacheFile === '') {
+        return;
+    }
+
+    guardarDatosCacheados($cacheFile . '.index.json', $index);
+}
+
+function filtrarIndiceProductosStream(
+    array $items,
+    string $selectedIdArticulo,
+    ?float $selectedPriceMin,
+    ?float $selectedPriceMax
+): array {
+    return array_values(array_filter(
+        $items,
+        static function (array $item) use (
+            $selectedIdArticulo,
+            $selectedPriceMin,
+            $selectedPriceMax
+        ): bool {
+            if (
+                $selectedIdArticulo !== ''
+                && (string) ($item['idarticulo'] ?? '') !== $selectedIdArticulo
+            ) {
+                return false;
+            }
+
+            $price = (float) ($item['price'] ?? 0);
+            if ($selectedPriceMin !== null && $price < $selectedPriceMin) {
+                return false;
+            }
+
+            if ($selectedPriceMax !== null && $price > $selectedPriceMax) {
+                return false;
+            }
+
+            return true;
+        }
+    ));
+}
+
+function leerProductosDesdeIndice($stream, array $items): array
+{
+    $products = [];
+
+    foreach ($items as $item) {
+        $offset = (int) ($item['offset'] ?? -1);
+        $length = (int) ($item['length'] ?? 0);
+        if ($offset < 0 || $length <= 0 || fseek($stream, $offset) !== 0) {
+            throw new UnexpectedValueException('No fue posible ubicar un producto en la respuesta remota.');
+        }
+
+        $itemJson = fread($stream, $length);
+        if ($itemJson === false || strlen($itemJson) !== $length) {
+            throw new UnexpectedValueException('No fue posible leer un producto completo de la respuesta remota.');
+        }
+
+        $product = json_decode($itemJson, true);
+        if (!is_array($product) || json_last_error() !== JSON_ERROR_NONE) {
+            throw new UnexpectedValueException('Un producto indexado contiene JSON no valido.');
+        }
+
+        $products[] = agregarPresentacionesNormalizadas($product);
+    }
+
+    return $products;
+}
+
+function responderMenosDe100Paginado(
+    array $sourceConfig,
+    int $requestedPage,
+    int $perPage,
+    ?float $selectedPriceMin,
+    ?float $selectedPriceMax,
+    string $selectedIdArticulo
+): void {
+    $cacheFile = obtenerRutaCache('menosde100_remoto', (array) $sourceConfig['payload']);
+    $context = abrirRespuestaRemotaComoStream(
+        (string) $sourceConfig['url'],
+        (array) $sourceConfig['payload'],
+        $cacheFile
+    );
+
+    if (empty($context['success']) || !isset($context['stream'])) {
+        responderJson([
+            'success' => false,
+            'message' => (string) ($context['message'] ?? 'No fue posible cargar los productos.'),
+            'data' => [],
+        ], 502);
+    }
+
+    $stream = $context['stream'];
+    $cacheFile = (string) ($context['cache_file'] ?? '');
+    $sourceSize = obtenerTamanoStream($stream);
+    $index = cargarIndiceProductosStream($cacheFile, $sourceSize);
+    $indexWasBuilt = false;
+    $cacheIsValid = false;
+
+    try {
+        if ($index === null) {
+            $index = construirIndiceProductosStream($stream);
+            $indexWasBuilt = true;
+        }
+
+        $filteredItems = filtrarIndiceProductosStream(
+            (array) $index['items'],
+            $selectedIdArticulo,
+            $selectedPriceMin,
+            $selectedPriceMax
+        );
+        $totalProducts = count($filteredItems);
+        $totalPages = $totalProducts > 0 ? (int) ceil($totalProducts / $perPage) : 1;
+        $currentPage = min($requestedPage, $totalPages);
+        $offset = ($currentPage - 1) * $perPage;
+        $pageProducts = leerProductosDesdeIndice(
+            $stream,
+            array_slice($filteredItems, $offset, $perPage)
+        );
+
+        $cacheIsValid = true;
+    } catch (Throwable $exception) {
+        registrarErrorProductos(
+            get_class($exception) . ' al procesar menos de 100: ' . $exception->getMessage()
+        );
+        cerrarRespuestaRemotaStream($context, false);
+
+        responderJson([
+            'success' => false,
+            'message' => 'La fuente remota devolvio una respuesta de productos no valida.',
+            'data' => [],
+        ], 502);
+    }
+
+    cerrarRespuestaRemotaStream($context, $cacheIsValid);
+
+    if ($indexWasBuilt && $cacheIsValid) {
+        guardarIndiceProductosStream($cacheFile, $index);
+    }
+
+    $minimumPrice = $index['minimum_price'] ?? null;
+    $maximumPrice = $index['maximum_price'] ?? null;
+    if ($minimumPrice === null || $maximumPrice === null) {
+        $priceRange = ['min' => 0, 'max' => 100];
+    } else {
+        $min = (int) floor($minimumPrice / 10) * 10;
+        $max = (int) ceil($maximumPrice / 10) * 10;
+        $priceRange = [
+            'min' => $min,
+            'max' => $min === $max ? $max + 100 : $max,
+        ];
+    }
+
+    $from = $totalProducts > 0 ? $offset + 1 : 0;
+    $to = $totalProducts > 0 ? $offset + count($pageProducts) : 0;
+
+    responderJson([
+        'success' => true,
+        'data' => $pageProducts,
+        'meta' => [
+            'page' => $currentPage,
+            'per_page' => $perPage,
+            'total' => $totalProducts,
+            'total_pages' => $totalPages,
+            'from' => $from,
+            'to' => $to,
+            'mode' => 'menosde100',
+            'tipoBusqueda' => null,
+        ],
+        'filters' => [
+            'price_range' => $priceRange,
+            'selected_price_min' => $selectedPriceMin,
+            'selected_price_max' => $selectedPriceMax,
+        ],
+    ]);
 }
 
 function normalizarTextoBusqueda($value): string
@@ -1093,6 +1822,17 @@ $perPage = normalizarEntero($input['per_page'] ?? PRODUCTOS_DEFAULT_PER_PAGE, PR
 $selectedPriceMin = normalizarFloatOpcional($input['price_min'] ?? null);
 $selectedPriceMax = normalizarFloatOpcional($input['price_max'] ?? null);
 $selectedIdArticulo = trim((string) ($input['idarticulo'] ?? ''));
+
+if (($sourceConfig['mode'] ?? '') === 'menosde100') {
+    responderMenosDe100Paginado(
+        $sourceConfig,
+        $requestedPage,
+        $perPage,
+        $selectedPriceMin,
+        $selectedPriceMax,
+        $selectedIdArticulo
+    );
+}
 
 if (($sourceConfig['mode'] ?? '') === 'busqueda') {
     $search = (string) ($sourceConfig['payload']['search'] ?? '');

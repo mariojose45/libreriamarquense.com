@@ -286,6 +286,18 @@ const Carrito = {
             return { valido: false, mensaje: `La cantidad del producto "${nombre}" no es valida.` };
         }
 
+        const stockPresentacion = this.obtenerStockPresentacion(item);
+        if (stockPresentacion !== null && stockPresentacion <= 0) {
+            return { valido: false, mensaje: `El producto "${nombre}" no tiene stock disponible.` };
+        }
+
+        if (stockPresentacion !== null && cantidad > stockPresentacion) {
+            return {
+                valido: false,
+                mensaje: `La cantidad solicitada de "${nombre}" supera el stock disponible.`
+            };
+        }
+
         const presentacion = typeof item.presentacion === 'string' ? item.presentacion.trim() : 'UNIDAD';
         if (presentacion.length > 60) {
             return { valido: false, mensaje: `La presentacion del producto "${nombre}" no es valida.` };
@@ -366,7 +378,17 @@ const Carrito = {
         }
 
         const stockPresentacion = this.obtenerStockPresentacion(presentacion);
-        let requiereReserva = this.requiereReservaPorStock(stockPresentacion, cantidad);
+        if (stockPresentacion !== null && stockPresentacion <= 0) {
+            this.mostrarNotificacion('Producto no disponible por falta de stock.');
+            return false;
+        }
+
+        if (stockPresentacion !== null && cantidad > stockPresentacion) {
+            this.mostrarNotificacion(`Cantidad no disponible. Stock actual: ${stockPresentacion}.`);
+            return false;
+        }
+
+        let requiereReserva = false;
 
         const carrito = this.obtenerCarrito();
         const idarticulo = producto.idarticulo || producto.id;
@@ -388,8 +410,12 @@ const Carrito = {
                 return false;
             }
 
+            if (stockPresentacion !== null && cantidadFinal > stockPresentacion) {
+                this.mostrarNotificacion(`Cantidad no disponible. Stock actual: ${stockPresentacion}.`);
+                return false;
+            }
+
             productoExistente.cantidad = cantidadFinal;
-            requiereReserva = this.requiereReservaPorStock(stockPresentacion, cantidadFinal);
             productoExistente.requiere_reserva = requiereReserva;
             // IMPORTANTE: No permitir cambiar el precio de productos existentes
             // El precio se mantiene como estaba cuando se agregó por primera vez
@@ -467,8 +493,18 @@ const Carrito = {
             }
 
             const stockPresentacion = this.obtenerStockPresentacion(producto);
+            if (stockPresentacion !== null && stockPresentacion <= 0) {
+                this.mostrarNotificacion('Producto no disponible por falta de stock.');
+                return false;
+            }
+
+            if (stockPresentacion !== null && cantidadNormalizada > stockPresentacion) {
+                this.mostrarNotificacion(`Cantidad no disponible. Stock actual: ${stockPresentacion}.`);
+                return false;
+            }
+
             producto.cantidad = cantidadNormalizada;
-            producto.requiere_reserva = this.requiereReservaPorStock(stockPresentacion, cantidadNormalizada);
+            producto.requiere_reserva = false;
             // Asegurar que el precio no se modifique
             producto.precio = precioOriginal;
             
@@ -476,9 +512,6 @@ const Carrito = {
                 return false;
             }
 
-            if (producto.requiere_reserva) {
-                this.mostrarNotificacion(this.MENSAJE_RESERVA);
-            }
             return true;
         }
         return false;

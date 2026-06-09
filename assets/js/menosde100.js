@@ -2,8 +2,9 @@
 // Inicialización
 // ------------------------------------------------------------
 document.addEventListener("DOMContentLoaded", function () {
-    // El slider se carga desde PHP en index.php, no necesita JavaScript
-    cargarProductosPromociones();
+    if (typeof window.cargarProductosPromociones === "function") {
+        window.cargarProductosPromociones();
+    }
 });
 
 const PRODUCTO_IMG_BASE = "https://ssl.sol.sistemasolgt.com/libremarquenseDos/files/articulos/";
@@ -21,149 +22,6 @@ function construirUrlImagenProducto(nombreArchivo) {
 function obtenerImagenProducto(producto) {
     return construirUrlImagenProducto(producto?.imagen) || PRODUCTO_IMG_PLACEHOLDER;
 }
-
-/* ============================================================
-   🔥 CARGAR PRODUCTOS NUEVOS DESDE TU API
-============================================================ */
-function cargarProductosPromociones() {
-    const contenedor = document.getElementById("contenedor-promociones-productos");
-
-    if (!contenedor) {
-        console.error("❌ No se encontró el contenedor de promociones.");
-        return;
-    }
-
-    fetch("https://ssl.sol.sistemasolgt.com/libremarquenseDos/api/api_tienda_menosde100.php", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({})
-    })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`HTTP ${response.status}`);
-            }
-            return response.json();
-        })
-        .then(data => {
-            contenedor.innerHTML = "";
-
-            if (!data.success || !Array.isArray(data.data)) {
-                contenedor.innerHTML = `
-                <div class="col-12">
-                    <div class="alert alert-warning">No hay productos nuevos para mostrar.</div>
-                </div>`;
-                return;
-            }
-
-            let productos = data.data;
-            let htmlProductos = "";
-
-            productos.forEach(producto => {
-                const nombreVisible = (producto?.nombre ?? "Producto").toString();
-                const nombre = escaparTextoProducto(nombreVisible);
-                const descripcion = escaparTextoProducto(producto?.descripcion ?? "");
-                const codigo = escaparTextoProducto(producto?.codigo ?? "");
-                const stock = escaparTextoProducto(producto?.stock ?? "N/A");
-                const precioVenta = producto?.precio_venta ?? 0;
-                const idArticulo = escaparTextoProducto(producto?.idarticulo ?? "");
-
-                const imagen = obtenerImagenProducto(producto);
-                const presentacionCarrito = window.LMProductPresentations
-                    ? window.LMProductPresentations.registerForCart(producto)
-                    : "";
-
-                let html = `
-                <div class="col-lg-3 col-sm-6">
-                    <div class="single-arrivals-products">
-
-                        <div class="arrivals-products-image">
-                            <a href="javascript:void(0)"
-                            onclick="vistaRapida(
-                                '${nombre}',
-                                '${imagen}',
-                                '${precioVenta}',
-                                '${idArticulo}',
-                                '${codigo}',
-                                '${descripcion}',
-                                '${stock}'
-                            )">
-                                <img src="${imagen}" alt="${nombreVisible}" loading="lazy" decoding="async" onerror="this.onerror=null;this.src='${PRODUCTO_IMG_PLACEHOLDER}';">
-                            </a>
-                            <div class="tag">Ofertas</div>
-
-                            <!-- ⭐ Iconos -->
-                            <ul class="arrivals-action">
-                                <li>
-                                    <a href="javascript:void(0)"
-                                    onclick="agregarAlCarrito(
-                                        '${idArticulo}',
-                                        '${nombre}',
-                                        '${precioVenta}',
-                                        '${imagen}',
-                                        '${descripcion}',
-                                        1,
-                                        '${presentacionCarrito}'
-                                    )">
-                                        <i class="flaticon-shopping-cart"></i>
-                                    </a>
-                                </li>
-
-                                <li>
-                                    <a href="javascript:void(0)"
-                                    onclick="vistaRapida(
-                                        '${nombre}',
-                                        '${imagen}',
-                                        '${precioVenta}',
-                                        '${idArticulo}',
-                                        '${codigo}',
-                                        '${descripcion}',
-                                        '${stock}'
-                                    )">
-                                        <i class="flaticon-view"></i>
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
-
-                        <div class="arrivals-products-content">
-                            <h3 class="product-title-limit">${nombreVisible}</h3>
-
-                            <!-- ⭐ Rating fijo -->
-                            <ul class="rating">
-                                <li><i class='bx bxs-star'></i></li>
-                                <li><i class='bx bxs-star'></i></li>
-                                <li><i class='bx bxs-star'></i></li>
-                                <li><i class='bx bxs-star'></i></li>
-                                <li><i class='bx bxs-star'></i></li>
-                            </ul>
-
-                            <span>Q${parseFloat(precioVenta).toFixed(2)}</span>
-                        </div>
-
-                    </div>
-                </div>
-            `;
-
-                htmlProductos += html;
-            });
-
-            contenedor.innerHTML = htmlProductos || `
-                <div class="col-12">
-                    <div class="alert alert-warning">No hay productos disponibles para mostrar.</div>
-                </div>`;
-
-        })
-        .catch(error => {
-            console.error("❌ Error al cargar productos de Menos de 100:", error);
-            contenedor.innerHTML = `
-            <div class="col-12">
-                <div class="alert alert-danger">Error al cargar los productos. Por favor intenta de nuevo.</div>
-            </div>`;
-        });
-}
-
 
 
 /* ============================================================
@@ -288,9 +146,15 @@ function mpMostrar(i) {
         this.src = PRODUCTO_IMG_PLACEHOLDER;
     };
 
-    let thumbs = document.querySelectorAll(".mp-thumb");
-    thumbs.forEach(t => t.classList.remove("active"));
-    thumbs[mpIndex].classList.add("active");
+    const thumbs = document.querySelectorAll(".mp-thumb-item");
+
+    thumbs.forEach(thumb => {
+        thumb.classList.remove("active");
+    });
+
+    if (thumbs[mpIndex]) {
+        thumbs[mpIndex].classList.add("active");
+    }
 }
 
 /* ===============================
@@ -486,6 +350,40 @@ function menos100RenderizarPaginacion(meta) {
     `;
 }
 
+function menos100PrepararCompra(producto) {
+    if (!window.LMProductPresentations) {
+        const stock = Number(producto?.stock ?? 0);
+        const precio = Number(producto?.precio_venta ?? 0);
+        return {
+            disponible: Number.isFinite(stock) && stock > 0 && Number.isFinite(precio) && precio > 0,
+            registro: ""
+        };
+    }
+
+    const presentacion = window.LMProductPresentations.defaultUnit(producto);
+    const disponible = !!presentacion
+        && !presentacion.disabled
+        && (presentacion.stock === null || presentacion.stock > 0)
+        && presentacion.precio > 0;
+
+    return {
+        disponible,
+        registro: disponible
+            ? window.LMProductPresentations.registerForCart(producto)
+            : ""
+    };
+}
+
+window.menos100NotificarSinStock = function () {
+    if (window.Carrito && typeof window.Carrito.mostrarNotificacion === "function") {
+        window.Carrito.mostrarNotificacion("Producto no disponible por falta de stock.");
+    } else {
+        alert("Producto no disponible por falta de stock.");
+    }
+
+    return false;
+};
+
 function menos100RenderizarCardProducto(producto) {
     const nombreVisible = (producto?.nombre ?? "Producto").toString();
     const nombre = escaparTextoProducto(nombreVisible);
@@ -495,9 +393,18 @@ function menos100RenderizarCardProducto(producto) {
     const precioVenta = producto?.precio_venta ?? 0;
     const idArticulo = escaparTextoProducto(producto?.idarticulo ?? "");
     const imagen = obtenerImagenProducto(producto);
-    const presentacionCarrito = window.LMProductPresentations
-        ? window.LMProductPresentations.registerForCart(producto)
-        : "";
+    const compra = menos100PrepararCompra(producto);
+    const accionCarrito = compra.disponible
+        ? `agregarAlCarrito(
+                '${idArticulo}',
+                '${nombre}',
+                '${precioVenta}',
+                '${imagen}',
+                '${descripcion}',
+                1,
+                '${compra.registro}'
+            )`
+        : "return menos100NotificarSinStock()";
 
     return `
         <div class="col-lg-3 col-sm-6">
@@ -519,15 +426,8 @@ function menos100RenderizarCardProducto(producto) {
                     <ul class="arrivals-action">
                         <li>
                             <a href="javascript:void(0)"
-                            onclick="agregarAlCarrito(
-                                '${idArticulo}',
-                                '${nombre}',
-                                '${precioVenta}',
-                                '${imagen}',
-                                '${descripcion}',
-                                1,
-                                '${presentacionCarrito}'
-                            )">
+                            onclick="${accionCarrito}"
+                            aria-disabled="${compra.disponible ? "false" : "true"}">
                                 <i class="flaticon-shopping-cart"></i>
                             </a>
                         </li>
@@ -598,11 +498,33 @@ function menos100CargarListadoPaginado(actualizarUrl = true) {
             per_page: MENOS100_PRODUCTOS_POR_PAGINA
         })
     })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`HTTP ${response.status}`);
+        .then(async response => {
+            const respuestaTexto = await response.text();
+
+            let data = null;
+
+            try {
+                data = JSON.parse(respuestaTexto);
+            } catch (error) {
+                data = null;
             }
-            return response.json();
+
+            if (!response.ok) {
+                const mensaje =
+                    data?.message ||
+                    respuestaTexto ||
+                    `Error HTTP ${response.status}`;
+
+                throw new Error(mensaje);
+            }
+
+            if (!data) {
+                throw new Error(
+                    "El servidor no devolvió una respuesta JSON válida."
+                );
+            }
+
+            return data;
         })
         .then(data => {
             if (!data.success || !Array.isArray(data.data)) {

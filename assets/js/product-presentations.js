@@ -159,7 +159,7 @@
             tipo: "unidad",
             stock,
             precio,
-            disabled: stock !== null ? stock <= 0 : false,
+            disabled: precio <= 0 || (stock !== null && stock <= 0),
         };
     }
 
