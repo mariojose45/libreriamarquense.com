@@ -120,10 +120,10 @@ $current_page = basename($_SERVER['PHP_SELF']);
                         </div>
 
                         <div class="mp-pickup-info" id="pickupStoreInfo" hidden>
-                            <strong>Retiro sin costo en Librer&iacute;a Marquense</strong>
+                            <strong>Librer&iacute;a Marquense</strong>
                             <span><?php echo lm_html_escape($pickup_config['address']); ?></span>
                             <span><?php echo lm_html_escape($pickup_config['schedule']); ?></span>
-                            <small>Te contactaremos cuando el pedido est&eacute; listo. Presenta tu n&uacute;mero de cotizaci&oacute;n al recogerlo.</small>
+                            <small>Presenta tu n&uacute;mero de cotizaci&oacute;n al recogerlo.</small>
                         </div>
 
                         <div class="mp-form-group" id="direccionEntregaGroup">
