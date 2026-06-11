@@ -10,6 +10,9 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 const CANTIDAD_MAXIMA_CARRITO = 99;
+const TIPO_ENTREGA_RETIRO = 'store_pickup';
+const TIPO_ENTREGA_ENVIO = 'shipping';
+let direccionEntregaAnterior = '';
 
 function escaparHTML(valor) {
     return String(valor ?? '')
@@ -191,6 +194,24 @@ function obtenerOpcionLugarEnvio() {
     return lugarEnvioInput.options[lugarEnvioInput.selectedIndex];
 }
 
+function obtenerTipoEntregaSeleccionado() {
+    const opcionSeleccionada = obtenerOpcionLugarEnvio();
+    return opcionSeleccionada
+        ? String(opcionSeleccionada.getAttribute('data-delivery-type') || '')
+        : '';
+}
+
+function esRecogeEnTienda() {
+    return obtenerTipoEntregaSeleccionado() === TIPO_ENTREGA_RETIRO;
+}
+
+function obtenerDireccionRecogida() {
+    const opcionSeleccionada = obtenerOpcionLugarEnvio();
+    return opcionSeleccionada
+        ? String(opcionSeleccionada.getAttribute('data-address') || '').trim()
+        : '';
+}
+
 function obtenerCostoEnvioSeleccionado(subtotal = null) {
     if (subtotal !== null && subtotal <= 0) {
         return 0;
@@ -201,7 +222,7 @@ function obtenerCostoEnvioSeleccionado(subtotal = null) {
         ? parseFloat(opcionSeleccionada.getAttribute('data-shipping') || '0')
         : 0;
 
-    return Number.isFinite(costoEnvio) && costoEnvio > 0 ? costoEnvio : 0;
+    return Number.isFinite(costoEnvio) && costoEnvio >= 0 ? costoEnvio : 0;
 }
 
 function obtenerErrorLugarEnvio(lugarEnvioInput) {
@@ -209,17 +230,74 @@ function obtenerErrorLugarEnvio(lugarEnvioInput) {
         return 'Seleccione el lugar de entrega para calcular el envio.';
     }
 
+    const tipoEntrega = obtenerTipoEntregaSeleccionado();
     const costoEnvio = obtenerCostoEnvioSeleccionado();
-    if (costoEnvio <= 0) {
+
+    if (tipoEntrega === TIPO_ENTREGA_RETIRO) {
+        return costoEnvio === 0 ? '' : 'La modalidad Recoge en tienda debe tener costo de envio Q0.00.';
+    }
+
+    if (tipoEntrega !== TIPO_ENTREGA_ENVIO || costoEnvio <= 0) {
         return 'Seleccione un lugar de entrega valido.';
     }
 
     return '';
 }
 
+function actualizarEstadoDireccionEntrega() {
+    const direccionInput = document.getElementById('direccion');
+    const direccionLabel = document.getElementById('direccionEntregaLabel');
+    const pickupStoreInfo = document.getElementById('pickupStoreInfo');
+
+    if (!direccionInput) {
+        return;
+    }
+
+    if (esRecogeEnTienda()) {
+        if (!direccionInput.readOnly && direccionInput.value.trim()) {
+            direccionEntregaAnterior = direccionInput.value;
+        }
+
+        direccionInput.value = obtenerDireccionRecogida();
+        direccionInput.readOnly = true;
+        direccionInput.setAttribute('aria-readonly', 'true');
+        aplicarEstadoValidacion(direccionInput, '');
+
+        if (direccionLabel) {
+            direccionLabel.innerHTML = 'Sucursal para recoger <span class="required">*</span>';
+        }
+        if (pickupStoreInfo) {
+            pickupStoreInfo.hidden = false;
+        }
+        return;
+    }
+
+    if (direccionInput.readOnly) {
+        direccionInput.value = direccionEntregaAnterior;
+    }
+
+    direccionInput.readOnly = false;
+    direccionInput.removeAttribute('aria-readonly');
+
+    if (direccionLabel) {
+        direccionLabel.innerHTML = 'Direccion de entrega <span class="required">*</span>';
+    }
+    if (pickupStoreInfo) {
+        pickupStoreInfo.hidden = true;
+    }
+}
+
 function entregaEsDepartamentos() {
     const opcionSeleccionada = obtenerOpcionLugarEnvio();
     return !!opcionSeleccionada && opcionSeleccionada.value === 'Departamentos';
+}
+
+function construirComentarioEntrega(tipoEntrega, lugarEntrega) {
+    if (tipoEntrega === TIPO_ENTREGA_RETIRO) {
+        return `Tienda en linea | Entrega: Recoge en tienda | Sucursal: ${lugarEntrega}`;
+    }
+
+    return `Tienda en linea | Entrega a domicilio | Lugar: ${lugarEntrega}`;
 }
 
 function obtenerErrorFormaPago(formaPagoInput) {
@@ -595,6 +673,7 @@ function inicializarRestriccionesFormularioPedido() {
 
     if (lugarEnvioInput) {
         const sincronizarTotalesEntrega = function () {
+            actualizarEstadoDireccionEntrega();
             aplicarEstadoValidacion(lugarEnvioInput, obtenerErrorLugarEnvio(lugarEnvioInput));
             sincronizarFormaPagoPorLugarEnvio();
             actualizarTotales();
@@ -661,6 +740,7 @@ function abrirModalPedido() {
 
     // Limpiar formulario
     document.getElementById('formPedido').reset();
+    direccionEntregaAnterior = '';
     document.getElementById('nit-group').style.display = 'none';
     document.getElementById('numeroDocumento-group').style.display = 'none';
     document.getElementById('documentoHelp').textContent = '';
@@ -675,6 +755,7 @@ function abrirModalPedido() {
     // Dejar el metodo de pago pendiente para que el cliente lo seleccione.
     document.getElementById('formaPago').value = '';
     refrescarSelectorVisual(document.getElementById('lugarEnvio'));
+    actualizarEstadoDireccionEntrega();
     sincronizarFormaPagoPorLugarEnvio();
     actualizarTotales();
     actualizarVistaPagoTarjeta();
@@ -831,6 +912,7 @@ function procesarPedido(event) {
     const tipoDocumentoInput = document.getElementById('tipoDocumento');
     const numeroDocumentoInput = document.getElementById('numeroDocumento');
     const formaPagoInput = document.getElementById('formaPago');
+    actualizarEstadoDireccionEntrega();
 
     // Obtener y sanitizar datos del formulario
     const nombreCompleto = sanitizarInput(limpiarNombreInput(nombreInput.value));
@@ -841,6 +923,8 @@ function procesarPedido(event) {
     const tipoDocumento = tipoDocumentoInput.value;
     const numeroDocumento = limpiarDocumentoInput(numeroDocumentoInput.value, tipoDocumento);
     const formaPago = formaPagoInput.value;
+    const modalidadEntrega = obtenerTipoEntregaSeleccionado();
+    const lugarEntrega = lugarEnvioInput.value;
 
     nombreInput.value = nombreCompleto;
     direccionInput.value = direccion;
@@ -921,6 +1005,8 @@ function procesarPedido(event) {
         tipoDocumento: tipoDocumentoFinal,
         numeroDocumento: nitFinal,
         formaPago: formaPago,
+        modalidadEntrega: modalidadEntrega,
+        lugarEntrega: lugarEntrega,
         carrito: Carrito.obtenerCarrito(),
         subtotal: subtotalPedido,
         shipping: shippingPedido,
@@ -1012,10 +1098,12 @@ function procesarPedido(event) {
         idvendedor: 0,
         tipo_cliente: "Cliente",
         forma_productos: "Detallado",
-        comentario_cotizacion: "Tienda en linea",
+        comentario_cotizacion: construirComentarioEntrega(formData.modalidadEntrega, formData.lugarEntrega),
         destino: "VENTA",
         no_auto_tarjeta: "",
         envio: formData.shipping,
+        modalidad_entrega: formData.modalidadEntrega,
+        lugar_entrega: formData.lugarEntrega,
         presen: presen,
         cantidadpresentacion: cantidadpresentacion,
         requiere_reserva: requiere_reserva,
@@ -1071,13 +1159,20 @@ function procesarPedido(event) {
         return;
     }
 
-    // Enviar datos a la API
-    fetch('https://ssl.sol.sistemasolgt.com/libremarquenseDos/api/api_cotizacion_insertar.php', {
+    const csrfToken = document.getElementById('checkoutCsrfToken')?.value || '';
+    const orderApiData = Object.assign({}, apiData, {
+        csrf_token: csrfToken,
+        website: document.getElementById('checkoutWebsite')?.value || ''
+    });
+
+    // Validar importes y modalidad en el backend local antes de reenviar.
+    fetch('/api/orders/create.php', {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'X-CSRF-Token': csrfToken
         },
-        body: JSON.stringify(apiData)
+        body: JSON.stringify(orderApiData)
     })
         .then(response => {
             // Verificar si la respuesta es OK
@@ -1099,7 +1194,9 @@ function procesarPedido(event) {
             if (data.success) {
                 // Construir mensaje con el número de cotización
                 const numeroCotizacion = data.idcotizacion || 'N/A';
-                const mensajeExito = `Cotización #${numeroCotizacion}`;
+                const mensajeExito = formData.modalidadEntrega === TIPO_ENTREGA_RETIRO
+                    ? `Cotizacion #${numeroCotizacion}. Te contactaremos cuando el pedido este listo para recoger.`
+                    : `Cotizacion #${numeroCotizacion}`;
 
                 // Limpiar carrito inmediatamente
                 Carrito.limpiarCarrito();

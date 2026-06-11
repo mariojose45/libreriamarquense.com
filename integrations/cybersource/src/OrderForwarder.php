@@ -13,7 +13,7 @@ class OrderForwarder
         $this->logger = $logger;
     }
 
-    public function send(array $orderPayload)
+    public function send(array $orderPayload, $paymentWasRegistered = false)
     {
         $url = (string) $this->config->get('external_order_api.url');
         $timeout = (int) $this->config->get('external_order_api.timeout_seconds', 25);
@@ -53,7 +53,9 @@ class OrderForwarder
 
         if ($responseBody === false || $statusCode < 200 || $statusCode >= 300) {
             $this->logger->error('Error enviando pedido a API externa', array('status' => $statusCode, 'error' => $error));
-            throw new GatewayException('El pago fue registrado, pero no se pudo enviar el pedido a la API externa.');
+            throw new GatewayException($paymentWasRegistered
+                ? 'El pago fue registrado, pero no se pudo enviar el pedido a la API externa.'
+                : 'No se pudo enviar el pedido a la API externa.');
         }
 
         $decoded = json_decode((string) $responseBody, true);

@@ -1,6 +1,9 @@
 <?php
 require_once __DIR__ . '/assets/php/security.php';
 $checkout_csrf_token = lm_csrf_token('checkout');
+$delivery_config = require __DIR__ . '/config/delivery.php';
+$pickup_config = $delivery_config['pickup'];
+$shipping_groups = $delivery_config['shipping_groups'];
 include 'head.php';
 $current_page = basename($_SERVER['PHP_SELF']);
 
@@ -94,65 +97,37 @@ $current_page = basename($_SERVER['PHP_SELF']);
                         </div>
 
                         <div class="mp-form-group">
-                            <label for="lugarEnvio">Lugar de entrega <span class="required">*</span></label>
+                            <label for="lugarEnvio">Modalidad y lugar de entrega <span class="required">*</span></label>
                             <select id="lugarEnvio" name="lugarEnvio" class="form-control" autocomplete="off" required>
                                 <option value="" data-shipping="0" selected>Seleccione lugar de entrega</option>
-                                <option value="" disabled>Ciudad de Guatemala</option>
-                                <option value="Ciudad de Guatemala, Zona 1" data-shipping="25">Ciudad de Guatemala, Zona 1 - Q25.00</option>
-                                <option value="Ciudad de Guatemala, Zona 2" data-shipping="25">Ciudad de Guatemala, Zona 2 - Q25.00</option>
-                                <option value="Ciudad de Guatemala, Zona 3" data-shipping="25">Ciudad de Guatemala, Zona 3 - Q25.00</option>
-                                <option value="Ciudad de Guatemala, Zona 4" data-shipping="25">Ciudad de Guatemala, Zona 4 - Q25.00</option>
-                                <option value="Ciudad de Guatemala, Zona 5" data-shipping="25">Ciudad de Guatemala, Zona 5 - Q25.00</option>
-                                <option value="Ciudad de Guatemala, Zona 6" data-shipping="25">Ciudad de Guatemala, Zona 6 - Q25.00</option>
-                                <option value="Ciudad de Guatemala, Zona 7" data-shipping="25">Ciudad de Guatemala, Zona 7 - Q25.00</option>
-                                <option value="Ciudad de Guatemala, Zona 8" data-shipping="25">Ciudad de Guatemala, Zona 8 - Q25.00</option>
-                                <option value="Ciudad de Guatemala, Zona 9" data-shipping="25">Ciudad de Guatemala, Zona 9 - Q25.00</option>
-                                <option value="Ciudad de Guatemala, Zona 10" data-shipping="25">Ciudad de Guatemala, Zona 10 - Q25.00</option>
-                                <option value="Ciudad de Guatemala, Zona 11" data-shipping="25">Ciudad de Guatemala, Zona 11 - Q25.00</option>
-                                <option value="Ciudad de Guatemala, Zona 12" data-shipping="25">Ciudad de Guatemala, Zona 12 - Q25.00</option>
-                                <option value="Ciudad de Guatemala, Zona 13" data-shipping="25">Ciudad de Guatemala, Zona 13 - Q25.00</option>
-                                <option value="Ciudad de Guatemala, Zona 14" data-shipping="25">Ciudad de Guatemala, Zona 14 - Q25.00</option>
-                                <option value="Ciudad de Guatemala, Zona 15" data-shipping="25">Ciudad de Guatemala, Zona 15 - Q25.00</option>
-                                <option value="Ciudad de Guatemala, Zona 16" data-shipping="30">Ciudad de Guatemala, Zona 16 - Q30.00</option>
-                                <option value="Ciudad de Guatemala, Zona 17" data-shipping="30">Ciudad de Guatemala, Zona 17 - Q30.00</option>
-                                <option value="Ciudad de Guatemala, Zona 18" data-shipping="30">Ciudad de Guatemala, Zona 18 - Q30.00</option>
-                                <option value="Ciudad de Guatemala, Zona 19" data-shipping="30">Ciudad de Guatemala, Zona 19 - Q30.00</option>
-                                <option value="Ciudad de Guatemala, Zona 21" data-shipping="30">Ciudad de Guatemala, Zona 21 - Q30.00</option>
-                                <option value="Ciudad de Guatemala, Zona 24" data-shipping="35">Ciudad de Guatemala, Zona 24 - Q35.00</option>
-                                <option value="Ciudad de Guatemala, Zona 25" data-shipping="35">Ciudad de Guatemala, Zona 25 - Q35.00</option>
-                                <option value="" disabled>Mixco</option>
-                                <option value="Mixco, Zona 1" data-shipping="35">Mixco, Zona 1 - Q35.00</option>
-                                <option value="Mixco, Zona 2" data-shipping="35">Mixco, Zona 2 - Q35.00</option>
-                                <option value="Mixco, Zona 3" data-shipping="30">Mixco, Zona 3 - Q30.00</option>
-                                <option value="Mixco, Zona 4" data-shipping="30">Mixco, Zona 4 - Q30.00</option>
-                                <option value="Mixco, Zona 5" data-shipping="30">Mixco, Zona 5 - Q30.00</option>
-                                <option value="Mixco, Zona 6" data-shipping="30">Mixco, Zona 6 - Q30.00</option>
-                                <option value="Mixco, Zona 7" data-shipping="35">Mixco, Zona 7 - Q35.00</option>
-                                <option value="Mixco, Zona 8" data-shipping="35">Mixco, Zona 8 - Q35.00</option>
-                                <option value="Mixco, Zona 9" data-shipping="40">Mixco, Zona 9 - Q40.00</option>
-                                <option value="Mixco, Zona 10" data-shipping="30">Mixco, Zona 10 - Q30.00</option>
-                                <option value="Mixco, Zona 11" data-shipping="35">Mixco, Zona 11 - Q35.00</option>
-                                <option value="" disabled>Villa Nueva</option>
-                                <option value="Villa Nueva, Zona 1" data-shipping="35">Villa Nueva, Zona 1 - Q35.00</option>
-                                <option value="Villa Nueva, Zona 2" data-shipping="35">Villa Nueva, Zona 2 - Q35.00</option>
-                                <option value="Villa Nueva, Zona 3" data-shipping="35">Villa Nueva, Zona 3 - Q35.00</option>
-                                <option value="Villa Nueva, Zona 4" data-shipping="35">Villa Nueva, Zona 4 - Q35.00</option>
-                                <option value="Villa Nueva, Zona 5" data-shipping="35">Villa Nueva, Zona 5 - Q35.00</option>
-                                <option value="Villa Nueva, Zona 6" data-shipping="35">Villa Nueva, Zona 6 - Q35.00</option>
-                                <option value="Villa Nueva, Zona 8" data-shipping="35">Villa Nueva, Zona 8 - Q35.00</option>
-                                <option value="Villa Nueva, Zona 10" data-shipping="35">Villa Nueva, Zona 10 - Q35.00</option>
-                                <option value="Villa Nueva, Zona 11" data-shipping="35">Villa Nueva, Zona 11 - Q35.00</option>
-                                <option value="Villa Nueva, Zona 12" data-shipping="35">Villa Nueva, Zona 12 - Q35.00</option>
-                                <option value="" disabled>Otros lugares</option>
-                                <option value="Boca del Monte" data-shipping="40">Boca del Monte - Q40.00</option>
-                                <option value="San Miguel Petapa" data-shipping="40">San Miguel Petapa - Q40.00</option>
-                                <option value="Ciudad Quetzal" data-shipping="70">Ciudad Quetzal - Q70.00</option>
-                                <option value="Departamentos" data-shipping="50">Departamentos - Q50.00</option>
+                                <option
+                                    value="<?php echo lm_html_escape($pickup_config['value']); ?>"
+                                    data-delivery-type="<?php echo lm_html_escape($pickup_config['type']); ?>"
+                                    data-address="<?php echo lm_html_escape($pickup_config['address']); ?>"
+                                    data-shipping="<?php echo number_format((float) $pickup_config['shipping'], 2, '.', ''); ?>"
+                                ><?php echo lm_html_escape($pickup_config['label']); ?> - GRATIS</option>
+                                <?php foreach ($shipping_groups as $group_label => $locations): ?>
+                                    <option value="" disabled><?php echo lm_html_escape($group_label); ?></option>
+                                    <?php foreach ($locations as $location => $shipping_cost): ?>
+                                        <option
+                                            value="<?php echo lm_html_escape($location); ?>"
+                                            data-delivery-type="shipping"
+                                            data-shipping="<?php echo number_format((float) $shipping_cost, 2, '.', ''); ?>"
+                                        ><?php echo lm_html_escape($location); ?> - Q<?php echo number_format((float) $shipping_cost, 2, '.', ''); ?></option>
+                                    <?php endforeach; ?>
+                                <?php endforeach; ?>
                             </select>
                         </div>
 
-                        <div class="mp-form-group">
-                            <label for="direccion">Dirección <span class="required">*</span></label>
+                        <div class="mp-pickup-info" id="pickupStoreInfo" hidden>
+                            <strong>Retiro sin costo en Librer&iacute;a Marquense</strong>
+                            <span><?php echo lm_html_escape($pickup_config['address']); ?></span>
+                            <span><?php echo lm_html_escape($pickup_config['schedule']); ?></span>
+                            <small>Te contactaremos cuando el pedido est&eacute; listo. Presenta tu n&uacute;mero de cotizaci&oacute;n al recogerlo.</small>
+                        </div>
+
+                        <div class="mp-form-group" id="direccionEntregaGroup">
+                            <label for="direccion" id="direccionEntregaLabel">Direcci&oacute;n de entrega <span class="required">*</span></label>
                             <input type="text" id="direccion" name="direccion" class="form-control"
                                 autocomplete="street-address" minlength="8" maxlength="250"
                                 pattern="[\p{L}\p{M}0-9 #.,\/\-]{8,250}"
@@ -454,6 +429,38 @@ $current_page = basename($_SERVER['PHP_SELF']);
 
             .mp-card-gateway p {
                 margin: 0;
+            }
+
+            .mp-pickup-info {
+                display: grid;
+                gap: 5px;
+                margin: -4px 0 16px;
+                padding: 13px 14px;
+                border: 1px solid rgba(22, 107, 56, 0.22);
+                border-radius: 10px;
+                background: #F4FBF6;
+                color: #2F3A33;
+            }
+
+            .mp-pickup-info[hidden] {
+                display: none !important;
+            }
+
+            .mp-pickup-info strong {
+                color: #166B38;
+                font-size: 14px;
+            }
+
+            .mp-pickup-info span,
+            .mp-pickup-info small {
+                font-size: 12px;
+                line-height: 1.45;
+            }
+
+            .mp-form-group .form-control[readonly] {
+                background: #F4FBF6;
+                color: #24452E;
+                cursor: default;
             }
 
             .mp-order-total {
@@ -789,4 +796,5 @@ $current_page = basename($_SERVER['PHP_SELF']);
 
 <?php include 'footer.php'; ?>
 <script type="text/javascript" src="assets/js/sweatlert.js"></script> 
-<script type="text/javascript" src="assets/js/cart.js"></script> 
+<?php $cartScript = __DIR__ . '/assets/js/cart.js'; ?>
+<script type="text/javascript" src="assets/js/cart.js?v=<?php echo file_exists($cartScript) ? filemtime($cartScript) : time(); ?>"></script>

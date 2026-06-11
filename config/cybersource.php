@@ -88,6 +88,8 @@ $config = array(
         'timeout_seconds' => 25,
     ),
 
+    'delivery' => require __DIR__ . '/delivery.php',
+
     'paths' => array(
         'session_dir' => dirname(__DIR__) . '/storage/cybersource',
         'log_file' => dirname(__DIR__) . '/logs/cybersource.log',

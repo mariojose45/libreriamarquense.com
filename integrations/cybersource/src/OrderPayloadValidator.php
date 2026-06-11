@@ -13,6 +13,11 @@ class OrderPayloadValidator
 
     public function validateForHostedCheckout(array $payload)
     {
+        return $this->validateForOrder($payload, array('Tarjeta'));
+    }
+
+    public function validateForOrder(array $payload, array $allowedPaymentMethods = array('Pago Contra Entrega', 'Tarjeta', 'Transferencia'))
+    {
         $payload = $this->sanitizeArray($payload);
         $this->rejectSuspiciousMarkup($payload);
 
@@ -25,6 +30,8 @@ class OrderPayloadValidator
             'forma_pago',
             'total_venta',
             'total_ventades',
+            'modalidad_entrega',
+            'lugar_entrega',
         );
 
         foreach ($required as $field) {
@@ -33,8 +40,8 @@ class OrderPayloadValidator
             }
         }
 
-        if ($payload['forma_pago'] !== 'Tarjeta') {
-            throw new GatewayException('La pasarela solo procesa pedidos con forma de pago Tarjeta.');
+        if (!in_array($payload['forma_pago'], $allowedPaymentMethods, true)) {
+            throw new GatewayException('La forma de pago no esta disponible para este proceso.');
         }
 
         $payload['nombre_cliente'] = $this->validateName($payload['nombre_cliente']);
@@ -49,6 +56,10 @@ class OrderPayloadValidator
         $shipping = array_key_exists('envio', $payload) && trim((string) $payload['envio']) !== ''
             ? $this->parseAmount($payload['envio'], 'El costo de envio')
             : 0.00;
+        $delivery = $this->validateDelivery($payload, $shipping);
+        $shipping = $delivery['shipping'];
+        $payload['direccion_cliente'] = $this->validateAddress($delivery['address']);
+        $payload['comentario_cotizacion'] = $delivery['comment'];
 
         $maxAmount = (float) $this->config->get('security.max_amount', 50000);
 
@@ -80,6 +91,7 @@ class OrderPayloadValidator
         $payload['no_auto_tarjeta'] = array_key_exists('no_auto_tarjeta', $payload)
             ? trim((string) $payload['no_auto_tarjeta'])
             : '';
+        unset($payload['modalidad_entrega'], $payload['lugar_entrega']);
 
         return $payload;
     }
@@ -87,6 +99,73 @@ class OrderPayloadValidator
     public function normalizeAmount($value)
     {
         return $this->parseAmount($value, 'El monto');
+    }
+
+    private function validateDelivery(array $payload, $requestedShipping)
+    {
+        $deliveryConfig = $this->config->get('delivery', array());
+        $pickup = isset($deliveryConfig['pickup']) && is_array($deliveryConfig['pickup'])
+            ? $deliveryConfig['pickup']
+            : array();
+        $shippingGroups = isset($deliveryConfig['shipping_groups']) && is_array($deliveryConfig['shipping_groups'])
+            ? $deliveryConfig['shipping_groups']
+            : array();
+
+        $deliveryType = trim((string) $payload['modalidad_entrega']);
+        $deliveryPlace = trim((string) $payload['lugar_entrega']);
+
+        if ($deliveryType === '' || $deliveryPlace === '') {
+            throw new GatewayException('Seleccione una modalidad y lugar de entrega validos.');
+        }
+
+        $pickupType = isset($pickup['type']) ? (string) $pickup['type'] : 'store_pickup';
+        if ($deliveryType === $pickupType) {
+            $pickupValue = isset($pickup['value']) ? trim((string) $pickup['value']) : '';
+            $pickupAddress = isset($pickup['address']) ? trim((string) $pickup['address']) : '';
+            $pickupShipping = isset($pickup['shipping'])
+                ? $this->parseAmount($pickup['shipping'], 'El costo de retiro')
+                : 0.00;
+
+            if ($pickupValue === '' || $pickupAddress === '' || !hash_equals($pickupValue, $deliveryPlace)) {
+                throw new GatewayException('La sucursal seleccionada para recoger no es valida.');
+            }
+
+            if (abs($requestedShipping - $pickupShipping) > 0.01) {
+                throw new GatewayException('Recoge en tienda no debe generar costo de envio.');
+            }
+
+            return array(
+                'shipping' => $pickupShipping,
+                'address' => $pickupAddress,
+                'comment' => 'Tienda en linea | Entrega: Recoge en tienda | Sucursal: ' . $pickupAddress,
+            );
+        }
+
+        if ($deliveryType !== 'shipping') {
+            throw new GatewayException('La modalidad de entrega no es valida.');
+        }
+
+        $expectedShipping = null;
+        foreach ($shippingGroups as $locations) {
+            if (is_array($locations) && array_key_exists($deliveryPlace, $locations)) {
+                $expectedShipping = $this->parseAmount($locations[$deliveryPlace], 'El costo de envio configurado');
+                break;
+            }
+        }
+
+        if ($expectedShipping === null) {
+            throw new GatewayException('El lugar de entrega seleccionado no es valido.');
+        }
+
+        if (abs($requestedShipping - $expectedShipping) > 0.01) {
+            throw new GatewayException('El costo de envio no coincide con el lugar seleccionado.');
+        }
+
+        return array(
+            'shipping' => $expectedShipping,
+            'address' => $payload['direccion_cliente'],
+            'comment' => 'Tienda en linea | Entrega a domicilio | Lugar: ' . $deliveryPlace,
+        );
     }
 
     private function validateName($value)
@@ -233,8 +312,12 @@ class OrderPayloadValidator
             $normalized['subtotaldes1'][] = $lineDiscountSubtotal;
         }
 
+        foreach ($normalized as $key => $values) {
+            $articles[$key] = $values;
+        }
+
         return array(
-            'articles' => $normalized,
+            'articles' => $articles,
             'subtotal' => $this->normalizeMoney($subtotal),
         );
     }

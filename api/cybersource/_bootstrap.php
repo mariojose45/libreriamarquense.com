@@ -197,7 +197,7 @@ function lm_finalize_paid_session(array $session, Config $config, PaymentSession
 
     $orderPayload = lm_external_order_payload($session);
     $forwarder = new OrderForwarder($config, $logger);
-    $response = $forwarder->send($orderPayload);
+    $response = $forwarder->send($orderPayload, true);
 
     $session['status'] = 'ORDER_SENT';
     $session['order_payload'] = $orderPayload;
