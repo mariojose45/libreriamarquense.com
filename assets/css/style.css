@@ -2119,6 +2119,14 @@ Arrivals Products Area CSS
 .single-arrivals-products:hover .arrivals-products-image img {
   transform: rotate(1deg) scale(1.1);
 }
+
+/* Show the complete fallback artwork without cropping. */
+body img[src*="ProductoSinImagen.png"] {
+  object-fit: contain !important;
+  object-position: center !important;
+  background-color: #ffffff;
+}
+
 .single-arrivals-products:hover .arrivals-products-image .tag {
   background: #B42A27;
 }

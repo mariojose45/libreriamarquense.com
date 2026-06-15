@@ -12,6 +12,7 @@ document.addEventListener("DOMContentLoaded", function () {
 const CANTIDAD_MAXIMA_CARRITO = 99;
 const TIPO_ENTREGA_RETIRO = 'store_pickup';
 const TIPO_ENTREGA_ENVIO = 'shipping';
+const PRODUCTO_IMG_PLACEHOLDER = 'assets/img/ProductoSinImagen.png';
 let direccionEntregaAnterior = '';
 
 function escaparHTML(valor) {
@@ -75,11 +76,10 @@ function obtenerStockPresentacionCarrito(producto) {
 }
 
 function obtenerImagenProductoSegura(valor) {
-    const fallback = 'assets/img/cart/cart-1.png';
     const texto = String(valor ?? '').trim();
 
     if (!texto) {
-        return fallback;
+        return PRODUCTO_IMG_PLACEHOLDER;
     }
 
     try {
@@ -93,7 +93,7 @@ function obtenerImagenProductoSegura(valor) {
         }
     }
 
-    return fallback;
+    return PRODUCTO_IMG_PLACEHOLDER;
 }
 
 // ============================================================
@@ -149,7 +149,7 @@ function cargarCarrito() {
                     <i class='bx bx-x'></i>
                 </a>
                 <a href="#">
-                    <img src="${imagen}" alt="${nombre}">
+                    <img src="${imagen}" alt="${nombre}" onerror="this.onerror=null;this.src='${PRODUCTO_IMG_PLACEHOLDER}';">
                 </a>
             </td>
             <td class="product-name">

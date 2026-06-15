@@ -1,0 +1,73 @@
+{
+    "status": "PENDING",
+    "amount": 32.5,
+    "currency": "GTQ",
+    "order_payload": {
+        "nit": "50734458",
+        "nombre_cliente": "MARIO DE LEON",
+        "telefono_cliente": "34775001",
+        "direccion_cliente": "10ma Ave. 7-03 Zona 1, Guatemala",
+        "correo_cliente": "mdeleon@compusisgt.com",
+        "tipo_documento_cliente": "NIT",
+        "forma_pago": "Tarjeta",
+        "total_venta": 32.5,
+        "total_ventades": 7.5,
+        "idvendedor": 0,
+        "tipo_cliente": "Cliente",
+        "forma_productos": "Detallado",
+        "comentario_cotizacion": "Tienda en linea",
+        "destino": "VENTA",
+        "no_auto_tarjeta": "",
+        "envio": 25,
+        "presen": [
+            "UNIDAD"
+        ],
+        "cantidadpresentacion": [
+            1
+        ],
+        "requiere_reserva": [
+            false
+        ],
+        "presentaciones": [
+            {
+                "idarticulo": 52,
+                "presentacion": "UNIDAD",
+                "tipo_presentacion": "unidad",
+                "precio_presentacion": 7.5,
+                "cantidad": 1,
+                "stock_validado": 1,
+                "requiere_reserva": false,
+                "subtotal_presentacion": 7.5
+            }
+        ],
+        "datosArticulos": {
+            "articulos": {
+                "idarticulo": [
+                    52
+                ],
+                "cantidad": [
+                    1
+                ],
+                "precio_venta": [
+                    7.5
+                ],
+                "subtotal1": [
+                    7.5
+                ],
+                "subtotaldes1": [
+                    7.5
+                ]
+            }
+        }
+    },
+    "expires_at": "2026-06-08T22:12:27+00:00",
+    "provider": "cybersource_secure_acceptance",
+    "reference": "LMQ-20260608211227-0B1829AB",
+    "created_at": "2026-06-08T21:12:27+00:00",
+    "updated_at": "2026-06-08T21:12:27+00:00",
+    "secure_acceptance_request": {
+        "endpoint": "https://testsecureacceptance.cybersource.com/pay",
+        "transaction_uuid": "LMQ-20260608211227-0B1829AB-1fe98a4a0db94620",
+        "signed_at": "2026-06-08T21:12:27+00:00"
+    }
+}

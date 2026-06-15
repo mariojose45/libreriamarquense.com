@@ -204,7 +204,8 @@ $categorias = $data["data"] ?? [];
     <!-- Start Preloader Area -->
     <div class="preloader">
         <div class="loader">
-            <img src="assets/img/LogoLibreriaMarquense.jpeg" alt="Cargando..." class="preloader-logo">
+            <img src="assets/img/logo%20marquense%20sin%20fondo.png" alt="Cargando..." class="preloader-logo"
+                onerror="this.src='assets/img/LogoLibreriaMarquense.jpeg'; this.onerror=null;">
         </div>
     </div>
     <!-- End Preloader Area -->
@@ -556,7 +557,7 @@ $categorias = $data["data"] ?? [];
                 <div class="main-responsive-menu">
                     <div>
                         <a href="index.php">
-                            <img src="assets/img/LogoLibreriaMarquense.jpeg" alt="Librería Marquense" class="logo-grande"
+                            <img src="assets/img/logo%20marquense%20sin%20fondo.png" alt="Librería Marquense" class="logo-grande"
                                 onerror="this.src='assets/img/LogoLibreriaMarquense.jpeg'; this.onerror=null;">
                         </a>
                     </div>
@@ -568,7 +569,7 @@ $categorias = $data["data"] ?? [];
             <div class="container">
                 <nav class="navbar navbar-expand-md navbar-light">
                     <a class="navbar-brand" href="index.php">
-                        <img src="assets/img/LogoLibreriaMarquense.jpeg" alt="Librería Marquense" class="logo-navbar"
+                        <img src="assets/img/logo%20marquense%20sin%20fondo.png" alt="Librería Marquense" class="logo-navbar"
                             onerror="this.src='assets/img/LogoLibreriaMarquense.jpeg'; this.onerror=null;">
                     </a>
 
