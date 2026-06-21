@@ -144,10 +144,10 @@ $current_page = basename($_SERVER['PHP_SELF']);
                         </div>
 
                         <div class="mp-form-group">
-                            <label for="correo">Correo Electrónico</label>
+                            <label for="correo">Correo Electronico <span class="required">*</span></label>
                             <input type="email" id="correo" name="correo" class="form-control" 
                                    inputmode="email" maxlength="120" autocomplete="email"
-                                   placeholder="ejemplo@correo.com">
+                                   placeholder="ejemplo@correo.com" required>
                         </div>
 
                         <div class="mp-form-group">

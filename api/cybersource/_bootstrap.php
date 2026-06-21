@@ -198,10 +198,13 @@ function lm_finalize_paid_session(array $session, Config $config, PaymentSession
     $orderPayload = lm_external_order_payload($session);
     $forwarder = new OrderForwarder($config, $logger);
     $response = $forwarder->send($orderPayload, true);
+    $mailer = new \LM\CyberSource\OrderReferenceMailer($config, $logger);
+    $emailStatus = $mailer->send($orderPayload, $response, isset($session['reference']) ? $session['reference'] : '');
 
     $session['status'] = 'ORDER_SENT';
     $session['order_payload'] = $orderPayload;
     $session['external_order_response'] = $response;
+    $session['order_email'] = $emailStatus;
     $store->save($session['reference'], $session);
 
     return $session;

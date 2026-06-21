@@ -2,6 +2,10 @@
 
 require_once __DIR__ . '/security.php';
 
+const LM_CONTACT_EMAIL_TO = 'servicioslcliente@libreriamarquense.com';
+const LM_CONTACT_EMAIL_FROM = 'no-reply@libreriamarquense.com';
+const LM_CONTACT_EMAIL_FROM_NAME = 'Libreria Marquense';
+
 lm_security_headers();
 header('Content-Type: text/plain; charset=utf-8');
 
@@ -67,7 +71,7 @@ if ($errors) {
     exit;
 }
 
-$emailTo = 'servicioslcliente@libreriamarquense.com';
+$emailTo = LM_CONTACT_EMAIL_TO;
 $mailSubject = 'Nuevo mensaje para Libreria Marquense';
 
 $body = "Nuevo mensaje recibido desde el formulario de contacto\n\n";
@@ -91,18 +95,36 @@ if (is_dir($logDir) && is_writable($logDir)) {
     file_put_contents($logDir . '/contactos_backup.log', $backupData, FILE_APPEND | LOCK_EX);
 }
 
-$headers = "MIME-Version: 1.0\r\n";
-$headers .= "Content-type:text/plain;charset=UTF-8\r\n";
-$headers .= "From: Libreria Marquense <no-reply@libreriamarquense.com>\r\n";
-$headers .= "Reply-To: " . $email . "\r\n";
-
-$success = true;
-if ($emailTo !== '') {
-    $success = mail($emailTo, $mailSubject, $body, $headers);
+if (!filter_var($emailTo, FILTER_VALIDATE_EMAIL)) {
+    error_log('Correo de destino del formulario de contacto no valido.');
+    http_response_code(500);
+    echo 'No se pudo enviar el mensaje. El correo de destino no esta configurado correctamente.';
+    exit;
 }
 
+$headers = array(
+    'MIME-Version: 1.0',
+    'Content-Type: text/plain; charset=UTF-8',
+    'From: ' . LM_CONTACT_EMAIL_FROM_NAME . ' <' . LM_CONTACT_EMAIL_FROM . '>',
+    'Reply-To: ' . $email,
+);
+
+$envelopeSender = preg_match('/^[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}$/', LM_CONTACT_EMAIL_FROM)
+    ? LM_CONTACT_EMAIL_FROM
+    : '';
+$mailParameters = $envelopeSender !== '' && strtoupper(substr(PHP_OS, 0, 3)) !== 'WIN'
+    ? '-f' . $envelopeSender
+    : '';
+
+$success = $mailParameters !== ''
+    ? mail($emailTo, $mailSubject, $body, implode("\r\n", $headers), $mailParameters)
+    : mail($emailTo, $mailSubject, $body, implode("\r\n", $headers));
+
 if (!$success) {
-    error_log('No se pudo enviar el correo del formulario de contacto.');
+    error_log('No se pudo enviar el correo del formulario de contacto a ' . $emailTo . '.');
+    http_response_code(500);
+    echo 'No se pudo enviar el mensaje en este momento. Por favor intenta nuevamente o escribenos a ' . $emailTo . '.';
+    exit;
 }
 
 echo 'success';

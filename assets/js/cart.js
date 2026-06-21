@@ -555,7 +555,7 @@ function obtenerErrorTelefono(telefono) {
 }
 
 function obtenerErrorCorreo(correo) {
-    if (!correo) return '';
+    if (!correo) return 'El correo electronico es obligatorio para enviar tu referencia.';
     if (!VALIDACION_PEDIDO.EMAIL_REGEX.test(correo)) {
         return 'Por favor ingrese un correo electronico valido';
     }
@@ -1000,7 +1000,7 @@ function procesarPedido(event) {
         nombreCompleto: nombreCompleto,
         direccion: direccion,
         telefono: telefono || '', // Opcional
-        correo: correo || '', // Opcional
+        correo: correo,
         necesitaFactura: necesitaFactura,
         tipoDocumento: tipoDocumentoFinal,
         numeroDocumento: nitFinal,
@@ -1090,7 +1090,7 @@ function procesarPedido(event) {
         nombre_cliente: formData.nombreCompleto,
         telefono_cliente: formData.telefono, // Obligatorio
         direccion_cliente: formData.direccion,
-        correo_cliente: formData.correo || '', // Opcional
+        correo_cliente: formData.correo,
         tipo_documento_cliente: formData.tipoDocumento, // Ya incluye "NIT" si no necesita factura
         forma_pago: formData.formaPago,
         total_venta: total,

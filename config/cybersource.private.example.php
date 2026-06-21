@@ -84,4 +84,13 @@ return array(
         'admin_token' => 'GENERE_UN_TOKEN_LARGO_Y_PRIVADO',
         'max_amount' => 50000,
     ),
+
+    'order_email' => array(
+        // Requiere que PHP mail() este configurado en el servidor.
+        'enabled' => true,
+        'from_email' => 'no-reply@libreriamarquense.com',
+        'from_name' => 'Libreria Marquense',
+        'reply_to' => 'servicioslcliente@libreriamarquense.com',
+        'bcc' => '',
+    ),
 );

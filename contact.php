@@ -93,7 +93,6 @@ $current_page = basename($_SERVER['PHP_SELF']);
                         <div class="contact-form">
                             <div class="tile">
                                 <h3>Dejanos tu mensaje</h3>
-                                <p>Tu email no sera publicado. Los campos requeridos estan marcados con *</p>
                             </div>
 
                             <form id="contactForm">
