@@ -169,7 +169,7 @@ class OrderReferenceMailer
             'From: ' . $fromName . ' <' . $fromEmail . '>',
         );
 
-        $replyTo = $this->validEmail((string) $this->config->get('order_email.reply_to', 'servicioslcliente@libreriamarquense.com'));
+        $replyTo = $this->validEmail((string) $this->config->get('order_email.reply_to', 'servicioalcliente@libreriamarquense.com'));
         if ($replyTo !== '') {
             $headers[] = 'Reply-To: ' . $replyTo;
         }

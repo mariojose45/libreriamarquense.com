@@ -2,7 +2,7 @@
 
 require_once __DIR__ . '/security.php';
 
-const LM_CONTACT_EMAIL_TO = 'servicioslcliente@libreriamarquense.com';
+const LM_CONTACT_EMAIL_TO = 'servicioalcliente@libreriamarquense.com';
 const LM_CONTACT_EMAIL_FROM = 'no-reply@libreriamarquense.com';
 const LM_CONTACT_EMAIL_FROM_NAME = 'Libreria Marquense';
 

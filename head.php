@@ -113,7 +113,7 @@ $categorias = $data["data"] ?? [];
     $site_phone_number = isset($site_phone_number) ? $site_phone_number : "+502 2232-8537 / +502 2253-6302 / +502 2372-3286 / +502 2372-3287";
     $site_whatsapp_number = isset($site_whatsapp_number) ? $site_whatsapp_number : "+502 5591-0533";
     $site_whatsapp_url = isset($site_whatsapp_url) ? $site_whatsapp_url : "https://wa.me/50255910533";
-    $site_email = isset($site_email) ? $site_email : "servicioslcliente@libreriamarquense.com";
+    $site_email = isset($site_email) ? $site_email : "servicioalcliente@libreriamarquense.com";
     $site_business_description = isset($site_business_description) ? $site_business_description : "Venta de libros, papelería, artículos escolares, material didáctico y productos de oficina en Guatemala.";
     $site_social_links = isset($site_social_links) ? $site_social_links : [
         'facebook' => 'https://www.facebook.com/LibreriaMarquenseSA?locale=es_LA',

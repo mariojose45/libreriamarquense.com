@@ -188,7 +188,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
                                             <?php echo $branch_statuses['san_miguel_ixtahuacan']['label']; ?>
                                         </li>
                             <li><i class='bx bx-phone-call'></i> <?php echo htmlspecialchars($site_phone_number); ?></li>
-                                        <li><i class='bx bx-envelope'></i> <a href="mailto:servicioslcliente@libreriamarquense.com">servicioslcliente@libreriamarquense.com</a></li>
+                                        <li><i class='bx bx-envelope'></i> <a href="mailto:servicioalcliente@libreriamarquense.com">servicioalcliente@libreriamarquense.com</a></li>
                                         <li><i class='bx bx-time-five'></i> Lunes a Viernes 8:00 am a 5:30 pm</li>
                                         <li><i class='bx bx-calendar'></i> Sabado 8:00 am a 1:00 pm</li>
                                         <li><i class='bx bx-calendar-x'></i> Domingo cerrado</li>
@@ -224,7 +224,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
                                         </li>
                             <li><i class='bx bx-phone-call'></i> <?php echo htmlspecialchars($site_phone_number); ?></li>
                                         
-                                        <li><i class='bx bx-time-five'></i> Domingo a Viernes 8:30 am a 5:00 pm</li><li><i class='bx bx-envelope'></i> <a href="mailto:servicioslcliente@libreriamarquense.com">servicioslcliente@libreriamarquense.com</a></li>
+                                        <li><i class='bx bx-time-five'></i> Domingo a Viernes 8:30 am a 5:00 pm</li><li><i class='bx bx-envelope'></i> <a href="mailto:servicioalcliente@libreriamarquense.com">servicioalcliente@libreriamarquense.com</a></li>
                                         <li><i class='bx bx-calendar-x'></i> Sabado cerrado</li>
                                     </ul>
                                 </div>
@@ -256,7 +256,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
                                             <?php echo $branch_statuses['san_miguel_ixtahuacan_2']['label']; ?>
                                         </li>
                             <li><i class='bx bx-phone-call'></i> <?php echo htmlspecialchars($site_phone_number); ?></li>
-                                        <li><i class='bx bx-envelope'></i> <a href="mailto:servicioslcliente@libreriamarquense.com">servicioslcliente@libreriamarquense.com</a></li>
+                                        <li><i class='bx bx-envelope'></i> <a href="mailto:servicioalcliente@libreriamarquense.com">servicioalcliente@libreriamarquense.com</a></li>
                                         <li><i class='bx bx-time-five'></i> Domingo a Viernes 8:00 am a 5:00 pm</li>
                                         <li><i class='bx bx-calendar-x'></i> Sabado cerrado</li>
                                     </ul>
@@ -289,7 +289,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
                                             <?php echo $branch_statuses['sipacapa']['label']; ?>
                                         </li>
                             <li><i class='bx bx-phone-call'></i> <?php echo htmlspecialchars($site_phone_number); ?></li>
-                                        <li><i class='bx bx-envelope'></i> <a href="mailto:servicioslcliente@libreriamarquense.com">servicioslcliente@libreriamarquense.com</a></li>
+                                        <li><i class='bx bx-envelope'></i> <a href="mailto:servicioalcliente@libreriamarquense.com">servicioalcliente@libreriamarquense.com</a></li>
                                         <li><i class='bx bx-time-five'></i> Domingo a Viernes 8:30 am a 6:00 pm</li>
                                         <li><i class='bx bx-calendar-x'></i> Sabado cerrado</li>
                                     </ul>
@@ -322,7 +322,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
                                             <?php echo $branch_statuses['huitan']['label']; ?>
                                         </li>
                             <li><i class='bx bx-phone-call'></i> <?php echo htmlspecialchars($site_phone_number); ?></li>
-                                        <li><i class='bx bx-envelope'></i> <a href="mailto:servicioslcliente@libreriamarquense.com">servicioslcliente@libreriamarquense.com</a></li>
+                                        <li><i class='bx bx-envelope'></i> <a href="mailto:servicioalcliente@libreriamarquense.com">servicioalcliente@libreriamarquense.com</a></li>
                                         <li><i class='bx bx-time-five'></i> Lunes a Viernes 8:00 am a 6:00 pm</li>
                                         <li><i class='bx bx-calendar'></i> Sabado y Domingo 8:00 am a 5:00 pm</li>
                                     </ul>

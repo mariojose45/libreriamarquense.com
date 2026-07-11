@@ -90,7 +90,7 @@ return array(
         'enabled' => true,
         'from_email' => 'no-reply@libreriamarquense.com',
         'from_name' => 'Libreria Marquense',
-        'reply_to' => 'servicioslcliente@libreriamarquense.com',
+        'reply_to' => 'servicioalcliente@libreriamarquense.com',
         'bcc' => '',
     ),
 );
