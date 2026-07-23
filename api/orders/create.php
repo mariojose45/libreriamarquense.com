@@ -21,6 +21,9 @@ try {
     $forwarder = new \LM\CyberSource\OrderForwarder($config, $logger);
     $response = $forwarder->send($orderPayload);
 
+    $mailer = new \LM\CyberSource\OrderReferenceMailer($config, $logger);
+    $mailer->send($orderPayload, $response);
+
     $logger->info('Pedido enviado a API externa', array(
         'payment_method' => $orderPayload['forma_pago'],
         'amount' => $orderPayload['total_venta'],

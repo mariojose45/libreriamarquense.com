@@ -5,7 +5,7 @@ let todosLosProductos = []; // Almacenar todos los productos cargados
 let precioMinimo = 0;
 let precioMaximo = 0;
 const PRODUCTO_IMG_BASE = "https://ssl.sol.sistemasolgt.com/libremarquenseDos/files/articulos/";
-const PRODUCTO_IMG_PLACEHOLDER = "assets/img/404.png";
+const PRODUCTO_IMG_PLACEHOLDER = "assets/img/ProductoSinImagen.png";
 
 function construirUrlImagenProducto(nombreArchivo) {
     const nombre = (nombreArchivo ?? "").toString().trim();

@@ -88,6 +88,14 @@ $config = array(
         'timeout_seconds' => 25,
     ),
 
+    'order_email' => array(
+        'enabled' => !in_array(strtolower((string) getenv('ORDER_EMAIL_ENABLED')), array('0', 'false', 'no'), true),
+        'from_email' => getenv('ORDER_EMAIL_FROM') ?: 'no-reply@libreriamarquense.com',
+        'from_name' => getenv('ORDER_EMAIL_FROM_NAME') ?: 'Libreria Marquense',
+        'reply_to' => getenv('ORDER_EMAIL_REPLY_TO') ?: 'servicioalcliente@libreriamarquense.com',
+        'bcc' => getenv('ORDER_EMAIL_BCC') ?: '',
+    ),
+
     'delivery' => require __DIR__ . '/delivery.php',
 
     'paths' => array(

@@ -2438,7 +2438,7 @@ document.addEventListener('DOMContentLoaded', function () {
 </script>
 
 <script type="text/javascript" src="assets/js/sweatlert.js"></script>
-<script type="text/javascript" src="assets/js/index.js"></script>
+<script type="text/javascript" src="assets/js/index.js?v=<?php echo filemtime('assets/js/index.js'); ?>"></script>
 <script>
     // Limpiar parámetros de error de la URL después de mostrar el mensaje
     document.addEventListener('DOMContentLoaded', function () {

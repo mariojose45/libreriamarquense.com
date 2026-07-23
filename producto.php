@@ -698,7 +698,7 @@ include 'head.php';
     //  VALIDAR ID DEL PRODUCTO
     // ============================================================
     const IMAGEN_PRODUCTO_BASE = "https://ssl.sol.sistemasolgt.com/libremarquenseDos/files/articulos/";
-    const IMAGEN_PRODUCTO_PLACEHOLDER = "assets/img/404.png";
+    const IMAGEN_PRODUCTO_PLACEHOLDER = "assets/img/ProductoSinImagen.png";
     const PRODUCTO_DETALLE_API = "https://ssl.sol.sistemasolgt.com/libremarquenseDos/api/api_tienda_articulos_listarid.php";
     const PRODUCTO_FOTOS_API = "https://ssl.sol.sistemasolgt.com/libremarquenseDos/api/api_tienda_mostrarfotosproducto.php";
     const PRODUCTO_FALLBACK_ENDPOINT = "assets/php/productos_paginados.php";

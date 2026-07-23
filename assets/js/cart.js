@@ -12,6 +12,7 @@ document.addEventListener("DOMContentLoaded", function () {
 const CANTIDAD_MAXIMA_CARRITO = 99;
 const TIPO_ENTREGA_RETIRO = 'store_pickup';
 const TIPO_ENTREGA_ENVIO = 'shipping';
+const PRODUCTO_IMG_PLACEHOLDER = 'assets/img/ProductoSinImagen.png';
 let direccionEntregaAnterior = '';
 
 function escaparHTML(valor) {
@@ -75,11 +76,10 @@ function obtenerStockPresentacionCarrito(producto) {
 }
 
 function obtenerImagenProductoSegura(valor) {
-    const fallback = 'assets/img/cart/cart-1.png';
     const texto = String(valor ?? '').trim();
 
     if (!texto) {
-        return fallback;
+        return PRODUCTO_IMG_PLACEHOLDER;
     }
 
     try {
@@ -93,7 +93,7 @@ function obtenerImagenProductoSegura(valor) {
         }
     }
 
-    return fallback;
+    return PRODUCTO_IMG_PLACEHOLDER;
 }
 
 // ============================================================
@@ -149,7 +149,7 @@ function cargarCarrito() {
                     <i class='bx bx-x'></i>
                 </a>
                 <a href="#">
-                    <img src="${imagen}" alt="${nombre}">
+                    <img src="${imagen}" alt="${nombre}" onerror="this.onerror=null;this.src='${PRODUCTO_IMG_PLACEHOLDER}';">
                 </a>
             </td>
             <td class="product-name">
@@ -555,7 +555,7 @@ function obtenerErrorTelefono(telefono) {
 }
 
 function obtenerErrorCorreo(correo) {
-    if (!correo) return '';
+    if (!correo) return 'El correo electronico es obligatorio para enviar tu referencia.';
     if (!VALIDACION_PEDIDO.EMAIL_REGEX.test(correo)) {
         return 'Por favor ingrese un correo electronico valido';
     }
@@ -1000,7 +1000,7 @@ function procesarPedido(event) {
         nombreCompleto: nombreCompleto,
         direccion: direccion,
         telefono: telefono || '', // Opcional
-        correo: correo || '', // Opcional
+        correo: correo,
         necesitaFactura: necesitaFactura,
         tipoDocumento: tipoDocumentoFinal,
         numeroDocumento: nitFinal,
@@ -1090,7 +1090,7 @@ function procesarPedido(event) {
         nombre_cliente: formData.nombreCompleto,
         telefono_cliente: formData.telefono, // Obligatorio
         direccion_cliente: formData.direccion,
-        correo_cliente: formData.correo || '', // Opcional
+        correo_cliente: formData.correo,
         tipo_documento_cliente: formData.tipoDocumento, // Ya incluye "NIT" si no necesita factura
         forma_pago: formData.formaPago,
         total_venta: total,

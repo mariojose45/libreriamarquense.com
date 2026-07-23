@@ -9,7 +9,7 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 const PRODUCTO_IMG_BASE = "https://ssl.sol.sistemasolgt.com/libremarquenseDos/files/articulos/";
-const PRODUCTO_IMG_PLACEHOLDER = "assets/img/404.png";
+const PRODUCTO_IMG_PLACEHOLDER = "assets/img/ProductoSinImagen.png";
 
 function construirUrlImagenProducto(nombreArchivo) {
     const nombre = (nombreArchivo ?? "").toString().trim();
