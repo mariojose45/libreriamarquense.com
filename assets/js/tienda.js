@@ -285,11 +285,20 @@ function cargarProductosNuevos() {
 }
 
 /* ============================================================
-   ⭐ FUNCIÓN VISTA RÁPIDA - REDIRIGE A PÁGINA DE PRODUCTO
+   ⭐ FUNCIÓN VISTA RÁPIDA - ABRE MODAL DE PRODUCTO
 ============================================================ */
-function vistaRapida(nombre, imagen, precio, idarticulo, descripcion) {
-    // Redirigir a la página de producto con el idarticulo
-    window.location.href = 'producto.php?id=' + idarticulo;
+function vistaRapida(nombre, imagen, precio, idarticulo, descripcion, sku = '', stock = '') {
+    const productoParaModal = {
+        nombre: nombre,
+        precio: precio,
+        descripcion: descripcion,
+        idarticulo: idarticulo,
+        sku: sku,
+        stock: stock,
+        imagenes: [imagen]
+    };
+    
+    abrirModalProducto(productoParaModal);
 }
 
 let mpIndex = 0;
