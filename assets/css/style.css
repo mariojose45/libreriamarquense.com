@@ -2142,6 +2142,104 @@ body img[src*="ProductoSinImagen.png"] {
   color: #B42A27;
 }
 
+.single-arrivals-products.is-sold-out .arrivals-products-image::before,
+.single-shop-products.is-sold-out .shop-products-image::before,
+.main-products-image.is-sold-out::before,
+.product-sold-out-ribbon {
+  content: "AGOTADO";
+  position: absolute;
+  top: 24px;
+  left: -46px;
+  z-index: 5;
+  width: 170px;
+  padding: 8px 0;
+  background: linear-gradient(135deg, #B42A27 0%, #7C1110 100%);
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  line-height: 1;
+  text-align: center;
+  text-transform: uppercase;
+  transform: rotate(-45deg);
+  box-shadow: 0 8px 18px rgba(124, 17, 16, 0.25);
+  pointer-events: none;
+}
+
+.single-arrivals-products.is-sold-out .arrivals-products-image img,
+.single-shop-products.is-sold-out .shop-products-image img {
+  filter: grayscale(0.25);
+  opacity: 0.78;
+}
+
+.single-arrivals-products.is-sold-out .arrivals-products-image .arrivals-action li a[aria-disabled=true] i,
+.single-shop-products.is-sold-out .shop-products-image .shop-action li a[aria-disabled=true] i {
+  background-color: #eeeeee;
+  color: #8a8a8a;
+  cursor: not-allowed;
+}
+
+.main-products-image .product-sold-out-ribbon {
+  top: 32px;
+  left: -52px;
+  width: 190px;
+  font-size: 14px;
+  z-index: 10;
+}
+
+.main-products-image.is-sold-out::before {
+  top: 32px;
+  left: -52px;
+  width: 190px;
+  font-size: 14px;
+  z-index: 10;
+}
+
+.products-details-desc .product-content .product-reserve-note {
+  display: none;
+  max-width: 430px;
+  margin-top: 22px;
+  padding: 12px 14px;
+  border-left: 4px solid #B42A27;
+  background: rgba(180, 42, 39, 0.08);
+  color: #3e2a29;
+  font-size: 15px;
+  line-height: 1.45;
+}
+
+.products-details-desc .product-content .product-reserve-note.is-visible {
+  display: block;
+}
+
+.products-details-desc .product-content .product-reserve-note strong {
+  display: block;
+  color: #B42A27;
+  font-size: 16px;
+  margin-bottom: 3px;
+}
+
+.products-details-desc .product-content .product-quantities.is-disabled {
+  opacity: 0.55;
+}
+
+.products-details-desc .product-content .product-quantities.is-disabled .input-counter,
+.products-details-desc .product-content .product-quantities.is-disabled .minus-btn,
+.products-details-desc .product-content .product-quantities.is-disabled .plus-btn {
+  cursor: not-allowed;
+}
+
+.products-details-desc .product-content .product-quantities.is-disabled .input-counter {
+  pointer-events: none;
+}
+
+.products-details-desc .product-content .product-add-to-cart .default-btn:disabled {
+  background-color: #8a8a8a;
+  border-color: #8a8a8a;
+  color: #ffffff;
+  cursor: not-allowed;
+  opacity: 0.82;
+}
+
 .arrivals-products-area.bg-color {
   border-bottom: 1px solid #eeeeee;
 }

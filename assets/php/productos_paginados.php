@@ -527,6 +527,17 @@ function primerValorProducto(array $producto, array $keys)
     return null;
 }
 
+function stockRealProducto(array $producto): ?float
+{
+    $valor = primerValorProducto($producto, ['stock', 'stocksucursal', 'existencia', 'stock_unidad']);
+    if ($valor === null) {
+        return null;
+    }
+
+    $stock = (float) $valor;
+    return $stock >= 0 ? $stock : null;
+}
+
 function crearPresentacionProducto($nombre, $tipo, $stock, $precio): ?array
 {
     if (!presentacionEsVisible($nombre)) {
@@ -551,6 +562,7 @@ function crearPresentacionProducto($nombre, $tipo, $stock, $precio): ?array
 function obtenerPresentacionesProducto(array $producto): array
 {
     $presentaciones = [];
+    $stockReal = stockRealProducto($producto);
 
     if (isset($producto['presentaciones']) && is_array($producto['presentaciones'])) {
         foreach ($producto['presentaciones'] as $presentacion) {
@@ -561,7 +573,7 @@ function obtenerPresentacionesProducto(array $producto): array
             $normalizada = crearPresentacionProducto(
                 $presentacion['nombre'] ?? $presentacion['presentacion'] ?? '',
                 (string) ($presentacion['tipo'] ?? ''),
-                $presentacion['stock'] ?? $presentacion['existencia'] ?? 0,
+                $stockReal ?? ($presentacion['stock'] ?? $presentacion['existencia'] ?? 0),
                 $presentacion['precio'] ?? $presentacion['precio_venta'] ?? 0
             );
 
@@ -572,17 +584,17 @@ function obtenerPresentacionesProducto(array $producto): array
     }
 
     $definiciones = [
-        ['nombre_01', 'unidad', ['stock_unidad', 'stock_01', 'stock'], ['precio_unidad', 'precio_01', 'precio_venta']],
-        ['nombre_02', 'blister', ['stock_blister', 'stock_02'], ['precio_blister', 'precio_02']],
-        ['nombre_03', 'caja', ['stock_caja', 'stock_03'], ['precio_caja', 'precio_03']],
-        ['nombre_04', 'fardo', ['stock_fardo', 'stock_04'], ['precio_fardo', 'precio_04']],
-        ['nombre_05', 'sacos', ['stock_sacos', 'stock_05'], ['precio_sacos', 'precio_05']],
-        ['nombre_06', 'paquete', ['stock_paquete', 'stock_06'], ['precio_paquete', 'precio_06']],
+        ['nombre_01', 'unidad', ['stock', 'stocksucursal', 'existencia', 'stock_unidad'], ['precio_unidad', 'precio_01', 'precio_venta']],
+        ['nombre_02', 'blister', ['stock_blister', 'stock', 'stocksucursal', 'existencia', 'stock_unidad'], ['precio_blister', 'precio_02']],
+        ['nombre_03', 'caja', ['stock_caja', 'stock', 'stocksucursal', 'existencia', 'stock_unidad'], ['precio_caja', 'precio_03']],
+        ['nombre_04', 'fardo', ['stock_fardo', 'stock', 'stocksucursal', 'existencia', 'stock_unidad'], ['precio_fardo', 'precio_04']],
+        ['nombre_05', 'sacos', ['stock_sacos', 'stock', 'stocksucursal', 'existencia', 'stock_unidad'], ['precio_sacos', 'precio_05']],
+        ['nombre_06', 'paquete', ['stock_paquete', 'stock', 'stocksucursal', 'existencia', 'stock_unidad'], ['precio_paquete', 'precio_06']],
     ];
 
     for ($i = 7; $i <= 20; $i++) {
         $idx = str_pad((string) $i, 2, '0', STR_PAD_LEFT);
-        $definiciones[] = ["nombre_$idx", "presentacion_$idx", ["stock_$idx"], ["precio_$idx"]];
+        $definiciones[] = ["nombre_$idx", "presentacion_$idx", ['stock', 'stocksucursal', 'existencia', 'stock_unidad'], ["precio_$idx"]];
     }
 
     foreach ($definiciones as [$nombreKey, $tipo, $stockKeys, $precioKeys]) {

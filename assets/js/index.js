@@ -20,10 +20,60 @@ function obtenerImagenProducto(producto) {
     return construirUrlImagenProducto(producto?.imagen) || PRODUCTO_IMG_PLACEHOLDER;
 }
 
-function registrarPresentacionCarrito(producto) {
-    return window.LMProductPresentations
-        ? window.LMProductPresentations.registerForCart(producto)
-        : "";
+function numeroProducto(valor, fallback = 0) {
+    if (valor === null || valor === undefined || valor === "") {
+        return fallback;
+    }
+
+    const numero = Number(String(valor).replace(",", "."));
+    return Number.isFinite(numero) ? numero : fallback;
+}
+
+function prepararCompraProducto(producto) {
+    if (window.LMProductPresentations) {
+        const presentacion = window.LMProductPresentations.defaultUnit(producto || {});
+        const precio = numeroProducto(presentacion?.precio, 0);
+        const stock = presentacion?.stock === null || presentacion?.stock === undefined
+            ? null
+            : numeroProducto(presentacion.stock, 0);
+        const sinStock = stock !== null && stock <= 0;
+        const disponible = !!presentacion
+            && !presentacion.disabled
+            && precio > 0
+            && !sinStock;
+
+        return {
+            disponible,
+            sinStock,
+            registro: disponible ? window.LMProductPresentations.registerForCart(producto) : ""
+        };
+    }
+
+    const precio = numeroProducto(producto?.precio_venta ?? producto?.precio, 0);
+    const stockValor = producto?.stock ?? producto?.stocksucursal ?? producto?.existencia;
+    const stock = stockValor === null || stockValor === undefined || stockValor === ""
+        ? null
+        : numeroProducto(stockValor, 0);
+
+    return {
+        disponible: precio > 0 && (stock === null || stock > 0),
+        sinStock: stock !== null && stock <= 0,
+        registro: ""
+    };
+}
+
+window.notificarProductoAgotado = function () {
+    if (window.Carrito && typeof window.Carrito.mostrarNotificacion === "function") {
+        window.Carrito.mostrarNotificacion("Producto agotado. Puedes consultar reserva por WhatsApp.");
+    } else {
+        alert("Producto agotado. Puedes consultar reserva por WhatsApp.");
+    }
+
+    return false;
+};
+
+function claseProductoAgotado(compra) {
+    return compra.sinStock ? " is-sold-out" : "";
 }
 
 /* ============================================================
@@ -59,11 +109,23 @@ function cargarProductosPromociones() {
             productos.forEach(producto => {
 
                 const imagen = obtenerImagenProducto(producto);
-                const presentacionCarrito = registrarPresentacionCarrito(producto);
+                const compra = prepararCompraProducto(producto);
+                const presentacionCarrito = compra.registro;
+                const accionCarrito = compra.disponible
+                    ? `agregarAlCarrito(
+                                        '${producto.idarticulo}',
+                                        '${producto.nombre.replace(/'/g, "\\'")}',
+                                        '${producto.precio_venta}',
+                                        '${imagen}',
+                                        '${producto.descripcion ? producto.descripcion.replace(/'/g, "\\'") : ""}',
+                                        1,
+                                        '${presentacionCarrito}'
+                                    )`
+                    : "return notificarProductoAgotado()";
 
                 let html = `
                 <div class="col-lg-3 col-sm-6">
-                    <div class="single-arrivals-products">
+                    <div class="single-arrivals-products${claseProductoAgotado(compra)}">
 
                         <div class="arrivals-products-image">
                             <a href="javascript:void(0)"
@@ -84,15 +146,8 @@ function cargarProductosPromociones() {
                             <ul class="arrivals-action">
                                 <li>
                                     <a href="javascript:void(0)"
-                                    onclick="agregarAlCarrito(
-                                        '${producto.idarticulo}',
-                                        '${producto.nombre.replace(/'/g, "\\'")}',
-                                        '${producto.precio_venta}',
-                                        '${imagen}',
-                                        '${producto.descripcion ? producto.descripcion.replace(/'/g, "\\'") : ""}',
-                                        1,
-                                        '${presentacionCarrito}'
-                                    )">
+                                    onclick="${accionCarrito}"
+                                    aria-disabled="${compra.disponible ? "false" : "true"}">
                                         <i class="flaticon-shopping-cart"></i>
                                     </a>
                                 </li>
@@ -181,11 +236,23 @@ function cargarProductosNuevos() {
             productos.forEach(producto => {
 
                 const imagen = obtenerImagenProducto(producto);
-                const presentacionCarrito = registrarPresentacionCarrito(producto);
+                const compra = prepararCompraProducto(producto);
+                const presentacionCarrito = compra.registro;
+                const accionCarrito = compra.disponible
+                    ? `agregarAlCarrito(
+                                        '${producto.idarticulo}',
+                                        '${producto.nombre.replace(/'/g, "\\'")}',
+                                        '${producto.precio_venta}',
+                                        '${imagen}',
+                                        '${producto.descripcion ? producto.descripcion.replace(/'/g, "\\'") : ""}',
+                                        1,
+                                        '${presentacionCarrito}'
+                                    )`
+                    : "return notificarProductoAgotado()";
 
                 let html = `
                 <div class="col-lg-3 col-sm-6">
-                    <div class="single-arrivals-products">
+                    <div class="single-arrivals-products${claseProductoAgotado(compra)}">
 
                         <div class="arrivals-products-image">
                             <a href="javascript:void(0)"
@@ -206,15 +273,8 @@ function cargarProductosNuevos() {
                             <ul class="arrivals-action">
                                 <li>
                                     <a href="javascript:void(0)"
-                                    onclick="agregarAlCarrito(
-                                        '${producto.idarticulo}',
-                                        '${producto.nombre.replace(/'/g, "\\'")}',
-                                        '${producto.precio_venta}',
-                                        '${imagen}',
-                                        '${producto.descripcion ? producto.descripcion.replace(/'/g, "\\'") : ""}',
-                                        1,
-                                        '${presentacionCarrito}'
-                                    )">
+                                    onclick="${accionCarrito}"
+                                    aria-disabled="${compra.disponible ? "false" : "true"}">
                                         <i class="flaticon-shopping-cart"></i>
                                     </a>
                                 </li>
@@ -521,11 +581,23 @@ function cargarProductosMasVendidos() {
             productos.forEach(producto => {
 
                 const imagen = obtenerImagenProducto(producto);
-                const presentacionCarrito = registrarPresentacionCarrito(producto);
+                const compra = prepararCompraProducto(producto);
+                const presentacionCarrito = compra.registro;
+                const accionCarrito = compra.disponible
+                    ? `agregarAlCarrito(
+                                        '${producto.idarticulo}',
+                                        '${producto.nombre.replace(/'/g, "\\'")}',
+                                        '${producto.precio_venta}',
+                                        '${imagen}',
+                                        '${producto.descripcion ? producto.descripcion.replace(/'/g, "\\'") : ""}',
+                                        1,
+                                        '${presentacionCarrito}'
+                                    )`
+                    : "return notificarProductoAgotado()";
 
                 let html = `
                 <div class="col-lg-3 col-sm-6">
-                    <div class="single-arrivals-products">
+                    <div class="single-arrivals-products${claseProductoAgotado(compra)}">
 
                         <div class="arrivals-products-image">
                             <a href="javascript:void(0)"
@@ -545,15 +617,8 @@ function cargarProductosMasVendidos() {
                             <ul class="arrivals-action">
                                 <li>
                                     <a href="javascript:void(0)"
-                                    onclick="agregarAlCarrito(
-                                        '${producto.idarticulo}',
-                                        '${producto.nombre.replace(/'/g, "\\'")}',
-                                        '${producto.precio_venta}',
-                                        '${imagen}',
-                                        '${producto.descripcion ? producto.descripcion.replace(/'/g, "\\'") : ""}',
-                                        1,
-                                        '${presentacionCarrito}'
-                                    )">
+                                    onclick="${accionCarrito}"
+                                    aria-disabled="${compra.disponible ? "false" : "true"}">
                                         <i class="flaticon-shopping-cart"></i>
                                     </a>
                                 </li>

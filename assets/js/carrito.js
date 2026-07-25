@@ -417,6 +417,10 @@ const Carrito = {
 
             productoExistente.cantidad = cantidadFinal;
             productoExistente.requiere_reserva = requiereReserva;
+            productoExistente.stock_presentacion = stockPresentacion;
+            productoExistente.cantidadpresentacion = presentacion.cantidadpresentacion || 1;
+            productoExistente.presentacion = presentacion.presentacion;
+            productoExistente.tipo_presentacion = presentacion.tipo_presentacion;
             // IMPORTANTE: No permitir cambiar el precio de productos existentes
             // El precio se mantiene como estaba cuando se agregó por primera vez
         } else {

@@ -628,6 +628,11 @@ include 'head.php';
                                             </button>
                                         </div>
 
+                                        <div id="producto-reserva-note" class="product-reserve-note" hidden>
+                                            <strong>Reservar disponibilidad</strong>
+                                            <span>Producto agotado por ahora. Escribenos por WhatsApp para reservar o consultar reposicion.</span>
+                                        </div>
+
                                         <div class="products-share">
                                             <ul class="social">
                                                 <li><span>Compartir:</span></li>
@@ -915,8 +920,8 @@ include 'head.php';
         return {
             nombre: 'UNIDAD',
             tipo: 'unidad',
-            precio: parseFloat(productoActual?.precio_venta || 0),
-            stock: parseFloat(productoActual?.stock || 0)
+            precio: normalizarNumeroProducto(productoActual?.precio_venta, 0),
+            stock: normalizarStockProducto(productoActual?.stock)
         };
     }
 
@@ -937,6 +942,76 @@ include 'head.php';
                 timerProgressBar: true
             });
         }
+    }
+
+    function normalizarNumeroProducto(valor, fallback = 0) {
+        if (valor === null || valor === undefined || valor === '') {
+            return fallback;
+        }
+
+        const numero = Number(String(valor).replace(',', '.'));
+        return Number.isFinite(numero) ? numero : fallback;
+    }
+
+    function normalizarStockProducto(valor) {
+        if (valor === null || valor === undefined || valor === '') {
+            return null;
+        }
+
+        const stock = normalizarNumeroProducto(valor, NaN);
+        return Number.isFinite(stock) ? stock : null;
+    }
+
+    function productoSinStock(stock) {
+        return stock !== null && stock <= 0;
+    }
+
+    function productoNoComprable(precio, stock) {
+        return precio <= 0 || productoSinStock(stock);
+    }
+
+    function actualizarEstadoAgotadoProducto(precio, stock) {
+        const sinStock = productoSinStock(stock);
+        const noComprable = productoNoComprable(precio, stock);
+
+        if (productoActual) {
+            productoActual.agotado = sinStock;
+            productoActual.no_comprable = noComprable;
+        }
+
+        const imagenWrapper = document.querySelector('.main-products-image');
+        if (imagenWrapper) {
+            imagenWrapper.classList.toggle('is-sold-out', sinStock);
+        }
+
+        const reservaNote = document.getElementById('producto-reserva-note');
+        if (reservaNote) {
+            reservaNote.hidden = !sinStock;
+            reservaNote.classList.toggle('is-visible', sinStock);
+        }
+
+        const cantidades = document.querySelector('.product-quantities');
+        if (cantidades) {
+            cantidades.classList.toggle('is-disabled', noComprable);
+        }
+
+        const inputCantidad = document.getElementById('producto-cantidad');
+        if (inputCantidad) {
+            inputCantidad.disabled = noComprable;
+            inputCantidad.max = stock !== null && stock > 0 ? String(Math.min(99, Math.floor(stock))) : '99';
+        }
+
+        const botonAgregar = document.querySelector('.product-add-to-cart .default-btn');
+        if (botonAgregar) {
+            botonAgregar.disabled = noComprable;
+            botonAgregar.style.opacity = '';
+            botonAgregar.style.cursor = '';
+            botonAgregar.innerHTML = noComprable
+                ? `<i class="flaticon-shopping-cart"></i> ${sinStock ? 'Producto agotado' : 'No disponible'} <span></span>`
+                : '<i class="flaticon-shopping-cart"></i> Agregar al carrito <span></span>';
+        }
+
+        return { sinStock, noComprable };
     }
 
     function normalizarTipoPresentacionProducto(presentacion) {
@@ -971,10 +1046,10 @@ include 'head.php';
         if (!productoActual) return;
 
         const presentacion = obtenerPresentacionActiva();
-        const precio = parseFloat(presentacion.precio ?? productoActual.precio_venta ?? 0);
+        const precio = normalizarNumeroProducto(presentacion.precio ?? productoActual.precio_venta, 0);
         const stock = presentacion.stock === null || presentacion.stock === undefined
-            ? parseFloat(productoActual.stock || 0)
-            : parseFloat(presentacion.stock || 0);
+            ? normalizarStockProducto(productoActual.stock)
+            : normalizarStockProducto(presentacion.stock);
 
         productoActual.precio_venta = precio;
         productoActual.stock = stock;
@@ -985,25 +1060,17 @@ include 'head.php';
             stockElement.textContent = '';
         }
 
-        const inputCantidad = document.getElementById('producto-cantidad');
-        if (inputCantidad) {
-            inputCantidad.max = '99';
-        }
+        const estadoCompra = actualizarEstadoAgotadoProducto(precio, stock);
 
         normalizarCantidadProducto();
 
-        const botonAgregar = document.querySelector('.product-add-to-cart .default-btn');
-        if (botonAgregar) {
-            botonAgregar.disabled = precio <= 0;
-            botonAgregar.style.opacity = botonAgregar.disabled ? '.65' : '';
-            botonAgregar.style.cursor = botonAgregar.disabled ? 'not-allowed' : '';
-        }
-
-        if (precio > 0) {
+        if (!estadoCompra.noComprable) {
             avisoProductoNoDisponibleMostrado = false;
         } else if (!avisoProductoNoDisponibleMostrado) {
             avisoProductoNoDisponibleMostrado = true;
-            mostrarToastProductoNoDisponible();
+            mostrarToastProductoNoDisponible(estadoCompra.sinStock
+                ? 'Producto agotado. Puedes consultar reserva por WhatsApp.'
+                : 'Producto no disponible.');
         }
     }
 
@@ -1334,9 +1401,14 @@ include 'head.php';
 
         const valorLimpio = input.value.replace(/\D/g, '');
         let cantidad = parseInt(valorLimpio, 10);
+        const maximo = parseInt(input.max || '99', 10);
 
         if (!Number.isInteger(cantidad) || cantidad < 1) {
             cantidad = 1;
+        }
+
+        if (Number.isInteger(maximo) && maximo > 0 && cantidad > maximo) {
+            cantidad = maximo;
         }
 
         input.value = forzarMinimo || valorLimpio !== '' ? String(cantidad) : '';
@@ -1345,7 +1417,7 @@ include 'head.php';
 
     function cambiarCantidad(n) {
         const input = document.getElementById('producto-cantidad');
-        if (!input) return;
+        if (!input || input.disabled) return;
 
         const cantidadActual = normalizarCantidadProducto();
         const cambio = n > 0 ? 1 : -1;
@@ -1363,13 +1435,15 @@ include 'head.php';
         let cantidad = normalizarCantidadProducto();
         let imagen = imagenesProducto[0] || imagenPrincipal || IMAGEN_PRODUCTO_PLACEHOLDER;
         const presentacion = obtenerPresentacionActiva();
-        const precio = parseFloat(presentacion.precio ?? productoActual.precio_venta ?? 0);
+        const precio = normalizarNumeroProducto(presentacion.precio ?? productoActual.precio_venta, 0);
         const stock = presentacion.stock === null || presentacion.stock === undefined
-            ? parseFloat(productoActual.stock || 0)
-            : parseFloat(presentacion.stock || 0);
+            ? normalizarStockProducto(productoActual.stock)
+            : normalizarStockProducto(presentacion.stock);
 
-        if (precio <= 0) {
-            mostrarToastProductoNoDisponible();
+        if (productoNoComprable(precio, stock)) {
+            mostrarToastProductoNoDisponible(productoSinStock(stock)
+                ? 'Producto agotado. Puedes consultar reserva por WhatsApp.'
+                : 'Producto no disponible.');
             return;
         }
 
@@ -1407,6 +1481,27 @@ include 'head.php';
         if (!productoActual) return false;
 
         const url = window.location.href;
+        if (productoActual.agotado) {
+            const precioReserva = normalizarNumeroProducto(productoActual.precio_venta, 0).toFixed(2);
+            const mensajeReserva = encodeURIComponent(
+                `Hola, quiero reservar o consultar disponibilidad de este producto:\n\n` +
+                `*${productoActual.nombre}*\n\n` +
+                `Precio: *Q${precioReserva}*\n\n` +
+                `Ver mas detalles:\n${url}\n\n` +
+                `_Libreria Marquense - Utiles escolares y papeleria_`
+            );
+            const whatsappReservaUrl = `https://wa.me/50255910533?text=${mensajeReserva}`;
+            const isMobileReserva = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+            if (isMobileReserva) {
+                window.location.href = whatsappReservaUrl;
+            } else {
+                window.open(whatsappReservaUrl, '_blank');
+            }
+
+            return false;
+        }
+
         const mensaje = encodeURIComponent(
             `🛍️ *${productoActual.nombre}*\n\n` +
             `💰 Precio: *Q${parseFloat(productoActual.precio_venta || 0).toFixed(2)}*\n\n` +

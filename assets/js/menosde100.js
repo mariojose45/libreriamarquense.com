@@ -356,18 +356,24 @@ function menos100PrepararCompra(producto) {
         const precio = Number(producto?.precio_venta ?? 0);
         return {
             disponible: Number.isFinite(stock) && stock > 0 && Number.isFinite(precio) && precio > 0,
+            sinStock: Number.isFinite(stock) && stock <= 0,
             registro: ""
         };
     }
 
     const presentacion = window.LMProductPresentations.defaultUnit(producto);
+    const stock = presentacion?.stock === null || presentacion?.stock === undefined
+        ? null
+        : Number(presentacion.stock);
+    const sinStock = Number.isFinite(stock) && stock <= 0;
     const disponible = !!presentacion
         && !presentacion.disabled
-        && (presentacion.stock === null || presentacion.stock > 0)
+        && !sinStock
         && presentacion.precio > 0;
 
     return {
         disponible,
+        sinStock,
         registro: disponible
             ? window.LMProductPresentations.registerForCart(producto)
             : ""
@@ -408,7 +414,7 @@ function menos100RenderizarCardProducto(producto) {
 
     return `
         <div class="col-lg-3 col-sm-6">
-            <div class="single-arrivals-products">
+            <div class="single-arrivals-products${compra.sinStock ? " is-sold-out" : ""}">
                 <div class="arrivals-products-image">
                     <a href="javascript:void(0)"
                     onclick="vistaRapida(

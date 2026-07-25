@@ -232,7 +232,8 @@ $footer_social_links = array_filter($site_social_links ?? []);
 <?php $productPresentationsScript = __DIR__ . '/assets/js/product-presentations.js'; ?>
 <script src="assets/js/product-presentations.js?v=<?php echo file_exists($productPresentationsScript) ? filemtime($productPresentationsScript) : time(); ?>"></script>
 <!-- Carrito JS -->
-<script src="assets/js/carrito.js"></script>
+<?php $carritoScript = __DIR__ . '/assets/js/carrito.js'; ?>
+<script src="assets/js/carrito.js?v=<?php echo file_exists($carritoScript) ? filemtime($carritoScript) : time(); ?>"></script>
 <!-- Custom JS -->
 <script src="assets/js/main.js"></script>
 <script>

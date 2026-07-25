@@ -3,13 +3,14 @@
 
     const EXCLUDED_NAMES = new Set(["MAYORISTA", "MINOREO", "MINORISTA", "MENUDEO"]);
     const cartRegistry = {};
+    const PRODUCT_STOCK_KEYS = ["stock", "stocksucursal", "existencia", "stock_unidad"];
     const DIRECT_PRESENTATIONS = [
-        { index: "01", tipo: "unidad", nameKeys: ["nombre_01"], stockKeys: ["stock_unidad", "stock_01", "stock"], priceKeys: ["precio_unidad", "precio_01", "precio_venta", "precio"] },
-        { index: "02", tipo: "blister", nameKeys: ["nombre_02"], stockKeys: ["stock_blister", "stock_02"], priceKeys: ["precio_blister", "precio_02"] },
-        { index: "03", tipo: "caja", nameKeys: ["nombre_03"], stockKeys: ["stock_caja", "stock_03"], priceKeys: ["precio_caja", "precio_03"] },
-        { index: "04", tipo: "fardo", nameKeys: ["nombre_04"], stockKeys: ["stock_fardo", "stock_04"], priceKeys: ["precio_fardo", "precio_04"] },
-        { index: "05", tipo: "sacos", nameKeys: ["nombre_05"], stockKeys: ["stock_sacos", "stock_05"], priceKeys: ["precio_sacos", "precio_05"] },
-        { index: "06", tipo: "paquete", nameKeys: ["nombre_06"], stockKeys: ["stock_paquete", "stock_06"], priceKeys: ["precio_paquete", "precio_06"] },
+        { index: "01", tipo: "unidad", nameKeys: ["nombre_01"], stockKeys: PRODUCT_STOCK_KEYS, priceKeys: ["precio_unidad", "precio_01", "precio_venta", "precio"] },
+        { index: "02", tipo: "blister", nameKeys: ["nombre_02"], stockKeys: ["stock_blister", ...PRODUCT_STOCK_KEYS], priceKeys: ["precio_blister", "precio_02"] },
+        { index: "03", tipo: "caja", nameKeys: ["nombre_03"], stockKeys: ["stock_caja", ...PRODUCT_STOCK_KEYS], priceKeys: ["precio_caja", "precio_03"] },
+        { index: "04", tipo: "fardo", nameKeys: ["nombre_04"], stockKeys: ["stock_fardo", ...PRODUCT_STOCK_KEYS], priceKeys: ["precio_fardo", "precio_04"] },
+        { index: "05", tipo: "sacos", nameKeys: ["nombre_05"], stockKeys: ["stock_sacos", ...PRODUCT_STOCK_KEYS], priceKeys: ["precio_sacos", "precio_05"] },
+        { index: "06", tipo: "paquete", nameKeys: ["nombre_06"], stockKeys: ["stock_paquete", ...PRODUCT_STOCK_KEYS], priceKeys: ["precio_paquete", "precio_06"] },
     ];
 
     for (let i = 7; i <= 20; i += 1) {
@@ -18,7 +19,7 @@
             index,
             tipo: `presentacion_${index}`,
             nameKeys: [`nombre_${index}`],
-            stockKeys: [`stock_${index}`],
+            stockKeys: PRODUCT_STOCK_KEYS,
             priceKeys: [`precio_${index}`],
         });
     }
@@ -57,6 +58,20 @@
         }
 
         return undefined;
+    }
+
+    function nullableNumber(value) {
+        if (value === null || value === undefined || value === "") {
+            return null;
+        }
+
+        const number = toNumber(value, NaN);
+        return Number.isFinite(number) ? Math.max(0, number) : null;
+    }
+
+    function resolveProductStock(product) {
+        const source = product && typeof product === "object" ? product : {};
+        return nullableNumber(firstValue(source, PRODUCT_STOCK_KEYS));
     }
 
     function isExcludedName(name) {
@@ -117,11 +132,12 @@
             return [];
         }
 
+        const productStock = resolveProductStock(product);
         return product.presentaciones
             .map((item) => buildPresentation({
                 nombre: item?.nombre ?? item?.presentacion,
                 tipo: item?.tipo,
-                stock: item?.stock ?? item?.existencia ?? item?.stocksucursal,
+                stock: productStock ?? item?.stock ?? item?.existencia ?? item?.stocksucursal,
                 precio: item?.precio ?? item?.precio_venta,
             }, item?.tipo))
             .filter(Boolean);
@@ -151,7 +167,7 @@
         const rawName = firstValue(source, ["nombre_01"]);
         const nombre = isValidPresentationName(rawName) && !isExcludedName(rawName) ? displayName(rawName) : "UNIDAD";
         const precio = toNumber(firstValue(source, ["precio_unidad", "precio_01", "precio_venta", "precio"]) ?? source.precio, 0);
-        const stockValue = firstValue(source, ["stock_unidad", "stock_01", "stock", "stocksucursal", "existencia"]);
+        const stockValue = firstValue(source, PRODUCT_STOCK_KEYS);
         const stock = stockValue === undefined ? null : Math.max(0, toNumber(stockValue, 0));
 
         return {
