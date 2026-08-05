@@ -1,48 +1,633 @@
 <?php
-// SEO para la pagina de producto
-$seo_title = "Producto - Librería Marquense | Libros, Papelería, Artículos Escolares y de Oficina";
-$seo_description = "Consulta detalles de productos en Librería Marquense: útiles escolares, papelería, libros, material didáctico y artículos de oficina.";
-$seo_keywords = "Librería Marquense, producto escolar, útiles escolares, papelería, libros, material didáctico, productos de oficina Guatemala";
-$current_page = basename($_SERVER['PHP_SELF']);
 
-// Obtener y validar idarticulo de la URL
+// ============================================================
+// VALIDACIÓN DEL PRODUCTO Y SEO DINÁMICO
+// ============================================================
+
+$current_page = basename(
+    $_SERVER['PHP_SELF'] ?? 'producto.php'
+);
+
 $idarticulo = 0;
+$id_raw = $_GET['id'] ?? null;
 
-if (isset($_GET['id'])) {
-    // Sanitizar y validar el ID
-    $id_raw = $_GET['id'];
+if (
+    !is_scalar($id_raw) ||
+    !preg_match('/^[0-9]+$/', (string) $id_raw)
+) {
+    header(
+        'Location: index.php?error=' .
+        (
+            $id_raw === null
+                ? 'id_faltante'
+                : 'id_invalido'
+        ),
+        true,
+        302
+    );
 
-    // Solo permitir parametros enteros positivos
-    if (preg_match('/^[0-9]+$/', $id_raw)) {
-        $idarticulo = intval($id_raw);
-
-        // Validar rango razonable (1 a 999999)
-        if ($idarticulo < 1 || $idarticulo > 999999) {
-            // ID fuera de rango válido
-            header("HTTP/1.0 404 Not Found");
-            header("Location: index.php?error=producto_no_encontrado");
-            exit();
-        }
-
-        // El detalle se carga en el navegador. No redirigir aqui si el API de detalle
-        // responde vacio, porque los listados pueden tener articulos validos que ese
-        // endpoint no devuelve de forma consistente.
-    } else {
-        // ID invalido (contiene caracteres no numericos)
-        header("HTTP/1.0 400 Bad Request");
-        header("Location: index.php?error=id_invalido");
-        exit();
-    }
-} else {
-    // No se proporciono ID
-    header("HTTP/1.0 400 Bad Request");
-    header("Location: index.php?error=id_faltante");
     exit();
 }
 
+$idarticulo = (int) $id_raw;
+
+if (
+    $idarticulo < 1 ||
+    $idarticulo > 999999
+) {
+    header(
+        'Location: index.php?error=producto_no_encontrado',
+        true,
+        302
+    );
+
+    exit();
+}
+
+// ============================================================
+// CONFIGURACIÓN BASE DE SEO
+// ============================================================
+
+$canonical_url =
+    'https://libreriamarquense.com/producto.php?id=' .
+    rawurlencode(
+        (string) $idarticulo
+    );
+
+$seo_title =
+    'Producto #' .
+    $idarticulo .
+    ' | Librería Marquense';
+
+$seo_description =
+    'Consulta información, precio y disponibilidad de este producto en Librería Marquense, Guatemala.';
+
+$seo_image =
+    'https://libreriamarquense.com/assets/img/ProductoSinImagen.png';
+
+$seo_og_type =
+    'product';
+
+$seo_robots =
+    'index, follow, max-image-preview:large';
+
+$product_schema = null;
+
+// ============================================================
+// CONSULTAR EL MISMO ENDPOINT PARA GENERAR EL SEO
+// No se modifica la URL, el método ni el parámetro de la API.
+// ============================================================
+
+$seo_product_api =
+    'https://ssl.sol.sistemasolgt.com/libremarquenseDos/api/api_tienda_articulos_listarid.php';
+
+$seo_product = null;
+
+if (function_exists('curl_init')) {
+    $seo_ch = curl_init(
+        $seo_product_api
+    );
+
+    if ($seo_ch !== false) {
+        $seo_payload = json_encode(
+            [
+                'idarticulo' =>
+                    $idarticulo,
+            ],
+            JSON_UNESCAPED_SLASHES
+        );
+
+        curl_setopt(
+            $seo_ch,
+            CURLOPT_RETURNTRANSFER,
+            true
+        );
+
+        curl_setopt(
+            $seo_ch,
+            CURLOPT_POST,
+            true
+        );
+
+        curl_setopt(
+            $seo_ch,
+            CURLOPT_HTTPHEADER,
+            [
+                'Content-Type: application/json',
+                'Accept: application/json',
+            ]
+        );
+
+        curl_setopt(
+            $seo_ch,
+            CURLOPT_POSTFIELDS,
+            $seo_payload
+        );
+
+        curl_setopt(
+            $seo_ch,
+            CURLOPT_CONNECTTIMEOUT,
+            5
+        );
+
+        curl_setopt(
+            $seo_ch,
+            CURLOPT_TIMEOUT,
+            12
+        );
+
+        curl_setopt(
+            $seo_ch,
+            CURLOPT_FOLLOWLOCATION,
+            true
+        );
+
+        /*
+         * Se conserva la misma configuración SSL
+         * utilizada actualmente por el proyecto
+         * para no alterar la conexión externa.
+         */
+        curl_setopt(
+            $seo_ch,
+            CURLOPT_SSL_VERIFYPEER,
+            false
+        );
+
+        curl_setopt(
+            $seo_ch,
+            CURLOPT_SSL_VERIFYHOST,
+            false
+        );
+
+        $seo_response =
+            curl_exec(
+                $seo_ch
+            );
+
+        $seo_http_code =
+            (int) curl_getinfo(
+                $seo_ch,
+                CURLINFO_HTTP_CODE
+            );
+
+        $seo_curl_error =
+            curl_error(
+                $seo_ch
+            );
+
+        curl_close(
+            $seo_ch
+        );
+
+        if (
+            $seo_response !== false &&
+            $seo_curl_error === '' &&
+            $seo_http_code >= 200 &&
+            $seo_http_code < 300
+        ) {
+            $seo_data = json_decode(
+                $seo_response,
+                true
+            );
+
+            if (
+                is_array($seo_data) &&
+                !empty($seo_data['success']) &&
+                isset($seo_data['data']) &&
+                is_array($seo_data['data'])
+            ) {
+                foreach (
+                    $seo_data['data']
+                    as $seo_item
+                ) {
+                    if (
+                        is_array($seo_item) &&
+                        (string) (
+                            $seo_item['idarticulo']
+                            ?? ''
+                        ) ===
+                        (string) $idarticulo
+                    ) {
+                        $seo_product =
+                            $seo_item;
+
+                        break;
+                    }
+                }
+
+                if (
+                    $seo_product === null &&
+                    isset(
+                        $seo_data['data'][0]
+                    ) &&
+                    is_array(
+                        $seo_data['data'][0]
+                    )
+                ) {
+                    $seo_first_item =
+                        $seo_data['data'][0];
+
+                    if (
+                        (string) (
+                            $seo_first_item['idarticulo']
+                            ?? ''
+                        ) ===
+                        (string) $idarticulo
+                    ) {
+                        $seo_product =
+                            $seo_first_item;
+                    }
+                }
+            }
+        }
+    }
+}
+
+// ============================================================
+// FUNCIONES AUXILIARES PARA EL SEO
+// ============================================================
+
+if (
+    !function_exists(
+        'lmSeoCleanText'
+    )
+) {
+    function lmSeoCleanText(
+        $value
+    ): string {
+        $text = strip_tags(
+            (string) $value
+        );
+
+        $text = preg_replace(
+            '/\s+/u',
+            ' ',
+            $text
+        );
+
+        return trim(
+            (string) $text
+        );
+    }
+}
+
+if (
+    !function_exists(
+        'lmSeoLimitText'
+    )
+) {
+    function lmSeoLimitText(
+        string $text,
+        int $limit
+    ): string {
+        $text = trim(
+            $text
+        );
+
+        if (
+            $text === '' ||
+            $limit < 2
+        ) {
+            return $text;
+        }
+
+        if (
+            function_exists(
+                'mb_strlen'
+            ) &&
+            function_exists(
+                'mb_substr'
+            )
+        ) {
+            if (
+                mb_strlen(
+                    $text,
+                    'UTF-8'
+                ) <= $limit
+            ) {
+                return $text;
+            }
+
+            return rtrim(
+                mb_substr(
+                    $text,
+                    0,
+                    $limit - 1,
+                    'UTF-8'
+                )
+            ) . '…';
+        }
+
+        if (
+            strlen($text) <=
+            $limit
+        ) {
+            return $text;
+        }
+
+        return rtrim(
+            substr(
+                $text,
+                0,
+                $limit - 3
+            )
+        ) . '...';
+    }
+}
+
+if (
+    !function_exists(
+        'lmSeoProductImageUrl'
+    )
+) {
+    function lmSeoProductImageUrl(
+        $value
+    ): string {
+        $image = trim(
+            (string) $value
+        );
+
+        if ($image === '') {
+            return '';
+        }
+
+        if (
+            preg_match(
+                '~^https?://~i',
+                $image
+            )
+        ) {
+            return $image;
+        }
+
+        if (
+            strpos(
+                $image,
+                '/'
+            ) === 0
+        ) {
+            return
+                'https://ssl.sol.sistemasolgt.com' .
+                $image;
+        }
+
+        if (
+            strpos(
+                $image,
+                '/'
+            ) !== false
+        ) {
+            return
+                'https://ssl.sol.sistemasolgt.com/libremarquenseDos/' .
+                ltrim(
+                    $image,
+                    '/'
+                );
+        }
+
+        return
+            'https://ssl.sol.sistemasolgt.com/libremarquenseDos/files/articulos/' .
+            rawurlencode(
+                $image
+            );
+    }
+}
+
+// ============================================================
+// CONSTRUIR LOS METADATOS DEL PRODUCTO
+// ============================================================
+
+if (
+    is_array(
+        $seo_product
+    )
+) {
+    $product_name =
+        lmSeoCleanText(
+            $seo_product['nombre']
+            ?? $seo_product['descripcion']
+            ?? $seo_product['codigo']
+            ?? ''
+        );
+
+    $product_description =
+        lmSeoCleanText(
+            $seo_product['descripcion']
+            ?? ''
+        );
+
+    $product_code =
+        lmSeoCleanText(
+            $seo_product['codigo']
+            ?? $seo_product['codarticulo']
+            ?? $idarticulo
+        );
+
+    $product_category =
+        lmSeoCleanText(
+            $seo_product['categoria']
+            ?? $seo_product['nombrecategoria']
+            ?? $seo_product['nom_categoria']
+            ?? ''
+        );
+
+    $product_image =
+        lmSeoProductImageUrl(
+            $seo_product['imagen']
+            ?? $seo_product['foto']
+            ?? $seo_product['ruta_imagen']
+            ?? ''
+        );
+
+    $product_price =
+        (float) (
+            $seo_product['precio_venta']
+            ?? $seo_product['precio']
+            ?? $seo_product['preciofinal']
+            ?? 0
+        );
+
+    $product_stock_raw =
+        $seo_product['stock']
+        ?? $seo_product['stocksucursal']
+        ?? $seo_product['existencia']
+        ?? null;
+
+    $product_stock =
+        is_numeric(
+            $product_stock_raw
+        )
+            ? (float) $product_stock_raw
+            : null;
+
+    /*
+     * Título único para cada producto.
+     */
+    if (
+        $product_name !== ''
+    ) {
+        $seo_title =
+            lmSeoLimitText(
+                $product_name .
+                ' | Librería Marquense',
+                65
+            );
+    }
+
+    /*
+     * Descripción única para cada producto.
+     */
+    if (
+        $product_description === '' ||
+        $product_description === '0'
+    ) {
+        $product_description =
+            'Compra ' .
+            (
+                $product_name !== ''
+                    ? $product_name
+                    : 'este producto'
+            ) .
+            ' en Librería Marquense. Consulta precio, disponibilidad y detalles para entrega en Guatemala.';
+    }
+
+    $seo_description =
+        lmSeoLimitText(
+            $product_description,
+            160
+        );
+
+    /*
+     * Imagen específica para Google,
+     * Facebook, WhatsApp y otras redes.
+     */
+    if (
+        $product_image !== ''
+    ) {
+        $seo_image =
+            $product_image;
+    }
+
+    // ========================================================
+    // DATOS ESTRUCTURADOS SCHEMA.ORG PRODUCT
+    // ========================================================
+
+    $product_schema = [
+        '@context' =>
+            'https://schema.org',
+
+        '@type' =>
+            'Product',
+
+        '@id' =>
+            $canonical_url .
+            '#product',
+
+        'url' =>
+            $canonical_url,
+
+        'name' =>
+            $product_name !== ''
+                ? $product_name
+                : 'Producto #' .
+                    $idarticulo,
+
+        'description' =>
+            $seo_description,
+
+        'image' => [
+            $seo_image,
+        ],
+
+        'sku' =>
+            $product_code !== ''
+                ? $product_code
+                : (string) $idarticulo,
+
+    ];
+
+    if (
+        $product_category !== ''
+    ) {
+        $product_schema['category'] =
+            $product_category;
+    }
+
+    /*
+     * Oferta y disponibilidad.
+     */
+    if (
+        $product_price > 0
+    ) {
+        $product_offer = [
+            '@type' =>
+                'Offer',
+
+            'url' =>
+                $canonical_url,
+
+            'priceCurrency' =>
+                'GTQ',
+
+            'price' =>
+                number_format(
+                    $product_price,
+                    2,
+                    '.',
+                    ''
+                ),
+
+            'itemCondition' =>
+                'https://schema.org/NewCondition',
+        ];
+
+        if (
+            $product_stock !== null
+        ) {
+            $product_offer['availability'] =
+                $product_stock > 0
+                    ? 'https://schema.org/InStock'
+                    : 'https://schema.org/OutOfStock';
+        }
+
+        $product_schema['offers'] =
+            $product_offer;
+    }
+}
+
+// ============================================================
+// CARGAR ENCABEZADO GENERAL
+// ============================================================
+
 include 'head.php';
 
+/*
+ * Google admite JSON-LD tanto dentro de <head>
+ * como dentro de <body>.
+ *
+ * Como head.php ya abre el <body>, los datos
+ * estructurados del producto se imprimen aquí.
+ */
+if (
+    is_array(
+        $product_schema
+    )
+):
 ?>
+
+<script type="application/ld+json">
+<?= json_encode(
+    $product_schema,
+    JSON_UNESCAPED_SLASHES
+    | JSON_UNESCAPED_UNICODE
+    | JSON_HEX_TAG
+    | JSON_HEX_AMP
+    | JSON_HEX_APOS
+    | JSON_HEX_QUOT
+) ?>
+</script>
+
+<?php endif; ?>
 
 <style>
     .main-slider-content,

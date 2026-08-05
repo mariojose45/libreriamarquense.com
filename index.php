@@ -1,11 +1,29 @@
 <?php
-// SEO para la pagina de inicio
-$seo_title = "Librería Marquense | Libros, Papelería, Artículos Escolares y de Oficina";
-$seo_description = "Librería Marquense ofrece libros, papelería, artículos escolares, material didáctico y productos de oficina para estudiantes, familias y empresas en Guatemala.";
-$seo_keywords = "Librería Marquense, libros Guatemala, papelería Guatemala, artículos escolares, útiles escolares, productos de oficina";
+
+// ============================================================
+// SEO ESPECÍFICO DE LA PÁGINA DE INICIO
+// ============================================================
+
+$current_page = basename(
+    $_SERVER['PHP_SELF'] ?? 'index.php'
+);
+
+$seo_title =
+    'Librería Marquense | Libros, papelería y útiles escolares';
+
+$seo_description =
+    'Encuentra libros, papelería, útiles escolares, material didáctico y productos de oficina en Librería Marquense, Guatemala.';
+
+$canonical_url =
+    'https://libreriamarquense.com/';
+
+$seo_image =
+    'https://libreriamarquense.com/assets/img/LogoLibreriaMarquense.jpeg';
+
+$seo_robots =
+    'index, follow, max-image-preview:large';
 
 include 'head.php';
-$current_page = basename($_SERVER['PHP_SELF']);
 
 $apiUrl = "https://ssl.sol.sistemasolgt.com/libremarquenseDos/api/api_tienda_inicio.php";
 $slider = null;
@@ -299,7 +317,7 @@ if ($slider) {
                                 <?php if ($i == 3): ?>
                                     <a href="contact.php" class="default-btn">
                                         <i class="flaticon-shopping-cart"></i>
-Dirigite a Nosotros
+                                            Contáctanos
                                         <span></span>
                                     </a>
                                 <?php else: ?>
@@ -639,6 +657,7 @@ Dirigite a Nosotros
     }
 
     .banner-text {
+        margin: 0;
         color: #fff;
         font-size: 26px;
         font-weight: 800;
@@ -1008,7 +1027,7 @@ Dirigite a Nosotros
 <div class="exclusive-offers-banner banner-main">
     <div class="container">
         <div class="banner-content">
-            <span class="banner-text">OFERTAS EXCLUSIVAS SOLO POR HOY</span>
+            <h2 class="banner-text">OFERTAS EXCLUSIVAS</h2>
             <a href="tienda.php" class="banner-btn">VER PRODUCTOS</a>
         </div>
     </div>
@@ -1167,7 +1186,7 @@ Dirigite a Nosotros
 <div class="exclusive-offers-banner">
     <div class="container">
         <div class="banner-content">
-            <span class="banner-text">LOS M&Aacute;S VENDIDOS</span>
+            <h2 class="banner-text">LOS M&Aacute;S VENDIDOS</h2>
             <a href="tienda.php" class="banner-btn">VER PRODUCTOS</a>
         </div>
     </div>

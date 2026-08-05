@@ -1,30 +1,47 @@
 <?php
+
 function getApi($url)
 {
     $ch = curl_init();
+
     curl_setopt($ch, CURLOPT_URL, $url);
     curl_setopt($ch, CURLOPT_POST, true);
     curl_setopt($ch, CURLOPT_POSTFIELDS, []);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+    /*
+     * Se conserva temporalmente esta configuración
+     * para no afectar la conexión con la API externa.
+     */
     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
     curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+
     $response = curl_exec($ch);
 
     if ($response === false) {
-        error_log('Error CURL consultando API: ' . curl_error($ch));
+        error_log(
+            'Error CURL consultando API: ' .
+            curl_error($ch)
+        );
+
         $response = '';
     }
 
     curl_close($ch);
+
     return $response;
 }
 
+/*
+ * Encabezados de seguridad.
+ */
 if (!headers_sent()) {
-    $content_security_policy = "default-src 'self'; "
+    $content_security_policy =
+        "default-src 'self'; "
         . "script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; "
         . "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com; "
         . "img-src 'self' data: blob: https://ssl.sol.sistemasolgt.com; "
-        . "font-src 'self' data: https://fonts.gstatic.com;"
+        . "font-src 'self' data: https://fonts.gstatic.com; "
         . "connect-src 'self' https://ssl.sol.sistemasolgt.com https://cdn.jsdelivr.net; "
         . "media-src 'self' data: blob:; "
         . "object-src 'none'; "
@@ -36,167 +53,580 @@ if (!headers_sent()) {
     header('X-Content-Type-Options: nosniff');
     header('X-Frame-Options: SAMEORIGIN');
     header('Referrer-Policy: strict-origin-when-cross-origin');
-    header('Permissions-Policy: accelerometer=(), autoplay=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()');
-    header('Content-Security-Policy: ' . $content_security_policy);
+
+    header(
+        'Permissions-Policy: accelerometer=(), autoplay=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()'
+    );
+
+    header(
+        'Content-Security-Policy: ' .
+        $content_security_policy
+    );
 }
 
-// Definir variables para evitar errores
+/*
+ * Variables generales del encabezado.
+ */
 if (!isset($current_page)) {
-    $current_page = basename($_SERVER['PHP_SELF']);
+    $current_page = basename(
+        $_SERVER['PHP_SELF'] ?? ''
+    );
 }
 
 if (!isset($paginas_servicios)) {
     $paginas_servicios = [
-        'servicios.php'
+        'servicios.php',
     ];
 }
 
-include "assets/php/rutas.php";
+/*
+ * Rutas de las API externas.
+ * No modificar endpoints, nombres ni parámetros.
+ */
+include 'assets/php/rutas.php';
 
-$response = getApi($url_listar_categorias);
-$data = json_decode($response, true);
+/*
+ * Obtener las categorías utilizadas por el buscador.
+ */
+$response = getApi(
+    $url_listar_categorias
+);
 
-$categorias = $data["data"] ?? [];
+$data = json_decode(
+    $response,
+    true
+);
+
+$categorias =
+    is_array($data['data'] ?? null)
+        ? $data['data']
+        : [];
 
 ?>
 
 <!doctype html>
+
 <html lang="es-GT">
 
 <head>
-    <!-- Required meta tags -->
+
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    >
+
     <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+    <link
+        rel="stylesheet"
+        href="assets/css/bootstrap.min.css"
+    >
+
     <!-- Animate CSS -->
-    <link rel="stylesheet" href="assets/css/animate.min.css">
+    <link
+        rel="stylesheet"
+        href="assets/css/animate.min.css"
+    >
+
     <!-- Meanmenu CSS -->
-    <link rel="stylesheet" href="assets/css/meanmenu.css">
+    <link
+        rel="stylesheet"
+        href="assets/css/meanmenu.css"
+    >
+
     <!-- Boxicons CSS -->
-    <link rel="stylesheet" href="assets/css/boxicons.min.css">
+    <link
+        rel="stylesheet"
+        href="assets/css/boxicons.min.css"
+    >
+
     <!-- Flaticon CSS -->
-    <link rel="stylesheet" href="assets/css/flaticon.css">
+    <link
+        rel="stylesheet"
+        href="assets/css/flaticon.css"
+    >
+
     <!-- Owl Carousel CSS -->
-    <link rel="stylesheet" href="assets/css/owl.carousel.min.css">
+    <link
+        rel="stylesheet"
+        href="assets/css/owl.carousel.min.css"
+    >
+
     <!-- Owl Carousel Default CSS -->
-    <link rel="stylesheet" href="assets/css/owl.theme.default.min.css">
+    <link
+        rel="stylesheet"
+        href="assets/css/owl.theme.default.min.css"
+    >
+
     <!-- Magnific Popup CSS -->
-    <link rel="stylesheet" href="assets/css/magnific-popup.min.css">
+    <link
+        rel="stylesheet"
+        href="assets/css/magnific-popup.min.css"
+    >
+
     <!-- Nice Select CSS -->
-    <link rel="stylesheet" href="assets/css/nice-select.min.css">
+    <link
+        rel="stylesheet"
+        href="assets/css/nice-select.min.css"
+    >
+
     <!-- Slick CSS -->
-    <link rel="stylesheet" href="assets/css/slick.min.css">
+    <link
+        rel="stylesheet"
+        href="assets/css/slick.min.css"
+    >
 
     <!-- Odometer CSS -->
-    <link rel="stylesheet" href="assets/css/odometer.min.css">
+    <link
+        rel="stylesheet"
+        href="assets/css/odometer.min.css"
+    >
+
     <!-- Style CSS -->
-    <link rel="stylesheet" href="assets/css/style.css?v=<?php echo filemtime('assets/css/style.css'); ?>">
+    <link
+        rel="stylesheet"
+        href="assets/css/style.css?v=<?=
+            urlencode(
+                (string) filemtime(
+                    'assets/css/style.css'
+                )
+            )
+        ?>"
+    >
+
     <!-- Dark CSS -->
-    <link rel="stylesheet" href="assets/css/dark.css?v=<?php echo filemtime('assets/css/dark.css'); ?>">
+    <link
+        rel="stylesheet"
+        href="assets/css/dark.css?v=<?=
+            urlencode(
+                (string) filemtime(
+                    'assets/css/dark.css'
+                )
+            )
+        ?>"
+    >
+
     <!-- Responsive CSS -->
-    <link rel="stylesheet" href="assets/css/responsive.css?v=<?php echo filemtime('assets/css/responsive.css'); ?>">
+    <link
+        rel="stylesheet"
+        href="assets/css/responsive.css?v=<?=
+            urlencode(
+                (string) filemtime(
+                    'assets/css/responsive.css'
+                )
+            )
+        ?>"
+    >
 
-    <?php
-    // Configuracion SEO por defecto
-    $site_url = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://" . $_SERVER['HTTP_HOST'];
-    $current_url = $site_url . $_SERVER['REQUEST_URI'];
+<?php
 
-    // SEO por defecto (puedes personalizar por pagina)
-    $site_primary_title = "Librería Marquense | Libros, Papelería, Artículos Escolares y de Oficina";
-    $seo_title = isset($seo_title) ? $seo_title : $site_primary_title;
-    $seo_description = isset($seo_description) ? $seo_description : "Librería Marquense ofrece libros, papelería, artículos escolares, material didáctico y productos de oficina con atención confiable en Guatemala.";
-    $seo_keywords = isset($seo_keywords) ? $seo_keywords : "Librería Marquense, libros Guatemala, papelería, artículos escolares, útiles escolares, productos de oficina";
-    $seo_image = isset($seo_image) ? $seo_image : $site_url . "/assets/img/LogoLibreriaMarquense.jpeg";
-    $browser_title = $site_primary_title;
-    $site_name = isset($site_name) ? $site_name : "Librería Marquense";
-    $site_phone_number = isset($site_phone_number) ? $site_phone_number : "+502 2232-8537 / +502 2253-6302 / +502 2372-3286 / +502 2372-3287";
-    $site_whatsapp_number = isset($site_whatsapp_number) ? $site_whatsapp_number : "+502 5591-0533";
-    $site_whatsapp_url = isset($site_whatsapp_url) ? $site_whatsapp_url : "https://wa.me/50255910533";
-    $site_email = isset($site_email) ? $site_email : "servicioalcliente@libreriamarquense.com";
-    $site_business_description = isset($site_business_description) ? $site_business_description : "Venta de libros, papelería, artículos escolares, material didáctico y productos de oficina en Guatemala.";
-    $site_social_links = isset($site_social_links) ? $site_social_links : [
-        'facebook' => 'https://www.facebook.com/LibreriaMarquenseSA?locale=es_LA',
-        'instagram' => 'https://www.instagram.com/libreriamarquense/?hl=es',
-        'tiktok' => 'https://www.tiktok.com/@lmmarquense/video/7632414546631658760',
+// ============================================================
+// CONFIGURACIÓN SEO GLOBAL DE LIBRERÍA MARQUENSE
+// ============================================================
+
+$site_url =
+    'https://libreriamarquense.com';
+
+$site_name =
+    $site_name
+    ?? 'Librería Marquense';
+
+$site_primary_title =
+    'Librería Marquense | Libros, papelería y útiles escolares';
+
+$seo_title =
+    $seo_title
+    ?? $site_primary_title;
+
+$seo_description =
+    $seo_description
+    ?? 'Encuentra libros, papelería, útiles escolares, material didáctico y productos de oficina en Librería Marquense, Guatemala.';
+
+$seo_robots =
+    $seo_robots
+    ?? 'index, follow, max-image-preview:large';
+
+$seo_og_type =
+    $seo_og_type
+    ?? 'website';
+
+$site_phone_number =
+    $site_phone_number
+    ?? '+502 2232-8537';
+
+$site_email =
+    $site_email
+    ?? 'servicioalcliente@libreriamarquense.com';
+
+$site_business_description =
+    $site_business_description
+    ?? 'Venta de libros, papelería, útiles escolares, material didáctico y productos de oficina en Guatemala.';
+
+$site_social_links =
+    $site_social_links
+    ?? [
+        'https://www.facebook.com/LibreriaMarquenseSA',
+        'https://www.instagram.com/libreriamarquense/',
+        'https://www.tiktok.com/@lmmarquense',
     ];
-    $site_social_same_as = array_values(array_filter($site_social_links));
 
-    // Limpiar URL para canonical
-    $canonical_url = strtok($current_url, '?');
-    ?>
+// ============================================================
+// URL CANÓNICA
+// ============================================================
 
-    <!-- SEO Meta Tags -->
-    <title><?php echo htmlspecialchars($browser_title); ?></title>
-    <meta name="description" content="<?php echo htmlspecialchars($seo_description); ?>">
-    <meta name="keywords" content="<?php echo htmlspecialchars($seo_keywords); ?>">
-    <meta name="author" content="<?php echo htmlspecialchars($site_name); ?>">
-    <meta name="robots" content="index, follow">
-    <meta name="language" content="Spanish">
-    <meta name="revisit-after" content="7 days">
-    <link rel="canonical" href="<?php echo htmlspecialchars($canonical_url); ?>">
+$request_path = parse_url(
+    $_SERVER['REQUEST_URI'] ?? '/',
+    PHP_URL_PATH
+);
 
-    <!-- Google Search Console Verification -->
-    <meta name="google-site-verification" content="yX3GJ3Ju-PIJeHR1dsRWzP_g1CPGgeKGrgi7-zCywvc" />
-    <!-- google-site-verification=yX3GJ3Ju-PIJeHR1dsRWzP_g1CPGgeKGrgi7-zCywvc -->
-    <!-- Open Graph / Facebook -->
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="<?php echo htmlspecialchars($current_url); ?>">
-    <meta property="og:title" content="<?php echo htmlspecialchars($seo_title); ?>">
-    <meta property="og:description" content="<?php echo htmlspecialchars($seo_description); ?>">
-    <meta property="og:image" content="<?php echo htmlspecialchars($seo_image); ?>">
-    <meta property="og:locale" content="es_GT">
-    <meta property="og:site_name" content="<?php echo htmlspecialchars($site_name); ?>">
+if (
+    !is_string($request_path) ||
+    trim($request_path) === ''
+) {
+    $request_path = '/';
+}
+
+/*
+ * La página index.php debe utilizar la raíz
+ * como dirección canónica.
+ */
+if ($request_path === '/index.php') {
+    $request_path = '/';
+}
+
+$default_canonical =
+    $site_url .
+    (
+        $request_path === '/'
+            ? '/'
+            : $request_path
+    );
+
+/*
+ * Cada página puede definir $canonical_url
+ * antes de incluir head.php.
+ */
+if (
+    !isset($canonical_url) ||
+    trim((string) $canonical_url) === ''
+) {
+    $canonical_url =
+        $default_canonical;
+}
+
+/*
+ * Convertir direcciones canónicas relativas
+ * en direcciones absolutas.
+ */
+if (
+    !preg_match(
+        '~^https?://~i',
+        (string) $canonical_url
+    )
+) {
+    $canonical_url =
+        $site_url .
+        '/' .
+        ltrim(
+            (string) $canonical_url,
+            '/'
+        );
+}
+
+// ============================================================
+// IMAGEN PARA FACEBOOK, WHATSAPP Y REDES SOCIALES
+// ============================================================
+
+$seo_image =
+    $seo_image
+    ?? '/assets/img/LogoLibreriaMarquense.jpeg';
+
+if (
+    !preg_match(
+        '~^https?://~i',
+        (string) $seo_image
+    )
+) {
+    $seo_image =
+        $site_url .
+        '/' .
+        ltrim(
+            (string) $seo_image,
+            '/'
+        );
+}
+
+// ============================================================
+// DATOS ESTRUCTURADOS
+// ============================================================
+
+$organization_schema = [
+    '@context' =>
+        'https://schema.org',
+
+    '@type' =>
+        'Organization',
+
+    '@id' =>
+        $site_url .
+        '/#organization',
+
+    'name' =>
+        $site_name,
+
+    'url' =>
+        $site_url .
+        '/',
+
+    'logo' => [
+        '@type' =>
+            'ImageObject',
+
+        'url' =>
+            $site_url .
+            '/assets/img/LogoLibreriaMarquense.jpeg',
+    ],
+
+    'description' =>
+        $site_business_description,
+
+    'telephone' =>
+        $site_phone_number,
+
+    'email' =>
+        $site_email,
+
+    'sameAs' =>
+        array_values(
+            array_filter(
+                $site_social_links
+            )
+        ),
+];
+
+$website_schema = [
+    '@context' =>
+        'https://schema.org',
+
+    '@type' =>
+        'WebSite',
+
+    '@id' =>
+        $site_url .
+        '/#website',
+
+    'url' =>
+        $site_url .
+        '/',
+
+    'name' =>
+        $site_name,
+
+    'publisher' => [
+        '@id' =>
+            $site_url .
+            '/#organization',
+    ],
+
+    'inLanguage' =>
+        'es-GT',
+];
+
+?>
+
+    <!-- =====================================================
+         SEO PRINCIPAL
+    ====================================================== -->
+
+    <title><?= htmlspecialchars(
+        $seo_title,
+        ENT_QUOTES,
+        'UTF-8'
+    ) ?></title>
+
+    <meta
+        name="description"
+        content="<?= htmlspecialchars(
+            $seo_description,
+            ENT_QUOTES,
+            'UTF-8'
+        ) ?>"
+    >
+
+    <meta
+        name="robots"
+        content="<?= htmlspecialchars(
+            $seo_robots,
+            ENT_QUOTES,
+            'UTF-8'
+        ) ?>"
+    >
+
+    <link
+        rel="canonical"
+        href="<?= htmlspecialchars(
+            $canonical_url,
+            ENT_QUOTES,
+            'UTF-8'
+        ) ?>"
+    >
+
+    <!-- Open Graph: Facebook y WhatsApp -->
+
+    <meta
+        property="og:type"
+        content="<?= htmlspecialchars(
+            $seo_og_type,
+            ENT_QUOTES,
+            'UTF-8'
+        ) ?>"
+    >
+
+    <meta
+        property="og:url"
+        content="<?= htmlspecialchars(
+            $canonical_url,
+            ENT_QUOTES,
+            'UTF-8'
+        ) ?>"
+    >
+
+    <meta
+        property="og:title"
+        content="<?= htmlspecialchars(
+            $seo_title,
+            ENT_QUOTES,
+            'UTF-8'
+        ) ?>"
+    >
+
+    <meta
+        property="og:description"
+        content="<?= htmlspecialchars(
+            $seo_description,
+            ENT_QUOTES,
+            'UTF-8'
+        ) ?>"
+    >
+
+    <meta
+        property="og:image"
+        content="<?= htmlspecialchars(
+            $seo_image,
+            ENT_QUOTES,
+            'UTF-8'
+        ) ?>"
+    >
+
+    <meta
+        property="og:image:alt"
+        content="<?= htmlspecialchars(
+            $seo_title,
+            ENT_QUOTES,
+            'UTF-8'
+        ) ?>"
+    >
+
+    <meta
+        property="og:locale"
+        content="es_GT"
+    >
+
+    <meta
+        property="og:site_name"
+        content="<?= htmlspecialchars(
+            $site_name,
+            ENT_QUOTES,
+            'UTF-8'
+        ) ?>"
+    >
 
     <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:url" content="<?php echo htmlspecialchars($current_url); ?>">
-    <meta name="twitter:title" content="<?php echo htmlspecialchars($seo_title); ?>">
-    <meta name="twitter:description" content="<?php echo htmlspecialchars($seo_description); ?>">
-    <meta name="twitter:image" content="<?php echo htmlspecialchars($seo_image); ?>">
 
-        <!-- Schema.org structured data -->
+    <meta
+        name="twitter:card"
+        content="summary_large_image"
+    >
+
+    <meta
+        name="twitter:url"
+        content="<?= htmlspecialchars(
+            $canonical_url,
+            ENT_QUOTES,
+            'UTF-8'
+        ) ?>"
+    >
+
+    <meta
+        name="twitter:title"
+        content="<?= htmlspecialchars(
+            $seo_title,
+            ENT_QUOTES,
+            'UTF-8'
+        ) ?>"
+    >
+
+    <meta
+        name="twitter:description"
+        content="<?= htmlspecialchars(
+            $seo_description,
+            ENT_QUOTES,
+            'UTF-8'
+        ) ?>"
+    >
+
+    <meta
+        name="twitter:image"
+        content="<?= htmlspecialchars(
+            $seo_image,
+            ENT_QUOTES,
+            'UTF-8'
+        ) ?>"
+    >
+
+    <!-- Datos estructurados de la organización -->
+
     <script type="application/ld+json">
-                {
-                "@context": "https://schema.org",
-                "@type": "Store",
-                "name": <?php echo json_encode($site_name); ?>,
-                "url": <?php echo json_encode($site_url); ?>,
-                "logo": <?php echo json_encode($site_url . "/assets/img/LogoLibreriaMarquense.jpeg"); ?>,
-                "description": <?php echo json_encode($site_business_description); ?>,
-                "address": {
-                    "@type": "PostalAddress",
-                    "addressCountry": "GT"
-                },
-                "contactPoint": {
-                    "@type": "ContactPoint",
-                    "telephone": <?php echo json_encode($site_phone_number); ?>,
-                    "contactType": "servicio al cliente"<?php if (!empty($site_email)): ?>,
-                    "email": <?php echo json_encode($site_email); ?><?php endif; ?>
-                },
-                "sameAs": <?php echo json_encode($site_social_same_as, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE); ?>
-                }
-                </script>
+<?= json_encode(
+    $organization_schema,
+    JSON_UNESCAPED_SLASHES
+    | JSON_UNESCAPED_UNICODE
+    | JSON_HEX_TAG
+    | JSON_HEX_AMP
+    | JSON_HEX_APOS
+    | JSON_HEX_QUOT
+) ?>
+    </script>
 
+    <!-- Datos estructurados del sitio web -->
 
-    
     <script type="application/ld+json">
-                    {
-                    "@context": "https://schema.org",
-                    "@type": "WebSite",
-                    "name": <?php echo json_encode($site_name); ?>,
-                    "url": <?php echo json_encode($site_url); ?>,
-                    "potentialAction": {
-                        "@type": "SearchAction",
-                        "target": <?php echo json_encode($site_url . "/tienda.php?buscar={search_term_string}"); ?>,
-                        "query-input": "required name=search_term_string"
-                    }
-                    }
-                </script>
+<?= json_encode(
+    $website_schema,
+    JSON_UNESCAPED_SLASHES
+    | JSON_UNESCAPED_UNICODE
+    | JSON_HEX_TAG
+    | JSON_HEX_AMP
+    | JSON_HEX_APOS
+    | JSON_HEX_QUOT
+) ?>
+    </script>
 
+    <!-- Favicon -->
 
-    <link rel="icon" type="image/jpeg" href="assets/img/LogoLibreriaMarquense.jpeg?v=2">
-    <link rel="shortcut icon" type="image/jpeg" href="assets/img/LogoLibreriaMarquense.jpeg?v=2">
+    <link
+        rel="icon"
+        type="image/jpeg"
+        href="assets/img/LogoLibreriaMarquense.jpeg?v=2"
+    >
+
+    <link
+        rel="shortcut icon"
+        type="image/jpeg"
+        href="assets/img/LogoLibreriaMarquense.jpeg?v=2"
+    >
+
 </head>
 
 <body>
