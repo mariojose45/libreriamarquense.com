@@ -1,20 +1,28 @@
 <?php
-$footer_social_links = array_filter($site_social_links ?? []);
+
+$footer_social_links = array_filter(
+    (array) ($site_social_links ?? [])
+);
+
+$footer_whatsapp_url = trim(
+    (string) ($site_whatsapp_url ?? '')
+);
+
 ?>
 <section class="footer-area pt-100 pb-70">
     <div class="container">
         <div class="row">
-            <div class="col-lg-3 col-sm-6">
+            <div class="col-lg-4 col-md-6">
                 <div class="single-footer-widget">
-                    <h2>Contactanos</h2>
+                    <h2>Contáctanos</h2>
 
                     <ul class="footer-contact-info">
                         <li>
                             <span>Ubicaci&oacute;n:</span>
-                            <a href="contact.php">8A Avenida 19-55, Cdad. de Guatemala 01001.</a>
+                            <a href="contact.php">8A Avenida 19-55, Ciudad de Guatemala 01001.</a>
                         </li>
                        <li class="footer-phone-item">
-                            <span>Telefonos:</span>
+                            <span>Teléfonos:</span>
                             <span class="footer-contact-text">
                                 <?php echo htmlspecialchars($site_phone_number ?? "+502 2232-8537 / +502 2253-6302 / +502 2372-3286 / +502 2372-3287"); ?>
                             </span>
@@ -61,41 +69,31 @@ $footer_social_links = array_filter($site_social_links ?? []);
                 </div>
             </div>
 
-            <div class="col-lg-3 col-sm-6">
+            <div class="col-lg-4 col-md-6">
                 <div class="single-footer-widget">
-                    <h2>Servicios</h2>
+                    <h2>Información</h2>
 
                     <ul class="quick-links">
-                        <li><a href="servicios.php">Servicios</a></li>
-                    </ul>
-                </div>
-            </div>
-
-            <div class="col-lg-3 col-sm-6">
-                <div class="single-footer-widget">
-                    <h2>Informacion</h2>
-
-                    <ul class="quick-links">
-                        <li><a href="nosotros.php">Quienes Somos</a></li>
-                        <li><a href="terminos.php">Terminos y Condiciones</a></li>
-                        <li><a href="politicas_de_garantia.php">Politicas de Garantia</a></li>
-                        <li><a href="metodos_de_pago.php">Metodos de Pago</a></li>
-                        <li><a href="preguntas_frecuentes.php">Preguntas Frecuentes</a></li>
+                        <li><a href="nosotros.php">Quiénes Somos</a></li>
+                        <li><a href="terminos.php">Términos y Condiciones</a></li>
+                        <li><a href="politicas_de_garantia.php">Políticas de garantía</a></li>
+                        <li><a href="metodos_de_pago.php">Métodos de pago</a></li>
+                        <li><a href="preguntas_frecuentes.php">Preguntas frecuentes</a></li>
                         <li><a href="contact.php">Contacto</a></li>
                     </ul>
                 </div>
             </div>
 
-            <div class="col-lg-3 col-sm-6">
+            <div class="col-lg-4 col-md-6">
                 <div class="single-footer-widget">
-                    <h2>Soporte y Atencion</h2>
+                    <h2>Soporte y atención</h2>
 
                     <div class="newsletter-item">
                         <div class="newsletter-content">
-                            <p>Necesitas ayuda con utiles escolares, papeleria o una lista escolar? Escribenos por WhatsApp.</p>
+                            <p>¿Necesitas ayuda con útiles escolares, papelería o una lista escolar? Escríbenos por WhatsApp.</p>
                         </div>
 
-                        <a href="<?php echo htmlspecialchars($site_whatsapp_url); ?>" target="_blank" rel="noopener" class="default-btn"
+                        <a href="<?php echo htmlspecialchars($footer_whatsapp_url, ENT_QUOTES, 'UTF-8'); ?>" target="_blank" rel="noopener" class="default-btn"
                             style="padding:12px 25px; display:inline-block;">
                             <i class='bx bxl-whatsapp'></i> Chatear Ahora
                             <span></span>
@@ -128,7 +126,7 @@ $footer_social_links = array_filter($site_social_links ?? []);
 <!-- End Go Top Area -->
 
 <!-- Start WhatsApp Float Button -->
-<a href="<?php echo htmlspecialchars($site_whatsapp_url); ?>" target="_blank" rel="noopener" class="whatsapp-float" title="Chatear por WhatsApp">
+<a href="<?php echo htmlspecialchars($footer_whatsapp_url, ENT_QUOTES, 'UTF-8'); ?>" target="_blank" rel="noopener" class="whatsapp-float" title="Chatear por WhatsApp">
     <i class='bx bxl-whatsapp'></i>
 </a>
 <!-- End WhatsApp Float Button -->
@@ -236,16 +234,7 @@ $footer_social_links = array_filter($site_social_links ?? []);
 <script src="assets/js/carrito.js?v=<?php echo file_exists($carritoScript) ? filemtime($carritoScript) : time(); ?>"></script>
 <!-- Custom JS -->
 <script src="assets/js/main.js"></script>
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    document.querySelectorAll('a[href*="servicios.php"]').forEach(function (link) {
-        if (link.textContent.trim().toLowerCase() === 'servicios') {
-            var item = link.closest('li') || link;
-            item.remove();
-        }
-    });
-});
-</script>
+
 </body>
 
 </html>

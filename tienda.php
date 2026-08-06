@@ -1,20 +1,117 @@
 <?php
-// SEO para la pagina de tienda
-$seo_title = "Tienda - Librería Marquense | Libros, Papelería, Artículos Escolares y de Oficina";
-$seo_description = "Explora la tienda en línea de Librería Marquense con útiles escolares, papelería, libros, material didáctico y productos de oficina.";
-$seo_keywords = "tienda Librería Marquense, útiles escolares, papelería, libros, material didáctico, productos escolares Guatemala";
 
-include 'head.php';
-$current_page = basename($_SERVER['PHP_SELF']);
+// ============================================================
+// SEO DE LA TIENDA
+// ============================================================
 
-// Cargar categorías desde la API (igual que en head.php)
-include "assets/php/rutas.php";
-$response = getApi($url_listar_categorias);
-$data = json_decode($response, true);
-$categorias = $data["data"] ?? [];
-$categoria_actual = isset($_GET['categoria']) && preg_match('/^\d{1,10}$/', (string) $_GET['categoria'])
+$current_page = basename(
+    $_SERVER['PHP_SELF'] ?? 'tienda.php'
+);
+
+// Validar los parámetros utilizados por los filtros de la tienda.
+$categoria_actual = (
+    isset($_GET['categoria']) &&
+    is_scalar($_GET['categoria']) &&
+    preg_match(
+        '/^\d{1,10}$/',
+        (string) $_GET['categoria']
+    )
+)
     ? (string) $_GET['categoria']
     : '';
+
+$busqueda_actual = (
+    isset($_GET['buscar']) &&
+    is_scalar($_GET['buscar'])
+)
+    ? trim((string) $_GET['buscar'])
+    : '';
+
+$tipo_busqueda_actual = (
+    isset($_GET['tipoBusqueda']) &&
+    is_scalar($_GET['tipoBusqueda'])
+)
+    ? trim((string) $_GET['tipoBusqueda'])
+    : '';
+
+// ============================================================
+// SEO PRINCIPAL DE TIENDA.PHP
+// ============================================================
+
+$seo_title =
+    'Tienda de libros y papelería | Librería Marquense';
+
+$seo_description =
+    'Compra libros, útiles escolares, papelería, material didáctico y productos de oficina en la tienda en línea de Librería Marquense, Guatemala.';
+
+$canonical_url =
+    'https://libreriamarquense.com/tienda.php';
+
+$seo_image =
+    'https://libreriamarquense.com/assets/img/LogoLibreriaMarquense.jpeg';
+
+$seo_og_type =
+    'website';
+
+$seo_robots =
+    'index, follow, max-image-preview:large';
+
+// ============================================================
+// EVITAR INDEXAR BÚSQUEDAS Y FILTROS
+// ============================================================
+
+if ($busqueda_actual !== '') {
+    $seo_title =
+        'Resultados de búsqueda | Librería Marquense';
+
+    $seo_description =
+        'Consulta los resultados de búsqueda disponibles en la tienda en línea de Librería Marquense.';
+
+    $seo_robots =
+        'noindex, follow, max-image-preview:large';
+} elseif (
+    $categoria_actual !== '' ||
+    $tipo_busqueda_actual !== ''
+) {
+    $seo_title =
+        'Productos por categoría | Librería Marquense';
+
+    $seo_description =
+        'Explora los productos disponibles por categoría en la tienda en línea de Librería Marquense.';
+
+    $seo_robots =
+        'noindex, follow, max-image-preview:large';
+}
+
+// ============================================================
+// CARGAR ENCABEZADO GENERAL
+// ============================================================
+
+include 'head.php';
+
+// ============================================================
+// CARGAR CATEGORÍAS DESDE LA API
+// Se conservan la ruta, endpoint y funcionamiento originales.
+// ============================================================
+
+include "assets/php/rutas.php";
+
+$response = getApi(
+    $url_listar_categorias
+);
+
+$data = json_decode(
+    $response,
+    true
+);
+
+$categorias = (
+    is_array($data) &&
+    isset($data['data']) &&
+    is_array($data['data'])
+)
+    ? $data['data']
+    : [];
 
 ?>
 
@@ -730,7 +827,7 @@ $categoria_actual = isset($_GET['categoria']) && preg_match('/^\d{1,10}$/', (str
     .mp-close:hover {
         background: #B42A27;
         color: #fff;
-        border-color: #B42A27s;
+        border-color: #B42A27;
         transform: scale(1.1);
     }
 

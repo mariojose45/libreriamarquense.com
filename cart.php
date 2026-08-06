@@ -1,11 +1,52 @@
 <?php
+
 require_once __DIR__ . '/assets/php/security.php';
-$checkout_csrf_token = lm_csrf_token('checkout');
-$delivery_config = require __DIR__ . '/config/delivery.php';
-$pickup_config = $delivery_config['pickup'];
-$shipping_groups = $delivery_config['shipping_groups'];
+
+// ============================================================
+// SEO DEL CARRITO
+// ============================================================
+
+$current_page = basename(
+    $_SERVER['PHP_SELF'] ?? 'cart.php'
+);
+
+$seo_title =
+    'Carrito de compras | Librería Marquense';
+
+$seo_description =
+    'Revisa los productos agregados a tu carrito y completa los datos necesarios para realizar tu pedido en Librería Marquense.';
+
+$canonical_url =
+    'https://libreriamarquense.com/cart.php';
+
+$seo_og_type =
+    'website';
+
+// El carrito no debe aparecer en los resultados de Google.
+$seo_robots =
+    'noindex, follow, max-image-preview:large';
+
+// ============================================================
+// SEGURIDAD Y CONFIGURACIÓN DEL PEDIDO
+// ============================================================
+
+$checkout_csrf_token =
+    lm_csrf_token('checkout');
+
+$delivery_config =
+    require __DIR__ . '/config/delivery.php';
+
+$pickup_config =
+    $delivery_config['pickup'];
+
+$shipping_groups =
+    $delivery_config['shipping_groups'];
+
+// ============================================================
+// CARGAR ENCABEZADO GENERAL
+// ============================================================
+
 include 'head.php';
-$current_page = basename($_SERVER['PHP_SELF']);
 
 ?>
         <!-- Start Page Banner -->
@@ -34,7 +75,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
                                     <thead>
                                         <tr>
                                             <th scope="col">Opciones</th>
-                                            <th scope="col">Articulo</th>
+                                            <th scope="col">Artículo</th>
                                             <th scope="col">Precio unitario</th>
                                             <th scope="col">Cantidad</th>
                                             <th scope="col">Total</th>
@@ -53,15 +94,14 @@ $current_page = basename($_SERVER['PHP_SELF']);
 
                     <div class="col-lg-4 col-md-12">
                         <div class="cart-totals">
-                            <h3>Cart Totals</h3>
+                            <h3>Resumen del carrito</h3>
     
                             <ul>
-                                    <li>Subtotal <span>Q0.00</span></li>
-                                <li>Shipping <span>Q00.00</span></li>
+                                <li>Subtotal <span>Q0.00</span></li>
+                                <li>Envío <span>Q0.00</span></li>
                                 <li>Total <span>Q0.00</span></li>
-                                <li>Total <span>Q0.00</span></li>
+                                <li>Total a pagar <span>Q0.00</span></li>
                             </ul>
-    
                             <a href="javascript:void(0)" class="default-btn" id="btn-continuar-pedido" onclick="abrirModalPedido()">
                                 Continuar con el pedido
                                 <span></span>
@@ -144,7 +184,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
                         </div>
 
                         <div class="mp-form-group">
-                            <label for="correo">Correo Electronico <span class="required">*</span></label>
+                            <label for="correo">Correo electrónico <span class="required">*</span></label>
                             <input type="email" id="correo" name="correo" class="form-control" 
                                    inputmode="email" maxlength="120" autocomplete="email"
                                    placeholder="ejemplo@correo.com" required>
@@ -187,9 +227,9 @@ $current_page = basename($_SERVER['PHP_SELF']);
                         <div class="mp-card-gateway" id="pasarelaTarjetaInfo" hidden>
                             <div class="mp-card-gateway-header">
                                 <strong>Pago seguro con tarjeta</strong>
-                                <span>Seras redirigido al portal seguro de Neonet.</span>
+                                <span>Serás redirigido al portal seguro de Neonet.</span>
                             </div>
-                            <p>No ingreses datos de tarjeta en este sitio. La autorizacion se realiza en la pagina segura del proveedor.</p>
+                            <p>No ingreses datos de tarjeta en este sitio. La autorización se realiza en la página segura del proveedor.</p>
                         </div>
 
                         <div class="mp-order-total">

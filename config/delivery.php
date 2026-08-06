@@ -7,7 +7,7 @@ return array(
         'label' => 'Recoge en tienda',
         'shipping' => 0.00,
         'address' => '8A Avenida 19-55, Ciudad de Guatemala 01001',
-        'schedule' => 'Lunes a viernes de 8:00 am a 5:30 pm y sabado de 8:00 am a 1:00 pm.',
+        'schedule' => 'Lunes a viernes de 8:00 am a 5:30 pm y sábado de 8:00 am a 1:00 pm.',
     ),
     'shipping_groups' => array(
         'Ciudad de Guatemala' => array(

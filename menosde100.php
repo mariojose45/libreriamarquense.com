@@ -1,13 +1,52 @@
 <?php
-// SEO para la pagina menos de Q100
-$seo_title = "Menos de Q100 - Librería Marquense | Libros, Papelería, Artículos Escolares y de Oficina";
-$seo_description = "Descubre productos escolares, útiles, papelería y artículos de oficina por menos de Q100 en Librería Marquense.";
-$seo_keywords = "Librería Marquense, productos menos de Q100, útiles escolares económicos, papelería económica, Guatemala";
+
+// ============================================================
+// SEO DE LA PÁGINA MENOS DE Q100
+// ============================================================
+
+$current_page = basename(
+    $_SERVER['PHP_SELF'] ?? 'menosde100.php'
+);
+
+// Validar el parámetro utilizado para mostrar mensajes de error.
+$error_actual = (
+    isset($_GET['error']) &&
+    is_scalar($_GET['error'])
+)
+    ? trim((string) $_GET['error'])
+    : '';
+
+// ============================================================
+// METADATOS PRINCIPALES
+// ============================================================
+
+$seo_title =
+    'Productos por menos de Q100 | Librería Marquense';
+
+$seo_description =
+    'Encuentra libros, útiles escolares, papelería, material didáctico y productos de oficina por menos de Q100 en Librería Marquense, Guatemala.';
+
+$canonical_url =
+    'https://libreriamarquense.com/menosde100.php';
+
+$seo_og_type =
+    'website';
+
+$seo_robots =
+    'index, follow, max-image-preview:large';
+
+// Las URLs utilizadas únicamente para mostrar errores
+// no deben aparecer como páginas independientes en Google.
+if ($error_actual !== '') {
+    $seo_robots =
+        'noindex, follow, max-image-preview:large';
+}
+
+// ============================================================
+// CARGAR ENCABEZADO GENERAL
+// ============================================================
 
 include 'head.php';
-$current_page = basename($_SERVER['PHP_SELF']);
-
-
 
 ?>
 
@@ -95,23 +134,30 @@ $current_page = basename($_SERVER['PHP_SELF']);
 </style>
 
 <!-- Mensaje de error si viene de redirección -->
-<?php if (isset($_GET['error'])): ?>
+<?php if ($error_actual !== ''): ?>
     <div class="container" style="margin-top: 20px;">
-        <div class="alert alert-danger" role="alert" style="padding: 15px; margin-bottom: 20px; border-radius: 5px;">
+        <div
+            class="alert alert-danger"
+            role="alert"
+            style="padding: 15px; margin-bottom: 20px; border-radius: 5px;"
+        >
             <?php
-            $error = $_GET['error'];
-            switch ($error) {
+            switch ($error_actual) {
                 case 'producto_no_encontrado':
                     echo '<strong>⚠️ Producto no encontrado:</strong> El producto que buscas no existe o ha sido eliminado.';
                     break;
+
                 case 'id_invalido':
                     echo '<strong>⚠️ ID inválido:</strong> El ID del producto no es válido. Por favor, selecciona un producto desde la tienda.';
                     break;
+
                 case 'id_faltante':
                     echo '<strong>⚠️ ID faltante:</strong> No se especificó un ID de producto. Por favor, selecciona un producto desde la tienda.';
                     break;
+
                 default:
                     echo '<strong>⚠️ Error:</strong> Ha ocurrido un error al cargar el producto.';
+                    break;
             }
             ?>
         </div>
@@ -242,6 +288,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
     }
 
     .banner-text {
+        margin: 0;
         color: #fff !important;
         font-size: 26px;
         font-weight: 800;
@@ -450,7 +497,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
 <div class="exclusive-offers-banner banner-main">
     <div class="container">
         <div class="banner-content">
-            <span class="banner-text">TODO POR MENOS DE Q100</span>
+            <h1 class="banner-text">TODO POR MENOS DE Q100</h1>
             <a href="tienda.php" class="banner-btn">VER PRODUCTOS</a>
         </div>
     </div>

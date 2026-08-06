@@ -1,11 +1,31 @@
 <?php
 require_once __DIR__ . '/assets/php/security.php';
 
-// SEO para la pagina de contacto
-$seo_title = "Contacto - Librería Marquense | Libros, Papelería, Artículos Escolares y de Oficina";
-$seo_description = "Contacta a Librería Marquense para consultas sobre útiles escolares, papelería, listas escolares, sucursales y pedidos.";
-$seo_keywords = "contacto Librería Marquense, librería Guatemala, útiles escolares, papelería, listas escolares";
-$contact_csrf_token = lm_csrf_token('contact_form');
+// ============================================================
+// SEO DE LA PÁGINA DE CONTACTO
+// ============================================================
+
+$current_page = basename(
+    $_SERVER['PHP_SELF'] ?? 'contact.php'
+);
+
+$seo_title =
+    'Contacto y ubicación | Librería Marquense';
+
+$seo_description =
+    'Contacta a Librería Marquense para consultas sobre libros, útiles escolares, papelería, listas escolares, pedidos y atención en tienda en Guatemala.';
+
+$canonical_url =
+    'https://libreriamarquense.com/contact.php';
+
+$seo_og_type =
+    'website';
+
+$seo_robots =
+    'index, follow, max-image-preview:large';
+
+$contact_csrf_token =
+    lm_csrf_token('contact_form');
 
 $branch_timezone = new DateTimeZone('America/Guatemala');
 
@@ -67,18 +87,17 @@ $branch_statuses = [
 ];
 
 include 'head.php';
-$current_page = basename($_SERVER['PHP_SELF']);
 ?>
 
         <!-- Start Page Banner -->
         <div class="page-title-area">
             <div class="container">
                 <div class="page-title-content">
-                    <h2>Contactanos</h2>
+                    <h1>Contáctanos</h1>
 
                     <ul>
                         <li><a href="index.php">Inicio</a></li>
-                        <li>Contactanos</li>
+                        <li>Contáctanos</li>
                     </ul>
                 </div>
             </div>
@@ -92,7 +111,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
                     <div class="col-lg-12 col-md-12">
                         <div class="contact-form">
                             <div class="tile">
-                                <h3>Dejanos tu mensaje</h3>
+                                <h3>Déjanos tu mensaje</h3>
                             </div>
 
                             <form id="contactForm">
@@ -101,7 +120,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
                                 <div class="row">
                                     <div class="col-lg-12 col-md-12">
                                         <div class="form-group">
-                                            <label>Mensaje*</label>
+                                            <label for="message">Mensaje*</label>
 
                                             <textarea name="message" id="message" cols="30" rows="5" maxlength="1000" required data-error="Por favor ingrese su mensaje" class="form-control"></textarea>
                                             <div class="help-block with-errors"></div>
@@ -110,7 +129,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
 
                                     <div class="col-lg-6 col-md-6">
                                         <div class="form-group">
-                                            <label>Nombre*</label>
+                                            <label for="name">Nombre*</label>
 
                                             <input type="text" name="name" id="name" class="form-control" minlength="3" maxlength="80" autocomplete="name" required data-error="Por favor ingrese su nombre">
                                             <div class="help-block with-errors"></div>
@@ -119,7 +138,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
 
                                     <div class="col-lg-6 col-md-6">
                                         <div class="form-group">
-                                            <label>Email*</label>
+                                            <label for="email">Email*</label>
 
                                             <input type="email" name="email" id="email" class="form-control" maxlength="120" autocomplete="email" required data-error="Por favor ingrese su email">
                                             <div class="help-block with-errors"></div>
@@ -128,7 +147,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
 
                                     <div class="col-lg-6 col-md-12">
                                         <div class="form-group">
-                                            <label>Telefono*</label>
+                                            <label for="phone_number">Teléfono*</label>
 
                                             <input type="text" name="phone_number" id="phone_number" class="form-control" inputmode="numeric" minlength="8" maxlength="9" pattern="[0-9]{4}-?[0-9]{4}" autocomplete="tel-national" required data-error="Por favor ingrese su telefono">
                                             <div class="help-block with-errors"></div>
@@ -137,7 +156,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
 
                                     <div class="col-lg-6 col-md-12">
                                         <div class="form-group">
-                                            <label>Asunto*</label>
+                                            <label for="msg_subject">Asunto*</label>
 
                                             <input type="text" name="msg_subject" id="msg_subject" class="form-control" minlength="3" maxlength="120" required data-error="Por favor ingrese el asunto">
                                             <div class="help-block with-errors"></div>
@@ -179,7 +198,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
                                     <div class="branch-card__copy">
                                         <h3>Librer&iacute;a Marquense</h3>
                                         <p class="branch-card__address">8A Avenida 19-55, Cdad. de Guatemala 01001.</p>
-                                        <p class="branch-card__pickup">Atencion en tienda disponible</p>
+                                        <p class="branch-card__pickup">Atención en tienda disponible</p>
                                     </div>
 
                                     <ul class="branch-card__meta">
@@ -190,7 +209,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
                             <li><i class='bx bx-phone-call'></i> <?php echo htmlspecialchars($site_phone_number); ?></li>
                                         <li><i class='bx bx-envelope'></i> <a href="mailto:servicioalcliente@libreriamarquense.com">servicioalcliente@libreriamarquense.com</a></li>
                                         <li><i class='bx bx-time-five'></i> Lunes a Viernes 8:00 am a 5:30 pm</li>
-                                        <li><i class='bx bx-calendar'></i> Sabado 8:00 am a 1:00 pm</li>
+                                        <li><i class='bx bx-calendar'></i> Sábado 8:00 am a 1:00 pm</li>
                                         <li><i class='bx bx-calendar-x'></i> Domingo cerrado</li>
                                     </ul>
                                 </div>
@@ -214,7 +233,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
                                     <div class="branch-card__copy">
                                         <h3>Librer&iacute;a Marquense Zamara</h3>
                                         <p class="branch-card__address">Informacion de direccion pendiente de confirmar.</p>
-                                        <p class="branch-card__pickup">Atencion en tienda disponible</p>
+                                        <p class="branch-card__pickup">Atención en tienda disponible</p>
                                     </div>
 
                                     <ul class="branch-card__meta">
@@ -225,7 +244,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
                             <li><i class='bx bx-phone-call'></i> <?php echo htmlspecialchars($site_phone_number); ?></li>
                                         
                                         <li><i class='bx bx-time-five'></i> Domingo a Viernes 8:30 am a 5:00 pm</li><li><i class='bx bx-envelope'></i> <a href="mailto:servicioalcliente@libreriamarquense.com">servicioalcliente@libreriamarquense.com</a></li>
-                                        <li><i class='bx bx-calendar-x'></i> Sabado cerrado</li>
+                                        <li><i class='bx bx-calendar-x'></i> Sábado cerrado</li>
                                     </ul>
                                 </div>
                             </div>
@@ -247,7 +266,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
                                     <div class="branch-card__copy">
                                         <h3>Librer&iacute;a Marquense San Miguel Ixtahuac&aacute;n 2</h3>
                                         <p class="branch-card__address">Informacion de direccion pendiente de confirmar.</p>
-                                        <p class="branch-card__pickup">Atencion en tienda disponible</p>
+                                        <p class="branch-card__pickup">Atención en tienda disponible</p>
                                     </div>
 
                                     <ul class="branch-card__meta">
@@ -258,7 +277,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
                             <li><i class='bx bx-phone-call'></i> <?php echo htmlspecialchars($site_phone_number); ?></li>
                                         <li><i class='bx bx-envelope'></i> <a href="mailto:servicioalcliente@libreriamarquense.com">servicioalcliente@libreriamarquense.com</a></li>
                                         <li><i class='bx bx-time-five'></i> Domingo a Viernes 8:00 am a 5:00 pm</li>
-                                        <li><i class='bx bx-calendar-x'></i> Sabado cerrado</li>
+                                        <li><i class='bx bx-calendar-x'></i> Sábado cerrado</li>
                                     </ul>
                                 </div>
                             </div>
@@ -280,7 +299,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
                                     <div class="branch-card__copy">
                                         <h3>Librer&iacute;a Marquense Sipacapa</h3>
                                         <p class="branch-card__address">Informacion de direccion pendiente de confirmar.</p>
-                                        <p class="branch-card__pickup">Atencion en tienda disponible</p>
+                                        <p class="branch-card__pickup">Atención en tienda disponible</p>
                                     </div>
 
                                     <ul class="branch-card__meta">
@@ -291,7 +310,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
                             <li><i class='bx bx-phone-call'></i> <?php echo htmlspecialchars($site_phone_number); ?></li>
                                         <li><i class='bx bx-envelope'></i> <a href="mailto:servicioalcliente@libreriamarquense.com">servicioalcliente@libreriamarquense.com</a></li>
                                         <li><i class='bx bx-time-five'></i> Domingo a Viernes 8:30 am a 6:00 pm</li>
-                                        <li><i class='bx bx-calendar-x'></i> Sabado cerrado</li>
+                                        <li><i class='bx bx-calendar-x'></i> Sábado cerrado</li>
                                     </ul>
                                 </div>
                             </div>
@@ -313,7 +332,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
                                     <div class="branch-card__copy">
                                         <h3>Librer&iacute;a Marquense Huit&aacute;n</h3>
                                         <p class="branch-card__address">Informacion de direccion pendiente de confirmar.</p>
-                                        <p class="branch-card__pickup">Atencion en tienda disponible</p>
+                                        <p class="branch-card__pickup">Atención en tienda disponible</p>
                                     </div>
 
                                     <ul class="branch-card__meta">
@@ -324,7 +343,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
                             <li><i class='bx bx-phone-call'></i> <?php echo htmlspecialchars($site_phone_number); ?></li>
                                         <li><i class='bx bx-envelope'></i> <a href="mailto:servicioalcliente@libreriamarquense.com">servicioalcliente@libreriamarquense.com</a></li>
                                         <li><i class='bx bx-time-five'></i> Lunes a Viernes 8:00 am a 6:00 pm</li>
-                                        <li><i class='bx bx-calendar'></i> Sabado y Domingo 8:00 am a 5:00 pm</li>
+                                        <li><i class='bx bx-calendar'></i> Sábado y Domingo 8:00 am a 5:00 pm</li>
                                     </ul>
                                 </div>
                             </div>
