@@ -1,55 +1,68 @@
 # ============================================================
+# LIBRERÍA MARQUENSE
 # CONFIGURACIÓN GENERAL
 # ============================================================
 
 RewriteEngine On
+
 Options -Indexes
 DirectoryIndex index.php
 
-# ============================================================
-# REDIRIGIR INDEX.PHP HACIA LA RAÍZ
-# ============================================================
-
-RewriteCond %{THE_REQUEST} \s/+index\.php(?:[?\s]) [NC]
-RewriteRule ^index\.php$ / [R=301,L]
 
 # ============================================================
 # DESARROLLO LOCAL
 # ============================================================
 
-# En localhost se utiliza HTTP para evitar problemas con
-# certificados locales. Se usa 302 para no guardar la
-# redirección permanentemente en el navegador.
-
+# En localhost utilizar HTTP.
+# 302 evita guardar permanentemente la redirección.
 RewriteCond %{HTTP_HOST} ^(localhost|127\.0\.0\.1)(:\d+)?$ [NC]
 RewriteCond %{HTTPS} on
 RewriteRule ^ http://%{HTTP_HOST}%{REQUEST_URI} [R=302,L,NE]
+
 
 # ============================================================
 # DOMINIO CANÓNICO Y HTTPS EN PRODUCCIÓN
 # ============================================================
 
-# Corrige en una sola redirección:
-# - HTTP a HTTPS
-# - www a dominio sin www
-# - cualquier host diferente al dominio oficial
+# Fuerza:
+# - HTTP -> HTTPS
+# - www -> sin www
+# - dominio oficial: libreriamarquense.com
 
 RewriteCond %{HTTP_HOST} !^(localhost|127\.0\.0\.1)(:\d+)?$ [NC]
 RewriteCond %{HTTPS} !=on [OR]
 RewriteCond %{HTTP_HOST} !^libreriamarquense\.com$ [NC]
 RewriteRule ^ https://libreriamarquense.com%{REQUEST_URI} [R=301,L,NE]
 
+
+# ============================================================
+# REDIRIGIR INDEX.PHP HACIA LA RAÍZ
+# ============================================================
+
+RewriteCond %{THE_REQUEST} \s/+index\.php(?:[\s?]) [NC]
+RewriteRule ^index\.php$ / [R=301,L]
+
+
 # ============================================================
 # BLOQUEAR DIRECTORIOS PRIVADOS
 # ============================================================
 
-RewriteRule ^(?:config|logs|storage|docs|assets/php)(?:/|$) - [F,L,NC]
+# Directorios que no deben ser accesibles desde el navegador.
+RewriteRule ^(?:config|logs|storage|docs)(?:/|$) - [F,L,NC]
 
-# No se bloquea /api/ porque contiene endpoints utilizados
-# por el carrito, pedidos y la pasarela de pago.
 
-# No se bloquea /integrations/ hasta confirmar que no contiene
-# webhooks o rutas que deban recibir solicitudes externas.
+# ============================================================
+# PROTEGER ASSETS/PHP
+# ============================================================
+
+# productos_paginados.php DEBE ser accesible porque tienda.js
+# lo utiliza mediante POST para cargar y paginar productos.
+#
+# Se bloquean por HTTP los demás archivos dentro de assets/php.
+# Esto NO impide que PHP los use mediante include/require.
+
+RewriteRule ^assets/php/(?!productos_paginados\.php$) - [F,L,NC]
+
 
 # ============================================================
 # PREVENIR ACCESO A ARCHIVOS SENSIBLES
@@ -63,6 +76,16 @@ RewriteRule ^(?:config|logs|storage|docs|assets/php)(?:/|$) - [F,L,NC]
     Require all denied
 </FilesMatch>
 
+
+# ============================================================
+# PROTEGER ARCHIVOS OCULTOS IMPORTANTES
+# ============================================================
+
+<FilesMatch "^\.">
+    Require all denied
+</FilesMatch>
+
+
 # ============================================================
 # ENCABEZADOS DE SEGURIDAD
 # ============================================================
@@ -73,14 +96,16 @@ RewriteRule ^(?:config|logs|storage|docs|assets/php)(?:/|$) - [F,L,NC]
     Header always set Referrer-Policy "strict-origin-when-cross-origin"
     Header always set X-Frame-Options "SAMEORIGIN"
 
+    # HSTS únicamente cuando la conexión ya utiliza HTTPS.
     <If "%{HTTPS} == 'on'">
         Header always set Strict-Transport-Security "max-age=31536000"
     </If>
 
 </IfModule>
 
-# No agregar includeSubDomains o preload a HSTS hasta confirmar
-# que todos los subdominios utilizan HTTPS permanentemente.
+# No agregar includeSubDomains ni preload hasta confirmar
+# que todos los subdominios usarán HTTPS permanentemente.
+
 
 # ============================================================
 # COMPRESIÓN
@@ -99,6 +124,7 @@ RewriteRule ^(?:config|logs|storage|docs|assets/php)(?:/|$) - [F,L,NC]
         image/svg+xml
 
 </IfModule>
+
 
 # ============================================================
 # CACHÉ DE ARCHIVOS ESTÁTICOS
@@ -124,8 +150,9 @@ RewriteRule ^(?:config|logs|storage|docs|assets/php)(?:/|$) - [F,L,NC]
 
 </IfModule>
 
+
 # ============================================================
-# PROTECCIÓN Y CODIFICACIÓN
+# CONFIGURACIÓN FINAL
 # ============================================================
 
 ServerSignature Off
