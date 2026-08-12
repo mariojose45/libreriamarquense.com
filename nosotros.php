@@ -1,13 +1,28 @@
 <?php
-// SEO para la pagina nosotros
-$seo_title = "Nosotros - Librería Marquense | Libros, Papelería, Artículos Escolares y de Oficina";
-$seo_description = "Conoce más sobre Librería Marquense, nuestra historia, misión y visión como tienda de útiles escolares, papelería, libros, material didáctico y productos de oficina.";
-$seo_keywords = "Librería Marquense, nosotros Librería Marquense, útiles escolares Guatemala, papelería Guatemala, libros, material didáctico, productos de oficina";
+$current_page = basename(
+    $_SERVER['PHP_SELF'] ?? 'nosotros.php'
+);
+
+$seo_title =
+    'Nosotros | Librería Marquense';
+
+$seo_description =
+    'Conoce más sobre Librería Marquense, nuestra historia, misión y visión como tienda de útiles escolares, papelería, libros, material didáctico y productos de oficina.';
+
+$seo_keywords =
+    'Librería Marquense, nosotros Librería Marquense, útiles escolares Guatemala, papelería Guatemala, libros, material didáctico, productos de oficina';
+
+$canonical_url =
+    'https://libreriamarquense.com/nosotros.php';
+
+$seo_og_type =
+    'website';
+
+$seo_robots =
+    'index, follow, max-image-preview:large';
 
 include 'head.php';
 include 'assets/php/rutas.php';
-
-$current_page = basename($_SERVER['PHP_SELF']);
 
 /*
 |--------------------------------------------------------------------------

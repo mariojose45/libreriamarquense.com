@@ -255,6 +255,14 @@ $site_phone_number =
     $site_phone_number
     ?? '+502 2232-8537';
 
+$site_whatsapp_number =
+    $site_whatsapp_number
+    ?? '+502 5591-0533';
+
+$site_whatsapp_url =
+    $site_whatsapp_url
+    ?? 'https://wa.me/50255910533';
+
 $site_email =
     $site_email
     ?? 'servicioalcliente@libreriamarquense.com';
@@ -266,9 +274,9 @@ $site_business_description =
 $site_social_links =
     $site_social_links
     ?? [
-        'https://www.facebook.com/LibreriaMarquenseSA',
-        'https://www.instagram.com/libreriamarquense/',
-        'https://www.tiktok.com/@lmmarquense',
+        'facebook' => 'https://www.facebook.com/LibreriaMarquenseSA',
+        'instagram' => 'https://www.instagram.com/libreriamarquense/',
+        'tiktok' => 'https://www.tiktok.com/@lmmarquense',
     ];
 
 // ============================================================
@@ -1041,7 +1049,7 @@ $website_schema = [
                             </li>
 
                             <li class="nav-item">
-                                <a href="contact.php" class="nav-link">Contactanos</a>
+                                <a href="contact.php" class="nav-link">Contáctanos</a>
                             </li>
                         </ul>
                     </div>

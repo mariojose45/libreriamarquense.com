@@ -1,10 +1,28 @@
-<?php include 'head.php';
-
-$current_page = basename($_SERVER['PHP_SELF']);
+<?php
+$current_page = basename(
+    $_SERVER['PHP_SELF'] ?? 'servicios.php'
+);
 
 $paginas_servicios = [
     'servicios.php'
 ];
+
+$seo_title =
+    'Servicios | Librería Marquense';
+
+$seo_description =
+    'Conoce los servicios de Librería Marquense para estudiantes, docentes, familias y empresas, incluyendo atención, pedidos y soluciones para necesidades escolares y de oficina.';
+
+$canonical_url =
+    'https://libreriamarquense.com/servicios.php';
+
+$seo_og_type =
+    'website';
+
+$seo_robots =
+    'index, follow, max-image-preview:large';
+
+include 'head.php';
 
 // Obtener datos de la API de servicios
 $apiUrl = "https://ssl.sol.sistemasolgt.com/libremarquenseDos/api/api_tienda_servicios.php";

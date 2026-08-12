@@ -1,10 +1,21 @@
-<?php include 'head.php';
-
-$current_page = basename($_SERVER['PHP_SELF']);
+<?php
+$current_page = basename(
+    $_SERVER['PHP_SELF'] ?? 'derechos.php'
+);
 
 $paginas_servicios = [
     'derechos.php'
 ];
+
+$seo_title = 'Derechos de autor | Librería Marquense';
+
+$seo_description = 'Consulta la información sobre derechos de autor, propiedad de contenidos, imágenes, logotipos, catálogos y materiales publicados por Librería Marquense.';
+
+$canonical_url = 'https://libreriamarquense.com/derechos.php';
+
+$seo_robots = 'index, follow, max-image-preview:large';
+
+include 'head.php';
 ?>
 
 <div class="page-title-area">

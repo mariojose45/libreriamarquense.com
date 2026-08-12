@@ -1,8 +1,16 @@
 <?php
+$current_page = basename($_SERVER['PHP_SELF']);
+
+$seo_title = 'Métodos de pago | Librería Marquense';
+
+$seo_description = 'Conoce los métodos de pago disponibles en Librería Marquense para realizar tus compras de libros, útiles escolares, papelería y productos de oficina.';
+
+$canonical_url = 'https://libreriamarquense.com/metodos_de_pago.php';
+
+$seo_robots = 'index, follow, max-image-preview:large';
+
 include 'head.php';
 include 'assets/php/legal_page_layout.php';
-
-$current_page = basename($_SERVER['PHP_SELF']);
 ?>
 
 <div class="page-title-area">

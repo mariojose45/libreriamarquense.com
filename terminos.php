@@ -1,8 +1,18 @@
 <?php
+$current_page = basename(
+    $_SERVER['PHP_SELF'] ?? 'terminos.php'
+);
+
+$seo_title = 'Términos y condiciones | Librería Marquense';
+
+$seo_description = 'Consulta los términos y condiciones de Librería Marquense sobre compras, pagos, entregas, productos, garantías, privacidad y uso del sitio web.';
+
+$canonical_url = 'https://libreriamarquense.com/terminos.php';
+
+$seo_robots = 'index, follow, max-image-preview:large';
+
 include 'head.php';
 include 'assets/php/legal_page_layout.php';
-
-$current_page = basename($_SERVER['PHP_SELF']);
 ?>
 
 <div class="page-title-area">

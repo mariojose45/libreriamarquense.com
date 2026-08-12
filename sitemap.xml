@@ -1,51 +1,62 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 
-    <!-- Páginas principales -->
-
+    <!-- Página principal -->
     <url>
         <loc>https://libreriamarquense.com/</loc>
     </url>
 
+    <!-- Tienda -->
     <url>
         <loc>https://libreriamarquense.com/tienda.php</loc>
     </url>
 
+    <!-- Servicios -->
+    <url>
+        <loc>https://libreriamarquense.com/servicios.php</loc>
+    </url>
+
+    <!-- Ofertas -->
     <url>
         <loc>https://libreriamarquense.com/ofertas.php</loc>
     </url>
 
+    <!-- Productos por menos de Q100 -->
     <url>
         <loc>https://libreriamarquense.com/menosde100.php</loc>
     </url>
 
-    <url>
-        <loc>https://libreriamarquense.com/contact.php</loc>
-    </url>
-
-    <!-- Páginas secundarias -->
-
+    <!-- Nosotros -->
     <url>
         <loc>https://libreriamarquense.com/nosotros.php</loc>
     </url>
 
+    <!-- Contacto -->
+    <url>
+        <loc>https://libreriamarquense.com/contact.php</loc>
+    </url>
+
+    <!-- Preguntas frecuentes -->
     <url>
         <loc>https://libreriamarquense.com/preguntas_frecuentes.php</loc>
     </url>
 
+    <!-- Métodos de pago -->
     <url>
         <loc>https://libreriamarquense.com/metodos_de_pago.php</loc>
     </url>
 
+    <!-- Políticas de garantía -->
     <url>
         <loc>https://libreriamarquense.com/politicas_de_garantia.php</loc>
     </url>
 
+    <!-- Términos y condiciones -->
     <url>
         <loc>https://libreriamarquense.com/terminos.php</loc>
     </url>
 
+    <!-- Derechos -->
     <url>
         <loc>https://libreriamarquense.com/derechos.php</loc>
     </url>

@@ -1215,7 +1215,7 @@ if (
 
                                         <div id="producto-reserva-note" class="product-reserve-note" hidden>
                                             <strong>Reservar disponibilidad</strong>
-                                            <span>Producto agotado por ahora. Escribenos por WhatsApp para reservar o consultar reposicion.</span>
+                                            <span>Producto agotado por ahora. Escríbenos por WhatsApp para reservar o consultar reposición.</span>
                                         </div>
 
                                         <div class="products-share">
@@ -1263,7 +1263,6 @@ if (
 
             </div>
         </div>
-    </div>
     </div>
 </section>
 <!-- End Shop Area -->

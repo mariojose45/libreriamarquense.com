@@ -1,11 +1,25 @@
 <?php
+$current_page = basename($_SERVER['PHP_SELF']);
+
+$paginas_servicios = [];
+
+$seo_title = 'Preguntas frecuentes | Librería Marquense';
+
+$seo_description = 'Resuelve tus dudas sobre compras, productos, listas escolares, métodos de pago, entregas, garantías y atención en Librería Marquense.';
+
+$canonical_url = 'https://libreriamarquense.com/preguntas_frecuentes.php';
+
+$seo_robots = 'index, follow, max-image-preview:large';
+
 include 'head.php';
 include 'assets/php/legal_page_layout.php';
 
-$current_page = basename($_SERVER['PHP_SELF']);
-$paginas_servicios = [];
-
-$faqContacto = 'Puedes escribirnos por WhatsApp al ' . htmlspecialchars($site_whatsapp_number) . ', llamarnos al ' . htmlspecialchars($site_phone_number) . ' o utilizar el formulario de contacto del sitio web.';
+$faqContacto =
+    'Puedes escribirnos por WhatsApp al ' .
+    htmlspecialchars($site_whatsapp_number, ENT_QUOTES, 'UTF-8') .
+    ', llamarnos al ' .
+    htmlspecialchars($site_phone_number, ENT_QUOTES, 'UTF-8') .
+    ' o utilizar el formulario de contacto del sitio web.';
 ?>
 
 <div class="page-title-area">

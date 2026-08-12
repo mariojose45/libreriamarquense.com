@@ -1,8 +1,16 @@
 <?php
+$current_page = basename($_SERVER['PHP_SELF']);
+
+$seo_title = 'Políticas de garantía | Librería Marquense';
+
+$seo_description = 'Consulta las políticas de garantía de Librería Marquense para productos, pedidos, cambios, daños, defectos de fábrica y condiciones aplicables.';
+
+$canonical_url = 'https://libreriamarquense.com/politicas_de_garantia.php';
+
+$seo_robots = 'index, follow, max-image-preview:large';
+
 include 'head.php';
 include 'assets/php/legal_page_layout.php';
-
-$current_page = basename($_SERVER['PHP_SELF']);
 ?>
 
 <div class="page-title-area">

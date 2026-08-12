@@ -44,6 +44,23 @@ RewriteRule ^index\.php$ / [R=301,L]
 
 
 # ============================================================
+# LIMPIAR PARÁMETROS ANTIGUOS DE ADD-TO-CART
+# ============================================================
+
+# El sitio anterior generaba URLs con ?add-to-cart=...
+# En las páginas actuales este parámetro ya no representa
+# contenido independiente.
+#
+# Únicamente se aplica a páginas actuales conocidas.
+# QSD elimina todos los parámetros de la URL antigua.
+
+RewriteCond %{HTTP_HOST} ^libreriamarquense\.com$ [NC]
+RewriteCond %{QUERY_STRING} (^|&)add-to-cart=[0-9]+(&|$) [NC]
+RewriteCond %{REQUEST_URI} ^/(?:|tienda\.php|servicios\.php|ofertas\.php|menosde100\.php|nosotros\.php|contact\.php|preguntas_frecuentes\.php|metodos_de_pago\.php|politicas_de_garantia\.php|terminos\.php|derechos\.php)$ [NC]
+RewriteRule ^(.*)$ /$1 [R=301,L,NE,QSD]
+
+
+# ============================================================
 # BLOQUEAR DIRECTORIOS PRIVADOS
 # ============================================================
 
