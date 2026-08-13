@@ -28,6 +28,7 @@ class HostedCheckoutService
             '{currency}' => rawurlencode($session['currency']),
             '{return_url}' => rawurlencode($returnUrl),
             '{cancel_url}' => rawurlencode($cancelUrl),
+            '{device_fingerprint_id}' => rawurlencode(isset($session['device_fingerprint_id']) ? (string) $session['device_fingerprint_id'] : ''),
         );
 
         return strtr($template, $replacements);

@@ -60,6 +60,7 @@ https://api.cybersource.com
 - Pago Contra Entrega y Transferencia siguen enviando el pedido directamente a la API externa actual.
 - Tarjeta prepara una referencia interna y redirige a CyberSource/Neonet Secure Acceptance.
 - La tarjeta y el CVV no se capturan ni guardan en este sitio.
+- Device Fingerprint publica los tags de `h.online-metrix.net` en el checkout y envia `device_fingerprint_id` firmado a Secure Acceptance para Decision Manager.
 - Cuando CyberSource/Neonet devuelve una respuesta firmada aprobada, el backend envia el pedido a la API externa.
 - No se usan logos locales de tarjetas porque la seleccion/ingreso de tarjeta ocurre dentro del portal seguro.
 
@@ -104,6 +105,38 @@ Puntos cubiertos por la implementacion:
 - Soporte para modo `authorization` o `sale` mediante configuracion.
 - Flujo de pedido existente conservado para la API externa.
 - Secretos fuera del frontend y fuera del repositorio.
+- El frontend solo expone configuracion publica de Device Fingerprint: `merchant_id`, `org_id` y URL de Online Metrix.
+
+## Device Fingerprint
+
+La configuracion vive en `device_fingerprint` dentro de `config/cybersource.php` o `config/cybersource.private.php`.
+
+Use el mismo `merchant_id` bajo el cual se firman las transacciones, por ejemplo:
+
+```text
+visanetgt_libreriamarquense
+```
+
+Ambientes:
+
+```text
+TEST:       org_id 1snn5n9w
+PRODUCCION: org_id k8vif92e
+```
+
+El navegador publica el tag con:
+
+```text
+session_id = merchant_id + deviceFingerprintID
+```
+
+Al crear el checkout, el backend recibe solamente el identificador unico (`deviceFingerprintID`) y lo envia a Secure Acceptance como:
+
+```text
+device_fingerprint_id
+```
+
+Este campo queda incluido en `signed_field_names`.
 
 Puntos que dependen de informacion del proveedor:
 

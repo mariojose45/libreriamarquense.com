@@ -58,6 +58,21 @@ $config = array(
     ),
 
     /*
+     * Device Fingerprint / Decision Manager.
+     *
+     * Los tags se publican en el checkout con h.online-metrix.net y el
+     * identificador unico se envia a Secure Acceptance como device_fingerprint_id.
+     * No contiene datos de tarjeta ni credenciales privadas.
+     */
+    'device_fingerprint' => array(
+        'enabled' => !in_array(strtolower((string) getenv('CYBERSOURCE_DF_ENABLED')), array('0', 'false', 'no'), true),
+        'merchant_id' => getenv('CYBERSOURCE_DF_MERCHANT_ID') ?: (getenv('CYBERSOURCE_MERCHANT_ID') ?: ''),
+        'test_org_id' => getenv('CYBERSOURCE_DF_TEST_ORG_ID') ?: '1snn5n9w',
+        'production_org_id' => getenv('CYBERSOURCE_DF_PRODUCTION_ORG_ID') ?: 'k8vif92e',
+        'script_base_url' => getenv('CYBERSOURCE_DF_SCRIPT_BASE_URL') ?: 'https://h.online-metrix.net',
+    ),
+
+    /*
      * Neonet / pagina segura hospedada:
      *
      * Como el ingreso de tarjeta se hace en la pagina de Neonet, no se
@@ -65,7 +80,8 @@ $config = array(
      * la URL oficial, configure redirect_url_template en el archivo privado.
      *
      * Placeholders disponibles:
-     * {reference}, {amount}, {currency}, {return_url}, {cancel_url}
+     * {reference}, {amount}, {currency}, {return_url}, {cancel_url},
+     * {device_fingerprint_id}
      */
     'hosted_checkout' => array(
         'redirect_url_template' => getenv('NEONET_CHECKOUT_URL_TEMPLATE') ?: '',

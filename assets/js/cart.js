@@ -13,7 +13,116 @@ const CANTIDAD_MAXIMA_CARRITO = 99;
 const TIPO_ENTREGA_RETIRO = 'store_pickup';
 const TIPO_ENTREGA_ENVIO = 'shipping';
 const PRODUCTO_IMG_PLACEHOLDER = 'assets/img/ProductoSinImagen.png';
+const DEVICE_FINGERPRINT_MIN_WAIT_MS = 80;
 let direccionEntregaAnterior = '';
+let deviceFingerprintState = {
+    id: '',
+    sessionId: '',
+    published: false,
+    publishedAt: 0
+};
+
+function obtenerConfiguracionDeviceFingerprint() {
+    const config = window.LM_DEVICE_FINGERPRINT_CONFIG || {};
+    const scriptBaseUrl = String(config.script_base_url || 'https://h.online-metrix.net').replace(/\/+$/, '');
+
+    return {
+        enabled: config.enabled === true,
+        merchantId: String(config.merchant_id || '').replace(/[^A-Za-z0-9_-]+/g, ''),
+        orgId: String(config.org_id || '').replace(/[^A-Za-z0-9_-]+/g, ''),
+        scriptBaseUrl: scriptBaseUrl === 'https://h.online-metrix.net' ? scriptBaseUrl : 'https://h.online-metrix.net'
+    };
+}
+
+function generarTokenDeviceFingerprint() {
+    const bytes = new Uint8Array(12);
+    if (window.crypto && typeof window.crypto.getRandomValues === 'function') {
+        window.crypto.getRandomValues(bytes);
+    } else {
+        for (let index = 0; index < bytes.length; index++) {
+            bytes[index] = Math.floor(Math.random() * 256);
+        }
+    }
+
+    const random = Array.from(bytes, function (byte) {
+        return byte.toString(16).padStart(2, '0');
+    }).join('');
+
+    return ('LMQ-' + Date.now().toString(36) + '-' + random).slice(0, 48);
+}
+
+function reiniciarDeviceFingerprint() {
+    deviceFingerprintState = {
+        id: '',
+        sessionId: '',
+        published: false,
+        publishedAt: 0
+    };
+
+    const container = document.getElementById('cybersourceDeviceFingerprintContainer');
+    if (container) {
+        container.innerHTML = '';
+    }
+}
+
+function obtenerDeviceFingerprintId() {
+    const config = obtenerConfiguracionDeviceFingerprint();
+    if (!config.enabled || !config.merchantId || !config.orgId) {
+        return '';
+    }
+
+    if (!deviceFingerprintState.id) {
+        deviceFingerprintState.id = generarTokenDeviceFingerprint();
+        deviceFingerprintState.sessionId = config.merchantId + deviceFingerprintState.id;
+    }
+
+    return deviceFingerprintState.id;
+}
+
+function publicarDeviceFingerprint() {
+    const config = obtenerConfiguracionDeviceFingerprint();
+    const deviceFingerprintId = obtenerDeviceFingerprintId();
+
+    if (!deviceFingerprintId || deviceFingerprintState.published) {
+        return deviceFingerprintId;
+    }
+
+    const container = document.getElementById('cybersourceDeviceFingerprintContainer');
+    if (!container) {
+        return deviceFingerprintId;
+    }
+
+    const script = document.createElement('script');
+    script.type = 'text/javascript';
+    script.async = true;
+    script.src = config.scriptBaseUrl
+        + '/fp/tags.js?org_id=' + encodeURIComponent(config.orgId)
+        + '&session_id=' + encodeURIComponent(deviceFingerprintState.sessionId);
+
+    container.innerHTML = '';
+    container.appendChild(script);
+
+    deviceFingerprintState.published = true;
+    deviceFingerprintState.publishedAt = Date.now();
+
+    return deviceFingerprintId;
+}
+
+function prepararDeviceFingerprintParaPago() {
+    const deviceFingerprintId = publicarDeviceFingerprint();
+    if (!deviceFingerprintId) {
+        return Promise.resolve('');
+    }
+
+    const elapsed = Date.now() - deviceFingerprintState.publishedAt;
+    const waitMs = Math.max(0, DEVICE_FINGERPRINT_MIN_WAIT_MS - elapsed);
+
+    return new Promise(function (resolve) {
+        window.setTimeout(function () {
+            resolve(deviceFingerprintId);
+        }, waitMs);
+    });
+}
 
 function escaparHTML(valor) {
     return String(valor ?? '')
@@ -625,6 +734,10 @@ function actualizarVistaPagoTarjeta() {
     if (btnEnviar) {
         btnEnviar.textContent = esTarjeta ? 'Continuar a pago seguro' : 'Enviar Pedido';
     }
+
+    if (esTarjeta) {
+        publicarDeviceFingerprint();
+    }
 }
 
 function refrescarSelectorVisual(selectElement) {
@@ -744,6 +857,7 @@ function abrirModalPedido() {
     document.getElementById('nit-group').style.display = 'none';
     document.getElementById('numeroDocumento-group').style.display = 'none';
     document.getElementById('documentoHelp').textContent = '';
+    reiniciarDeviceFingerprint();
     aplicarEstadoValidacion(document.getElementById('nombreCompleto'), '');
     aplicarEstadoValidacion(document.getElementById('direccion'), '');
     aplicarEstadoValidacion(document.getElementById('lugarEnvio'), '');
@@ -1404,10 +1518,6 @@ function restaurarBotonPagoTarjeta(btnEnviar) {
 function iniciarPagoTarjeta(apiData, btnEnviar) {
     const ventanaPago = abrirVentanaPagoExterna();
     const csrfToken = document.getElementById('checkoutCsrfToken')?.value || '';
-    const secureApiData = Object.assign({}, apiData, {
-        csrf_token: csrfToken,
-        website: document.getElementById('checkoutWebsite')?.value || ''
-    });
 
     if (!ventanaPago) {
         restaurarBotonPagoTarjeta(btnEnviar);
@@ -1427,14 +1537,26 @@ function iniciarPagoTarjeta(apiData, btnEnviar) {
         return;
     }
 
-    fetch('/api/cybersource/create_checkout.php', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-Token': csrfToken
-        },
-        body: JSON.stringify(secureApiData)
-    })
+    prepararDeviceFingerprintParaPago()
+        .then(function (deviceFingerprintId) {
+            const secureApiData = Object.assign({}, apiData, {
+                csrf_token: csrfToken,
+                website: document.getElementById('checkoutWebsite')?.value || ''
+            });
+
+            if (deviceFingerprintId) {
+                secureApiData.deviceFingerprintID = deviceFingerprintId;
+            }
+
+            return fetch('/api/cybersource/create_checkout.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-Token': csrfToken
+                },
+                body: JSON.stringify(secureApiData)
+            });
+        })
         .then(response => {
             return response.text().then(text => {
                 let data;

@@ -56,6 +56,11 @@ class SecureAcceptanceService
             'override_custom_cancel_page' => $cancelUrl,
         );
 
+        $deviceFingerprintId = $this->deviceFingerprintId($session);
+        if ($deviceFingerprintId !== '') {
+            $fields['device_fingerprint_id'] = $deviceFingerprintId;
+        }
+
         $fields = $this->removeEmptyOptionalFields($fields);
         $fields['signed_field_names'] = implode(',', array_keys($fields));
         $fields['signature'] = $this->sign($fields);
@@ -180,6 +185,16 @@ class SecureAcceptanceService
         }
 
         return $fields;
+    }
+
+    private function deviceFingerprintId(array $session)
+    {
+        if (!isset($session['device_fingerprint_id'])) {
+            return '';
+        }
+
+        $value = trim((string) $session['device_fingerprint_id']);
+        return preg_match('/^[A-Za-z0-9_-]{1,88}$/', $value) ? $value : '';
     }
 
     private function value(array $array, $key, $default)

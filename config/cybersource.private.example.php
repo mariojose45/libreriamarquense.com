@@ -61,11 +61,23 @@ return array(
         'session_ttl_minutes' => 60,
     ),
 
+    'device_fingerprint' => array(
+        /*
+         * Debe coincidir con el Merchant ID bajo el cual se firman las
+         * transacciones. Ejemplo: visanetgt_libreriamarquense.
+         */
+        'enabled' => true,
+        'merchant_id' => 'COLOQUE_AQUI_SU_MERCHANT_ID',
+        'test_org_id' => '1snn5n9w',
+        'production_org_id' => 'k8vif92e',
+        'script_base_url' => 'https://h.online-metrix.net',
+    ),
+
     'hosted_checkout' => array(
         /*
          * Pegue aqui la plantilla oficial de redireccion que entregue Neonet.
          * Ejemplo ilustrativo, NO usar en produccion sin confirmacion de Neonet:
-         * https://checkout.neonet.com/pay?reference={reference}&amount={amount}&currency={currency}&return_url={return_url}&cancel_url={cancel_url}
+         * https://checkout.neonet.com/pay?reference={reference}&amount={amount}&currency={currency}&return_url={return_url}&cancel_url={cancel_url}&device_fingerprint_id={device_fingerprint_id}
          */
         'redirect_url_template' => '',
 

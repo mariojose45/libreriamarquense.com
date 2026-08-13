@@ -38,11 +38,12 @@ function getApi($url)
 if (!headers_sent()) {
     $content_security_policy =
         "default-src 'self'; "
-        . "script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; "
+        . "script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://h.online-metrix.net; "
         . "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com; "
-        . "img-src 'self' data: blob: https://ssl.sol.sistemasolgt.com; "
+        . "img-src 'self' data: blob: https://ssl.sol.sistemasolgt.com https://h.online-metrix.net; "
         . "font-src 'self' data: https://fonts.gstatic.com; "
-        . "connect-src 'self' https://ssl.sol.sistemasolgt.com https://cdn.jsdelivr.net; "
+        . "connect-src 'self' https://ssl.sol.sistemasolgt.com https://cdn.jsdelivr.net https://h.online-metrix.net; "
+        . "frame-src 'self' https://h.online-metrix.net; "
         . "media-src 'self' data: blob:; "
         . "object-src 'none'; "
         . "base-uri 'self'; "

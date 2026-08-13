@@ -36,11 +36,44 @@ $checkout_csrf_token =
 $delivery_config =
     require __DIR__ . '/config/delivery.php';
 
+$cybersource_config =
+    require __DIR__ . '/config/cybersource.php';
+
 $pickup_config =
     $delivery_config['pickup'];
 
 $shipping_groups =
     $delivery_config['shipping_groups'];
+
+$device_fingerprint_config =
+    isset($cybersource_config['device_fingerprint']) && is_array($cybersource_config['device_fingerprint'])
+        ? $cybersource_config['device_fingerprint']
+        : array();
+
+$cybersource_environment =
+    strtolower((string) ($cybersource_config['environment'] ?? 'test'));
+
+$device_fingerprint_org_id =
+    in_array($cybersource_environment, array('production', 'prod'), true)
+        ? (string) ($device_fingerprint_config['production_org_id'] ?? '')
+        : (string) ($device_fingerprint_config['test_org_id'] ?? '');
+
+$device_fingerprint_merchant_id =
+    trim((string) ($device_fingerprint_config['merchant_id'] ?? ''));
+
+if ($device_fingerprint_merchant_id === '') {
+    $device_fingerprint_merchant_id =
+        trim((string) ($cybersource_config['cybersource']['merchant_id'] ?? ''));
+}
+
+$device_fingerprint_public_config = array(
+    'enabled' => (bool) ($device_fingerprint_config['enabled'] ?? false)
+        && $device_fingerprint_merchant_id !== ''
+        && trim($device_fingerprint_org_id) !== '',
+    'merchant_id' => $device_fingerprint_merchant_id,
+    'org_id' => trim($device_fingerprint_org_id),
+    'script_base_url' => rtrim((string) ($device_fingerprint_config['script_base_url'] ?? 'https://h.online-metrix.net'), '/'),
+);
 
 // ============================================================
 // CARGAR ENCABEZADO GENERAL
@@ -231,6 +264,8 @@ include 'head.php';
                             </div>
                             <p>No ingreses datos de tarjeta en este sitio. La autorización se realiza en la página segura del proveedor.</p>
                         </div>
+
+                        <div id="cybersourceDeviceFingerprintContainer" aria-hidden="true" hidden></div>
 
                         <div class="mp-order-total">
                             <span>Total a pagar</span>
@@ -836,5 +871,8 @@ include 'head.php';
 
 <?php include 'footer.php'; ?>
 <script type="text/javascript" src="assets/js/sweatlert.js"></script> 
+<script>
+    window.LM_DEVICE_FINGERPRINT_CONFIG = <?php echo json_encode($device_fingerprint_public_config, JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP); ?>;
+</script>
 <?php $cartScript = __DIR__ . '/assets/js/cart.js'; ?>
 <script type="text/javascript" src="assets/js/cart.js?v=<?php echo file_exists($cartScript) ? filemtime($cartScript) : time(); ?>"></script>
