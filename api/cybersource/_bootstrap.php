@@ -127,11 +127,7 @@ function lm_payment_service(Config $config, SecureLogger $logger)
 
 function lm_payment_authorization_number_from_session(array $session)
 {
-    foreach (array('provider_authorization_number', 'provider_transaction_id') as $key) {
-        if (isset($session[$key]) && trim((string) $session[$key]) !== '') {
-            return trim((string) $session[$key]);
-        }
-    }
+    $providerPayloads = array();
 
     foreach (array('provider_return', 'provider_webhook') as $containerKey) {
         if (!isset($session[$containerKey]) || !is_array($session[$containerKey])) {
@@ -147,11 +143,33 @@ function lm_payment_authorization_number_from_session(array $session)
             $payload = $container['payload'];
         }
 
-        foreach (array('auth_trans_ref_no', 'auth_code', 'authorization_code', 'transaction_id', 'request_token', 'id') as $field) {
+        if ($payload) {
+            $providerPayloads[] = $payload;
+        }
+    }
+
+    foreach ($providerPayloads as $payload) {
+        foreach (array('auth_code', 'authorization_code', 'approvalCode') as $field) {
             if (isset($payload[$field]) && trim((string) $payload[$field]) !== '') {
                 return trim((string) $payload[$field]);
             }
         }
+    }
+
+    if (isset($session['provider_authorization_number']) && trim((string) $session['provider_authorization_number']) !== '') {
+        return trim((string) $session['provider_authorization_number']);
+    }
+
+    foreach ($providerPayloads as $payload) {
+        foreach (array('auth_trans_ref_no', 'transaction_id', 'request_token', 'id') as $field) {
+            if (isset($payload[$field]) && trim((string) $payload[$field]) !== '') {
+                return trim((string) $payload[$field]);
+            }
+        }
+    }
+
+    if (isset($session['provider_transaction_id']) && trim((string) $session['provider_transaction_id']) !== '') {
+        return trim((string) $session['provider_transaction_id']);
     }
 
     return '';

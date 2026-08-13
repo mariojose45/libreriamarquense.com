@@ -130,7 +130,7 @@ class SecureAcceptanceService
 
     public function extractAuthorizationNumber(array $params)
     {
-        foreach (array('auth_trans_ref_no', 'auth_code', 'authorization_code', 'transaction_id', 'request_token', 'id') as $key) {
+        foreach (array('auth_code', 'authorization_code', 'auth_trans_ref_no', 'transaction_id', 'request_token', 'id') as $key) {
             if (isset($params[$key]) && trim((string) $params[$key]) !== '') {
                 return trim((string) $params[$key]);
             }
