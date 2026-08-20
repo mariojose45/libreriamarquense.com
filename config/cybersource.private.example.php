@@ -17,8 +17,8 @@ return array(
     'currency' => 'GTQ',
 
     // "authorization" = autorizar primero y capturar despues.
-    // "sale" = autorizacion + captura inmediata.
-    'operation' => 'authorization',
+    // "sale" = autorizacion + captura inmediata/liquidacion automatica.
+    'operation' => 'sale',
 
     'cybersource' => array(
         // Merchant ID entregado por CyberSource/Neonet.
@@ -55,8 +55,9 @@ return array(
         'test_endpoint' => 'https://testsecureacceptance.cybersource.com/pay',
         'production_endpoint' => 'https://secureacceptance.cybersource.com/pay',
 
+        // Para liquidacion automatica, envie sale.
         // Si se deja vacio, usa el valor de "operation".
-        'transaction_type' => '',
+        'transaction_type' => 'sale',
         'locale' => 'es',
         'session_ttl_minutes' => 60,
     ),

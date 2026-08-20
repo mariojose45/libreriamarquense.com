@@ -22,7 +22,7 @@ $config = array(
     'enabled' => false,
     'environment' => getenv('CYBERSOURCE_ENVIRONMENT') ?: 'test',
     'currency' => getenv('CYBERSOURCE_CURRENCY') ?: 'GTQ',
-    'operation' => getenv('CYBERSOURCE_OPERATION') ?: 'authorization',
+    'operation' => getenv('CYBERSOURCE_OPERATION') ?: 'sale',
 
     'site' => array(
         'base_url' => getenv('SITE_BASE_URL') ?: 'https://libreriamarquense.com',

@@ -103,6 +103,9 @@ Puntos cubiertos por la implementacion:
   - `POST /pts/v2/captures/{id}/voids`
   - `POST /pts/v2/payments/{id}/reversals`
 - Soporte para modo `authorization` o `sale` mediante configuracion.
+- Para liquidacion automatica en Secure Acceptance, usar `transaction_type=sale`.
+  En la documentacion de CyberSource, `sale` combina autorizacion y captura
+  inmediata; si se usa `authorization`, la captura/liquidacion queda pendiente.
 - Flujo de pedido existente conservado para la API externa.
 - Secretos fuera del frontend y fuera del repositorio.
 - El frontend solo expone configuracion publica de Device Fingerprint: `merchant_id`, `org_id` y URL de Online Metrix.
@@ -145,5 +148,5 @@ Puntos que dependen de informacion del proveedor:
 - Parametros exactos que Neonet devuelve al retorno o webhook.
 - Metodo de firma/validacion del retorno de Neonet.
 - Confirmacion de moneda autorizada: `GTQ` o `USD`.
-- Confirmacion operativa: `authorization` + `capture` o `sale`.
+- Confirmacion operativa con Neonet: `sale` para autorizacion y captura/liquidacion automatica.
 - Confirmacion si Neonet requiere Visa Secure / 3D Secure y bajo que modalidad.
