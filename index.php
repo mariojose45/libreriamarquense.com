@@ -8,6 +8,13 @@ $current_page = basename(
     $_SERVER['PHP_SELF'] ?? 'index.php'
 );
 
+$error_actual = (
+    isset($_GET['error']) &&
+    is_scalar($_GET['error'])
+)
+    ? trim((string) $_GET['error'])
+    : '';
+
 $seo_title =
     'Librería Marquense | Libros, papelería y útiles escolares';
 
@@ -22,6 +29,11 @@ $seo_image =
 
 $seo_robots =
     'index, follow, max-image-preview:large';
+
+if ($error_actual !== '') {
+    $seo_robots =
+        'noindex, follow, max-image-preview:large';
+}
 
 include 'head.php';
 
@@ -253,11 +265,11 @@ if ($ch !== false) {
 </style>
 
 <!-- Mensaje de error si viene de redirección -->
-<?php if (isset($_GET['error'])): ?>
+<?php if ($error_actual !== ''): ?>
     <div class="container" style="margin-top: 20px;">
         <div class="alert alert-danger" role="alert" style="padding: 15px; margin-bottom: 20px; border-radius: 5px;">
             <?php
-            $error = $_GET['error'];
+            $error = $error_actual;
             switch ($error) {
                 case 'producto_no_encontrado':
                     echo '<strong>⚠️ Producto no encontrado:</strong> El producto que buscas no existe o ha sido eliminado.';

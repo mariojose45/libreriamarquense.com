@@ -20,7 +20,7 @@ include 'assets/php/legal_page_layout.php';
         <div class="page-title-content">
             <h2>T&eacute;rminos y Condiciones</h2>
             <ul>
-                <li><a href="index.php">Inicio</a></li>
+                <li><a href="/">Inicio</a></li>
                 <li>T&eacute;rminos y Condiciones</li>
             </ul>
         </div>

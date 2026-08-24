@@ -200,7 +200,7 @@ if (!empty($nosotrosData) && is_array($nosotrosData)) {
         <div class="page-title-content">
             <h2>Sobre Nosotros</h2>
             <ul>
-                <li><a href="index.php">Inicio</a></li>
+                <li><a href="/">Inicio</a></li>
                 <li>Nosotros</li>
             </ul>
         </div>

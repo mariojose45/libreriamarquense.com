@@ -3,9 +3,7 @@ $current_page = basename(
     $_SERVER['PHP_SELF'] ?? 'derechos.php'
 );
 
-$paginas_servicios = [
-    'derechos.php'
-];
+$paginas_servicios = [];
 
 $seo_title = 'Derechos de autor | Librería Marquense';
 
@@ -15,6 +13,11 @@ $canonical_url = 'https://libreriamarquense.com/derechos.php';
 
 $seo_robots = 'index, follow, max-image-preview:large';
 
+$seo_og_type = 'website';
+
+$seo_image =
+    'https://libreriamarquense.com/assets/img/LogoLibreriaMarquense.jpeg';
+
 include 'head.php';
 ?>
 
@@ -23,7 +26,7 @@ include 'head.php';
         <div class="page-title-content">
             <h2>Derechos de Autor</h2>
             <ul>
-                <li><a href="index.php">Inicio</a></li>
+                <li><a href="/">Inicio</a></li>
                 <li>Derechos de Autor</li>
             </ul>
         </div>

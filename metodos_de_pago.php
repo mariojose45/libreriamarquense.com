@@ -18,7 +18,7 @@ include 'assets/php/legal_page_layout.php';
         <div class="page-title-content">
             <h2>M&eacute;todos de Pago</h2>
             <ul>
-                <li><a href="index.php">Inicio</a></li>
+                <li><a href="/">Inicio</a></li>
                 <li>M&eacute;todos de Pago</li>
             </ul>
         </div>

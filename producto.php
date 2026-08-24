@@ -16,7 +16,7 @@ if (
     !preg_match('/^[0-9]+$/', (string) $id_raw)
 ) {
     header(
-        'Location: index.php?error=' .
+        'Location: /?error=' .
         (
             $id_raw === null
                 ? 'id_faltante'
@@ -36,7 +36,7 @@ if (
     $idarticulo > 999999
 ) {
     header(
-        'Location: index.php?error=producto_no_encontrado',
+        'Location: /?error=producto_no_encontrado',
         true,
         302
     );
@@ -82,6 +82,8 @@ $seo_product_api =
     'https://ssl.sol.sistemasolgt.com/libremarquenseDos/api/api_tienda_articulos_listarid.php';
 
 $seo_product = null;
+
+$seo_lookup_confirmed = false;
 
 if (function_exists('curl_init')) {
     $seo_ch = curl_init(
@@ -196,6 +198,7 @@ if (function_exists('curl_init')) {
                 isset($seo_data['data']) &&
                 is_array($seo_data['data'])
             ) {
+                $seo_lookup_confirmed = true;
                 foreach (
                     $seo_data['data']
                     as $seo_item
@@ -241,6 +244,31 @@ if (function_exists('curl_init')) {
             }
         }
     }
+}
+
+// ============================================================
+// PRODUCTO INEXISTENTE - RESPUESTA SEO CORRECTA
+// ============================================================
+
+if (
+    $seo_lookup_confirmed === true &&
+    $seo_product === null
+) {
+    http_response_code(404);
+
+    $seo_title =
+        'Producto no encontrado | Librería Marquense';
+
+    $seo_description =
+        'El producto solicitado no se encuentra disponible en Librería Marquense. Consulta nuestro catálogo para encontrar otros productos.';
+
+    $seo_robots =
+        'noindex, follow, max-image-preview:large';
+
+    $seo_og_type =
+        'website';
+
+    $product_schema = null;
 }
 
 // ============================================================
@@ -957,7 +985,7 @@ if (
             <h2>Tienda</h2>
 
             <ul>
-                <li><a href="index.php">Inicio</a></li>
+                <li><a href="/">Inicio</a></li>
                 <li>Tienda</li>
             </ul>
         </div>
@@ -1344,7 +1372,7 @@ if (
             document.getElementById('producto-error').style.display = 'block';
             document.getElementById('producto-error').innerHTML =
                 '<p style="color: red;">ID de producto inválido. Por favor, selecciona un producto válido.</p>' +
-                '<p><a href="index.php" class="default-btn">Volver al inicio</a></p>';
+                '<p><a href="/" class="default-btn">Volver al inicio</a></p>';
 
             // Limpiar la URL para evitar que se vea el ID inválido
             if (window.history && window.history.replaceState) {

@@ -89,7 +89,7 @@ include 'head.php';
                     <h2>Carrito de compras</h2>
 
                     <ul>
-                        <li><a href="index.php">Inicio</a></li>
+                        <li><a href="/">Inicio</a></li>
                         <li>Carrito de compras</li>
                     </ul>
                 </div>

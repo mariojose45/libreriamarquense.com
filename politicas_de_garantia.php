@@ -18,7 +18,7 @@ include 'assets/php/legal_page_layout.php';
         <div class="page-title-content">
             <h2>Pol&iacute;ticas de Garant&iacute;a</h2>
             <ul>
-                <li><a href="index.php">Inicio</a></li>
+                <li><a href="/">Inicio</a></li>
                 <li>Pol&iacute;ticas de Garant&iacute;a</li>
             </ul>
         </div>

@@ -96,7 +96,7 @@ include 'head.php';
                     <h1>Contáctanos</h1>
 
                     <ul>
-                        <li><a href="index.php">Inicio</a></li>
+                        <li><a href="/">Inicio</a></li>
                         <li>Contáctanos</li>
                     </ul>
                 </div>

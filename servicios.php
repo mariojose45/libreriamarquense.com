@@ -72,7 +72,7 @@ $rutaImagenes = "https://ssl.sol.sistemasolgt.com/libremarquenseDos/files/articu
             <h2>Servicios</h2>
 
             <ul>
-                <li><a href="index.php">Inicio</a></li>
+                <li><a href="/">Inicio</a></li>
                 <li>Servicios</li>
             </ul>
         </div>
