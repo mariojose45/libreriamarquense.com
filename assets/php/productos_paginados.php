@@ -1835,7 +1835,6 @@ $selectedPriceMin = normalizarFloatOpcional($input['price_min'] ?? null);
 $selectedPriceMax = normalizarFloatOpcional($input['price_max'] ?? null);
 $selectedIdArticulo = trim((string) ($input['idarticulo'] ?? ''));
 
-/*
 if (($sourceConfig['mode'] ?? '') === 'menosde100') {
     responderMenosDe100Paginado(
         $sourceConfig,
@@ -1846,7 +1845,6 @@ if (($sourceConfig['mode'] ?? '') === 'menosde100') {
         $selectedIdArticulo
     );
 }
-*/
 
 if (($sourceConfig['mode'] ?? '') === 'busqueda') {
     $search = (string) ($sourceConfig['payload']['search'] ?? '');
