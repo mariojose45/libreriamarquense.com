@@ -352,20 +352,10 @@ function cargarProductosNuevos() {
 }
 
 /* ============================================================
-   ⭐ FUNCIÓN VISTA RÁPIDA - ABRE MODAL DE PRODUCTO
+   ⭐ FUNCIÓN VISTA RÁPIDA - ABRE FICHA DE PRODUCTO
 ============================================================ */
 function vistaRapida(nombre, imagen, precio, idarticulo, descripcion, sku = '', stock = '') {
-    const productoParaModal = {
-        nombre: nombre,
-        precio: precio,
-        descripcion: descripcion,
-        idarticulo: idarticulo,
-        sku: sku,
-        stock: stock,
-        imagenes: [imagen]
-    };
-    
-    abrirModalProducto(productoParaModal);
+    window.location.href = 'producto.php?id=' + encodeURIComponent(idarticulo);
 }
 
 let mpIndex = 0;
