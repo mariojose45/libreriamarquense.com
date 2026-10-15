@@ -1,9 +1,9 @@
 (function (window) {
     "use strict";
 
-    const EXCLUDED_NAMES = new Set([
-        "MAYORISTA", "MINOREO", "MINORISTA", "MENUDEO",
-        "MAYORISTA MAS DE 12", "MINORISTA MAS DE 6", "MENUDEO MAS DE 3", "."
+    const ALLOWED_NAMES = new Set([
+        "UNIDAD", "PAQUETE", "FARDO", "RESMA", "CAJA", "CAJAX10",
+        "PAQX100", "PAQX50", "PAQX12", "PAQX25", "PAQX10"
     ]);
     const cartRegistry = {};
     const PRODUCT_STOCK_KEYS = ["stock", "stocksucursal", "existencia", "stock_unidad"];
@@ -78,13 +78,12 @@
     }
 
     function isExcludedName(name) {
-        const normalized = normalizeName(name).replace(/\bDE(?=\d)/g, "DE ");
-        return EXCLUDED_NAMES.has(normalized);
+        const normalized = normalizeName(name).replace(/[.\s]+/g, "");
+        return !ALLOWED_NAMES.has(normalized);
     }
 
     function isValidPresentationName(name) {
-        const normalized = normalizeName(name);
-        return normalized !== "" && normalized !== "0" && normalized !== "PRIMARY" && !isExcludedName(normalized);
+        return !isExcludedName(name);
     }
 
     function normalizeTipo(tipo, nombre) {

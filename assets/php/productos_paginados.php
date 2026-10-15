@@ -508,14 +508,11 @@ function normalizarNombrePresentacion($value): string
 
 function presentacionEsVisible($nombre): bool
 {
-    $normalizado = preg_replace('/\bDE(?=\d)/', 'DE ', normalizarNombrePresentacion($nombre)) ?? '';
-    if ($normalizado === '' || $normalizado === '0') {
-        return false;
-    }
+    $normalizado = preg_replace('/[.\s]+/', '', normalizarNombrePresentacion($nombre)) ?? '';
 
-    return !in_array($normalizado, [
-        'MAYORISTA', 'MINOREO', 'MINORISTA', 'MENUDEO',
-        'MAYORISTA MAS DE 12', 'MINORISTA MAS DE 6', 'MENUDEO MAS DE 3', '.',
+    return in_array($normalizado, [
+        'UNIDAD', 'PAQUETE', 'FARDO', 'RESMA', 'CAJA', 'CAJAX10',
+        'PAQX100', 'PAQX50', 'PAQX12', 'PAQX25', 'PAQX10',
     ], true);
 }
 
