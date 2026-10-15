@@ -32,6 +32,20 @@ function getApi($url)
     return $response;
 }
 
+function filtrarCategoriasVisibles(array $categorias): array
+{
+    $categoriasOcultas = ['.', 'FACTURACION', 'OTROS', 'VARIOS', 'N/A'];
+
+    return array_values(array_filter($categorias, static function ($categoria) use ($categoriasOcultas) {
+        $nombre = strtoupper(trim(strtr((string) ($categoria['nombre'] ?? ''), [
+            'ó' => 'o',
+            'Ó' => 'O',
+        ])));
+
+        return !in_array($nombre, $categoriasOcultas, true);
+    }));
+}
+
 /*
  * Encabezados de seguridad.
  */
@@ -102,6 +116,8 @@ $categorias =
     is_array($data['data'] ?? null)
         ? $data['data']
         : [];
+
+$categorias = filtrarCategoriasVisibles($categorias);
 
 ?>
 

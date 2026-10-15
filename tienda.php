@@ -113,6 +113,8 @@ $categorias = (
     ? $data['data']
     : [];
 
+$categorias = filtrarCategoriasVisibles($categorias);
+
 ?>
 
         <style>

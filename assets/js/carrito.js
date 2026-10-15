@@ -728,17 +728,17 @@ function agregarAlCarrito(idarticulo, nombre, precio, imagen, descripcion = '', 
 function agregarAlCarritoDesdeModal() {
     const titulo = document.getElementById('mp-titulo')?.innerText || '';
     const precio = document.getElementById('mp-precio')?.innerText.replace('Q', '') || '0';
-    const sku = document.getElementById('mp-sku')?.innerText || '';
+    const idarticulo = typeof mpProductoActual !== 'undefined' ? mpProductoActual?.idarticulo : null;
     const imagen = document.getElementById('mp-imagen-principal')?.src || '';
     const descripcion = document.getElementById('mp-descripcion')?.innerText || '';
     const cantidad = document.getElementById('mp-cantidad')?.value || '1';
     
-    if (!sku) {
-        console.error('No se pudo obtener el SKU del producto');
+    if (!idarticulo) {
+        console.error('No se pudo obtener el identificador del producto');
         return;
     }
     
-    agregarAlCarrito(sku, titulo, precio, imagen, descripcion, cantidad);
+    agregarAlCarrito(idarticulo, titulo, precio, imagen, descripcion, cantidad);
     
     // Cerrar el modal después de agregar
     setTimeout(() => {

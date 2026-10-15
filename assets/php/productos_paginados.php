@@ -508,12 +508,15 @@ function normalizarNombrePresentacion($value): string
 
 function presentacionEsVisible($nombre): bool
 {
-    $normalizado = normalizarNombrePresentacion($nombre);
+    $normalizado = preg_replace('/\bDE(?=\d)/', 'DE ', normalizarNombrePresentacion($nombre)) ?? '';
     if ($normalizado === '' || $normalizado === '0') {
         return false;
     }
 
-    return !in_array($normalizado, ['MAYORISTA', 'MINOREO', 'MINORISTA', 'MENUDEO'], true);
+    return !in_array($normalizado, [
+        'MAYORISTA', 'MINOREO', 'MINORISTA', 'MENUDEO',
+        'MAYORISTA MAS DE 12', 'MINORISTA MAS DE 6', 'MENUDEO MAS DE 3', '.',
+    ], true);
 }
 
 function primerValorProducto(array $producto, array $keys)

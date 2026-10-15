@@ -1,7 +1,10 @@
 (function (window) {
     "use strict";
 
-    const EXCLUDED_NAMES = new Set(["MAYORISTA", "MINOREO", "MINORISTA", "MENUDEO"]);
+    const EXCLUDED_NAMES = new Set([
+        "MAYORISTA", "MINOREO", "MINORISTA", "MENUDEO",
+        "MAYORISTA MAS DE 12", "MINORISTA MAS DE 6", "MENUDEO MAS DE 3", "."
+    ]);
     const cartRegistry = {};
     const PRODUCT_STOCK_KEYS = ["stock", "stocksucursal", "existencia", "stock_unidad"];
     const DIRECT_PRESENTATIONS = [
@@ -75,12 +78,13 @@
     }
 
     function isExcludedName(name) {
-        return EXCLUDED_NAMES.has(normalizeName(name));
+        const normalized = normalizeName(name).replace(/\bDE(?=\d)/g, "DE ");
+        return EXCLUDED_NAMES.has(normalized);
     }
 
     function isValidPresentationName(name) {
         const normalized = normalizeName(name);
-        return normalized !== "" && normalized !== "0" && normalized !== "PRIMARY" && !EXCLUDED_NAMES.has(normalized);
+        return normalized !== "" && normalized !== "0" && normalized !== "PRIMARY" && !isExcludedName(normalized);
     }
 
     function normalizeTipo(tipo, nombre) {
