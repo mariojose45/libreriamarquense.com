@@ -13,29 +13,14 @@ try {
         throw new \LM\CyberSource\GatewayException('La pasarela no esta configurada.');
     }
 
-    $session = $store->find($reference);
-    if (!$session) {
-        throw new \LM\CyberSource\GatewayException('No encontramos la referencia de pago.');
-    }
-
-    if (isset($session['expires_at']) && strtotime($session['expires_at']) < time()) {
-        $session['status'] = 'EXPIRED';
-        $store->save($reference, $session);
-        throw new \LM\CyberSource\GatewayException('La sesion de pago vencio. Vuelve al carrito para intentarlo de nuevo.');
-    }
-
-    $secureAcceptance = new \LM\CyberSource\SecureAcceptanceService($config);
-    $fields = $secureAcceptance->buildSignedFormFields($session);
+    $coordinator = new \LM\CyberSource\CheckoutCoordinator($config, $store);
+    lm_security_start_session();
+    $fields = $coordinator->prepare($reference, hash('sha256', session_id()));
+    session_write_close();
     $endpoint = $config->getSecureAcceptanceEndpoint();
     $siteBaseUrl = rtrim((string) $config->get('site.base_url'), '/');
     $logoUrl = $siteBaseUrl . '/assets/img/LogoLibreriaMarquense.jpeg';
 
-    $session['secure_acceptance_request'] = array(
-        'endpoint' => $endpoint,
-        'transaction_uuid' => $fields['transaction_uuid'],
-        'signed_at' => gmdate('c'),
-    );
-    $store->save($reference, $session);
 } catch (Throwable $e) {
     $logger->warning('No se pudo redirigir a Secure Acceptance', array('reference' => $reference, 'message' => $e->getMessage()));
     http_response_code(400);

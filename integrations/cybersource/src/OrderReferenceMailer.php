@@ -15,6 +15,14 @@ class OrderReferenceMailer
 
     public function send(array $orderPayload, array $orderResponse = array(), $paymentReference = '')
     {
+        $isTest = strtolower((string) $this->config->get('environment', 'test')) === 'test';
+        if ($isTest && !SideEffectPolicy::isolated($this->config)) {
+            return array('attempted' => false, 'sent' => false, 'reason' => 'test_delivery_blocked');
+        }
+        if (!$isTest && (!in_array($this->config->get('environment'), array('production', 'prod'), true)
+            || $this->config->get('execution.production_authorized', false) !== true)) {
+            return array('attempted' => false, 'sent' => false, 'reason' => 'production_not_authorized');
+        }
         if (!$this->isEnabled()) {
             return array('attempted' => false, 'sent' => false, 'reason' => 'disabled');
         }
@@ -50,6 +58,17 @@ class OrderReferenceMailer
 
         $subject = $this->buildSubject($quotationNumber, $paymentReference);
         $body = $this->buildBody($orderPayload, $quotationNumber, $paymentReference);
+        if ($isTest) {
+            SideEffectPolicy::assertIsolation($this->config);
+            $capture = array('recipient' => $recipient, 'subject' => $subject, 'body' => $body);
+            $file = $this->config->get('isolation.root') . '/mail-' . hash('sha256', $mainReference) . '.json';
+            $json = json_encode($capture);
+            if ($json === false || @file_put_contents($file, $json, LOCK_EX) !== strlen($json)) {
+                throw new PaymentStorageException('No se pudo capturar el correo de prueba.');
+            }
+            @chmod($file, 0640);
+            return array('attempted' => true, 'sent' => true, 'reason' => 'captured_not_delivered');
+        }
         $headers = $this->buildHeaders($recipient);
         $mailParameters = $this->buildMailParameters();
 

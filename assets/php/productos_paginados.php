@@ -1,6 +1,7 @@
 <?php
 declare(strict_types=1);
 
+require_once __DIR__ . '/https.php';
 header('Content-Type: application/json; charset=UTF-8');
 header('X-Content-Type-Options: nosniff');
 
@@ -260,6 +261,7 @@ function validarConfiguracionFuente(array $sourceConfig): ?string
 function obtenerRutaCache(string $mode, array $payload): string
 {
     $cacheDir = dirname(__DIR__) . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR . 'productos_paginados';
+    $cacheDir = lm_store_cache_directory($cacheDir);
     if (!is_dir($cacheDir)) {
         if (!@mkdir($cacheDir, 0755, true) && !is_dir($cacheDir)) {
             registrarErrorProductos('No fue posible crear el directorio de cache.');
@@ -373,11 +375,10 @@ function consultarApiRemota(string $url, array $payload): array
         CURLOPT_POSTFIELDS => $requestBody,
         CURLOPT_HTTPHEADER => ['Content-Type: application/json'],
         CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_SSL_VERIFYPEER => false,
-        CURLOPT_SSL_VERIFYHOST => false,
         CURLOPT_CONNECTTIMEOUT => 10,
         CURLOPT_TIMEOUT => 25,
     ]);
+    curl_setopt_array($ch, lm_store_https_options($url));
 
     $response = curl_exec($ch);
     $error = curl_error($ch);
@@ -703,11 +704,10 @@ function abrirRespuestaRemotaComoStream(string $url, array $payload, string $cac
         CURLOPT_POSTFIELDS => $requestBody,
         CURLOPT_HTTPHEADER => ['Content-Type: application/json'],
         CURLOPT_FILE => $stream,
-        CURLOPT_SSL_VERIFYPEER => false,
-        CURLOPT_SSL_VERIFYHOST => false,
         CURLOPT_CONNECTTIMEOUT => 10,
         CURLOPT_TIMEOUT => 45,
     ]);
+    curl_setopt_array($ch, lm_store_https_options($url));
 
     $executed = curl_exec($ch);
     $error = curl_error($ch);
@@ -1333,11 +1333,10 @@ function consultarBusquedaRemotaPorCampos(string $url, array $payload, array $ti
             CURLOPT_POSTFIELDS => json_encode($payloadCampo, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
             CURLOPT_HTTPHEADER => ['Content-Type: application/json'],
             CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_SSL_VERIFYPEER => false,
-            CURLOPT_SSL_VERIFYHOST => false,
             CURLOPT_CONNECTTIMEOUT => 4,
             CURLOPT_TIMEOUT => 10,
         ]);
+        curl_setopt_array($ch, lm_store_https_options($url));
 
         $handles[] = $ch;
         curl_multi_add_handle($multiHandle, $ch);
@@ -1699,11 +1698,10 @@ function consultarProductosPorCategorias(string $baseApi, array $idsCategorias):
                 CURLOPT_POSTFIELDS => json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
                 CURLOPT_HTTPHEADER => ['Content-Type: application/json'],
                 CURLOPT_RETURNTRANSFER => true,
-                CURLOPT_SSL_VERIFYPEER => false,
-                CURLOPT_SSL_VERIFYHOST => false,
                 CURLOPT_CONNECTTIMEOUT => 4,
                 CURLOPT_TIMEOUT => 12,
             ]);
+            curl_setopt_array($ch, lm_store_https_options($baseApi . 'api_tienda_articulos_listarProductosxCategoria.php'));
 
             $handles[] = $ch;
             curl_multi_add_handle($multiHandle, $ch);

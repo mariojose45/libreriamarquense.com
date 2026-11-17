@@ -2,80 +2,47 @@
 
 require __DIR__ . '/_bootstrap.php';
 
-$params = $_SERVER['REQUEST_METHOD'] === 'POST' ? $_POST : $_GET;
-
-$checkout = new \LM\CyberSource\HostedCheckoutService($config);
-$secureAcceptance = new \LM\CyberSource\SecureAcceptanceService($config);
-
-if (isset($params['signed_field_names'], $params['signature'])) {
-    $reference = $secureAcceptance->extractReference($params);
-    $trusted = $secureAcceptance->validateResponse($params);
-    $status = $secureAcceptance->normalizeDecision($params);
-} else {
-    $reference = isset($params['ref']) ? $params['ref'] : (isset($params['reference']) ? $params['reference'] : '');
-    $statusParam = isset($params['status']) ? $params['status'] : (isset($params['payment_status']) ? $params['payment_status'] : '');
-    $trusted = $checkout->validateProviderSignature($params);
-    $status = $checkout->normalizeStatus($statusParam);
-}
-
+$reference = '';
 $title = 'Pago en validacion';
 $message = 'Recibimos el retorno del portal de pago. Tu pedido queda en revision mientras se confirma la transaccion.';
 $clearCart = false;
 
 try {
-    if (!lm_payment_reference_is_valid($reference)) {
-        throw new \LM\CyberSource\GatewayException('Referencia de pago no valida.');
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        throw new \LM\CyberSource\GatewayException('Se requiere el retorno firmado de CyberSource.');
     }
-
-    $session = $store->find($reference);
-
-    if (!$session) {
-        throw new \LM\CyberSource\GatewayException('No encontramos la referencia de pago.');
-    }
-
-    if (lm_session_is_expired($session)) {
-        $session['status'] = 'EXPIRED';
-        $store->save($reference, $session);
-        throw new \LM\CyberSource\GatewayException('La sesion de pago vencio.');
-    }
-
-    $session['provider_return'] = array(
-        'trusted' => $trusted,
-        'status' => $status,
-        'params' => $params,
-        'received_at' => gmdate('c'),
+    $params = \LM\CyberSource\SecureAcceptanceNotification::parseForm(
+        file_get_contents('php://input', false, null, 0, 131073),
+        isset($_SERVER['CONTENT_TYPE']) ? $_SERVER['CONTENT_TYPE'] : ''
     );
-
-    if ($trusted && $status === 'APPROVED') {
-        if (!lm_provider_amount_matches_session($params, $session)) {
-            throw new \LM\CyberSource\GatewayException('El monto aprobado no coincide con el total del pedido.');
+    $service = new \LM\CyberSource\SecureAcceptanceService($config);
+    $notifications = new \LM\CyberSource\SecureAcceptanceNotification($service, $store);
+    $session = $notifications->receive($params, 'customer_response');
+    $reference = $session['reference'];
+    if (!empty($session['payment_verified']) && empty($session['notification_queued'])) {
+        try {
+            $session = lm_finalize_paid_session($session, $config, $store, $logger);
+        } catch (Throwable $e) {
+            $logger->warning('Pedido pendiente de procesamiento durable', array('reference' => $reference));
         }
-
-        $session['status'] = 'PAID';
-        $session['provider_transaction_id'] = $secureAcceptance->extractTransactionId($params);
-        $session['provider_authorization_number'] = $secureAcceptance->extractAuthorizationNumber($params);
-        $store->save($reference, $session);
-
-        $session = lm_finalize_paid_session($session, $config, $store, $logger);
-        $title = 'Pago aprobado';
-        $message = 'Tu pago fue aprobado y el pedido fue enviado correctamente.';
+        $held = \LM\CyberSource\Reconciliation::held($session) || \LM\CyberSource\ChargeGroups::blocked($store, $session)
+            || $store->hasPendingEvents($reference);
+        $title = $held ? 'Pago en revision' : 'Pago aprobado';
+        $message = $held
+            ? 'Se registro un pago, pero existe una incidencia que necesita conciliacion. No vuelvas a pagar; conserva tu referencia.'
+            : ($session['status'] === 'ORDER_SENT'
+            ? 'Tu pago fue aprobado y el pedido fue enviado correctamente.'
+            : 'Tu pago fue aprobado. El registro del pedido esta pendiente de confirmacion; no vuelvas a pagar. Conserva tu referencia.');
         $clearCart = true;
-    } elseif ($trusted && $status === 'DECLINED') {
-        $session['status'] = 'DECLINED';
-        $store->save($reference, $session);
+    } elseif ($session['status'] === 'DECLINED') {
         $title = 'Pago rechazado';
         $message = 'El portal de pago rechazo la transaccion. Puedes volver al carrito e intentarlo nuevamente.';
-    } elseif ($trusted && $status === 'CANCELLED') {
-        $session['status'] = 'CANCELLED';
-        $store->save($reference, $session);
+    } elseif ($session['status'] === 'CANCELLED') {
         $title = 'Pago cancelado';
         $message = 'El pago fue cancelado. Puedes volver al carrito cuando desees continuar.';
-    } else {
-        $session['status'] = 'AWAITING_CONFIRMATION';
-        $store->save($reference, $session);
     }
 } catch (Throwable $e) {
-    $logger->warning('Retorno de pago no finalizado', array('reference' => $reference, 'message' => $e->getMessage()));
+    $logger->warning('Retorno de pago no finalizado', array('reference' => $reference, 'exception' => get_class($e)));
     $title = 'Pago pendiente';
     $message = 'No fue posible confirmar automaticamente el pago. Conserva tu referencia y contactanos para validarlo.';
 }

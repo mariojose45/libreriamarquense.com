@@ -1509,6 +1509,7 @@ function cerrarVentanaPagoExterna(ventanaPago) {
 }
 
 function restaurarBotonPagoTarjeta(btnEnviar) {
+    iniciarPagoTarjeta.inFlight = false;
     if (btnEnviar) {
         btnEnviar.disabled = false;
         actualizarVistaPagoTarjeta();
@@ -1516,6 +1517,8 @@ function restaurarBotonPagoTarjeta(btnEnviar) {
 }
 
 function iniciarPagoTarjeta(apiData, btnEnviar) {
+    if (iniciarPagoTarjeta.inFlight) return;
+    iniciarPagoTarjeta.inFlight = true;
     const ventanaPago = abrirVentanaPagoExterna();
     const csrfToken = document.getElementById('checkoutCsrfToken')?.value || '';
 
@@ -1548,30 +1551,26 @@ function iniciarPagoTarjeta(apiData, btnEnviar) {
                 secureApiData.deviceFingerprintID = deviceFingerprintId;
             }
 
-            return fetch('/api/cybersource/create_checkout.php', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-Token': csrfToken
-                },
-                body: JSON.stringify(secureApiData)
-            });
-        })
-        .then(response => {
-            return response.text().then(text => {
-                let data;
-                try {
-                    data = JSON.parse(text);
-                } catch (e) {
-                    throw new Error('La respuesta de la pasarela no es valida');
+            async function solicitarCheckout(payload, confirmed = false) {
+                const response = await fetch('/api/cybersource/create_checkout.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': csrfToken },
+                    body: JSON.stringify(payload)
+                });
+                const data = await response.json();
+                if (response.status === 409 && data.requires_confirmation && !confirmed) {
+                    const accepted = typeof Swal !== 'undefined'
+                        ? (await Swal.fire({ icon: 'warning', title: 'Confirmar otra compra',
+                            text: data.message, showCancelButton: true,
+                            confirmButtonText: 'Crear nueva compra', cancelButtonText: 'Cancelar' })).isConfirmed
+                        : window.confirm(data.message);
+                    if (!accepted) throw new Error('No se creo un nuevo intento. Conserva tu referencia anterior.');
+                    return solicitarCheckout(Object.assign({}, payload, { purchase_confirmation: data.purchase_confirmation }), true);
                 }
-
-                if (!response.ok || !data.success) {
-                    throw new Error(data.message || `Error HTTP: ${response.status}`);
-                }
-
+                if (!response.ok || !data.success) throw new Error(data.message || 'No se pudo iniciar el pago.');
                 return data;
-            });
+            }
+            return solicitarCheckout(secureApiData);
         })
         .then(data => {
             if (!data.redirect_url) {

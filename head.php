@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__ . '/assets/php/https.php';
+
 function getApi($url)
 {
     $ch = curl_init();
@@ -9,12 +11,9 @@ function getApi($url)
     curl_setopt($ch, CURLOPT_POSTFIELDS, []);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
-    /*
-     * Se conserva temporalmente esta configuración
-     * para no afectar la conexión con la API externa.
-     */
-    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 12);
+    curl_setopt_array($ch, lm_store_https_options($url));
 
     $response = curl_exec($ch);
 
@@ -65,6 +64,15 @@ if (!headers_sent()) {
         . "upgrade-insecure-requests; "
         . "form-action 'self';";
 
+    if (\LM\CyberSource\SideEffectPolicy::isolated(lm_store_transport_config())) {
+        $providerTest = lm_store_transport_config()->get('isolation.provider_test', false) === true;
+        $collector = $providerTest ? ' https://h.online-metrix.net' : '';
+        $content_security_policy = "default-src 'self'; script-src 'self' 'unsafe-inline'" . $collector
+            . "; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:" . $collector
+            . "; font-src 'self' data:; connect-src 'self'" . $collector . "; frame-src 'self'" . $collector
+            . "; object-src 'none'; base-uri 'self'; frame-ancestors 'self'; form-action 'self'"
+            . ($providerTest ? ' https://testsecureacceptance.cybersource.com' : '') . ';';
+    }
     header('X-Content-Type-Options: nosniff');
     header('X-Frame-Options: SAMEORIGIN');
     header('Referrer-Policy: strict-origin-when-cross-origin');
@@ -126,6 +134,11 @@ $categorias = filtrarCategoriasVisibles($categorias);
 <html lang="es-GT">
 
 <head>
+
+    <?php if (\LM\CyberSource\SideEffectPolicy::isolated(lm_store_transport_config())): ?>
+        <script>window.LM_ISOLATED_STORE = {providerTest: <?php echo lm_store_transport_config()->get('isolation.provider_test', false) ? 'true' : 'false'; ?>};</script>
+        <script src="/assets/js/store-test-transport.js"></script>
+    <?php endif; ?>
 
     <meta charset="utf-8">
 

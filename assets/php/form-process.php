@@ -1,6 +1,7 @@
 <?php
 
 require_once __DIR__ . '/security.php';
+require_once __DIR__ . '/https.php';
 
 const LM_CONTACT_EMAIL_TO = 'servicioalcliente@libreriamarquense.com';
 const LM_CONTACT_EMAIL_FROM = 'no-reply@libreriamarquense.com';
@@ -86,6 +87,28 @@ $body .= "Mensaje:\n" . $message . "\n\n";
 $body .= "===========================================\n";
 $body .= "Este mensaje fue enviado desde el formulario de contacto del sitio web.";
 
+$transportConfig = lm_store_transport_config();
+if ($transportConfig->get('environment', 'test') === 'test') {
+    if (\LM\CyberSource\SideEffectPolicy::isolated($transportConfig)) {
+        \LM\CyberSource\SideEffectPolicy::assertIsolation($transportConfig);
+        $capture = json_encode(array('recipient' => $emailTo, 'subject' => $mailSubject, 'body' => $body));
+        $captureFile = $transportConfig->get('isolation.root') . '/contact-mail-' . hash('sha256', $body) . '.json';
+        if ($capture !== false && file_put_contents($captureFile, $capture, LOCK_EX) === strlen($capture)) {
+            @chmod($captureFile, 0640);
+            echo 'success';
+            exit;
+        }
+    }
+    http_response_code(503);
+    echo 'El correo real esta deshabilitado en TEST.';
+    exit;
+}
+if (!in_array($transportConfig->get('environment'), array('production', 'prod'), true)
+    || $transportConfig->get('execution.production_authorized', false) !== true) {
+    http_response_code(503);
+    echo 'El envio de correo no esta autorizado.';
+    exit;
+}
 $logDir = dirname(__DIR__, 2) . '/logs';
 if (is_dir($logDir) && is_writable($logDir)) {
     $backupData = "==========================================\n";

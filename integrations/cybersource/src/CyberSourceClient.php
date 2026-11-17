@@ -15,6 +15,8 @@ class CyberSourceClient
 
     public function request($method, $path, array $payload = array())
     {
+        $url = $this->config->getCyberSourceBaseUrl() . $path;
+        SideEffectPolicy::assertRestTransport($this->config, $url);
         if (!$this->config->hasRestCredentials()) {
             throw new GatewayException('Faltan credenciales REST de CyberSource.');
         }
@@ -45,11 +47,12 @@ class CyberSourceClient
             CURLOPT_POSTFIELDS => $body,
             CURLOPT_TIMEOUT => 30,
         ));
+        curl_setopt_array($ch, HttpsTransport::curlOptions($this->config, $url, 'rest'));
 
         $responseBody = curl_exec($ch);
         $statusCode = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
         $error = curl_error($ch);
-        curl_close($ch);
+        unset($ch);
 
         $decoded = json_decode((string) $responseBody, true);
         $this->logger->info('CyberSource REST response', array(

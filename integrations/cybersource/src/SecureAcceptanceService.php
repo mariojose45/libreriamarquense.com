@@ -11,6 +11,11 @@ class SecureAcceptanceService
         $this->config = $config;
     }
 
+    public function config()
+    {
+        return $this->config;
+    }
+
     public function buildSignedFormFields(array $session)
     {
         if (!$this->config->hasSecureAcceptance()) {
@@ -23,7 +28,8 @@ class SecureAcceptanceService
 
         $siteBaseUrl = rtrim((string) $this->config->get('site.base_url'), '/');
         $returnUrl = $siteBaseUrl . $this->config->get('site.return_path');
-        $cancelUrl = $siteBaseUrl . $this->config->get('site.cancel_path');
+        // Both responses must reach the authenticated form handler, not cart.php.
+        $cancelUrl = $returnUrl;
         $transactionType = trim((string) $this->config->get('secure_acceptance.transaction_type', ''));
         if ($transactionType === '') {
             $transactionType = (string) $this->config->get('operation', 'authorization');
@@ -34,14 +40,16 @@ class SecureAcceptanceService
         $fields = array(
             'access_key' => (string) $this->config->get('secure_acceptance.access_key'),
             'profile_id' => (string) $this->config->get('secure_acceptance.profile_id'),
-            'transaction_uuid' => $session['reference'] . '-' . bin2hex(random_bytes(8)),
+            'transaction_uuid' => isset($session['secure_acceptance_request']['transaction_uuid'])
+                ? $session['secure_acceptance_request']['transaction_uuid'] : bin2hex(random_bytes(16)),
             'signed_field_names' => '',
             'unsigned_field_names' => '',
-            'signed_date_time' => gmdate('Y-m-d\TH:i:s\Z'),
+            'signed_date_time' => isset($session['secure_acceptance_request']['signed_date_time'])
+                ? $session['secure_acceptance_request']['signed_date_time'] : gmdate('Y-m-d\TH:i:s\Z'),
             'locale' => (string) $this->config->get('secure_acceptance.locale', 'es'),
             'transaction_type' => strtolower($transactionType),
             'reference_number' => $session['reference'],
-            'amount' => number_format((float) $session['amount'], 2, '.', ''),
+            'amount' => Money::decimal(Money::cents($session['amount'])),
             'currency' => $session['currency'],
             'bill_to_forename' => $customer['first_name'],
             'bill_to_surname' => $customer['last_name'],
@@ -68,18 +76,35 @@ class SecureAcceptanceService
         return $fields;
     }
 
-    public function validateResponse(array $params)
+    public function authenticateResponse(array $params)
     {
-        if (!$this->config->hasSecureAcceptance()) {
-            return false;
-        }
+        return (new SecureAcceptanceResponse($this->config))->authenticate($params);
+    }
 
-        if (!isset($params['signature'], $params['signed_field_names'])) {
-            return false;
-        }
+    public function hasValidResponseSignature(array $params)
+    {
+        return $this->authenticateResponse($params) !== null;
+    }
 
-        $expected = $this->sign($params);
-        return hash_equals($expected, (string) $params['signature']);
+    public function responseIssues(array $params, array $session)
+    {
+        $validator = new SecureAcceptanceResponse($this->config);
+        $authenticated = $validator->authenticate($params);
+        return $authenticated === null ? array('invalid_signature') : $validator->issues($authenticated, $session);
+    }
+
+    public function validateResponse(array $params, array $session)
+    {
+        return count($this->responseIssues($params, $session)) === 0;
+    }
+
+    public function credentialFingerprint()
+    {
+        return SecureAcceptanceResponse::fingerprint(
+            (string) $this->config->get('secure_acceptance.profile_id'),
+            (string) $this->config->get('secure_acceptance.access_key'),
+            (string) $this->config->get('secure_acceptance.secret_key')
+        );
     }
 
     public function normalizeDecision(array $params)
@@ -87,11 +112,15 @@ class SecureAcceptanceService
         $decision = strtoupper(trim((string) $this->value($params, 'decision', '')));
         $reasonCode = trim((string) $this->value($params, 'reason_code', ''));
 
-        if ($decision === 'ACCEPT' || $reasonCode === '100') {
+        if ($decision === 'ACCEPT' && $reasonCode === '100') {
             return 'APPROVED';
         }
 
-        if (in_array($decision, array('DECLINE', 'REJECT', 'ERROR'), true)) {
+        if ($decision === 'ERROR' || in_array($reasonCode, array('104', '150', '151', '152'), true)) {
+            return 'REVIEW';
+        }
+
+        if (in_array($decision, array('DECLINE', 'REJECT'), true)) {
             return 'DECLINED';
         }
 
@@ -99,8 +128,8 @@ class SecureAcceptanceService
             return 'CANCELLED';
         }
 
-        if ($reasonCode !== '' && $reasonCode !== '100') {
-            return 'DECLINED';
+        if ($decision === 'REVIEW') {
+            return 'REVIEW';
         }
 
         return 'PENDING';
@@ -108,18 +137,13 @@ class SecureAcceptanceService
 
     public function extractReference(array $params)
     {
-        foreach (array('req_reference_number', 'reference_number', 'ref', 'reference') as $key) {
-            if (isset($params[$key]) && trim((string) $params[$key]) !== '') {
-                return trim((string) $params[$key]);
-            }
-        }
-
-        return '';
+        return isset($params['req_reference_number']) && is_string($params['req_reference_number'])
+            ? $params['req_reference_number'] : '';
     }
 
     public function extractTransactionId(array $params)
     {
-        foreach (array('transaction_id', 'request_token', 'id') as $key) {
+        foreach (array('transaction_id') as $key) {
             if (isset($params[$key]) && trim((string) $params[$key]) !== '') {
                 return trim((string) $params[$key]);
             }
@@ -130,7 +154,7 @@ class SecureAcceptanceService
 
     public function extractAuthorizationNumber(array $params)
     {
-        foreach (array('auth_code', 'authorization_code', 'auth_trans_ref_no', 'transaction_id', 'request_token', 'id') as $key) {
+        foreach (array('auth_code') as $key) {
             if (isset($params[$key]) && trim((string) $params[$key]) !== '') {
                 return trim((string) $params[$key]);
             }

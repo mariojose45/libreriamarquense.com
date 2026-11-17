@@ -34,11 +34,11 @@ try {
         ), 503);
     }
 
-    if (!$config->hasSecureAcceptance() && !$config->hasHostedCheckout()) {
+    if (!$config->hasSecureAcceptance()) {
         lm_json_response(array(
             'success' => false,
             'configured' => false,
-            'message' => 'Falta configurar Secure Acceptance o la URL oficial de Neonet.',
+            'message' => 'Falta configurar Secure Acceptance.',
         ), 503);
     }
 
@@ -51,6 +51,8 @@ try {
 
     lm_require_csrf_token('checkout', $input);
     lm_require_rate_limit_json('checkout:' . lm_client_ip(), 8, 300);
+    $confirmation = isset($input['purchase_confirmation']) && is_string($input['purchase_confirmation']) ? $input['purchase_confirmation'] : '';
+    unset($input['purchase_confirmation']);
     unset($input['csrf_token'], $input['website'], $input['deviceFingerprintID'], $input['device_fingerprint_id']);
 
     $validator = new \LM\CyberSource\OrderPayloadValidator($config);
@@ -58,29 +60,34 @@ try {
 
     $sessionTtl = (int) $config->get('secure_acceptance.session_ttl_minutes', $config->get('hosted_checkout.session_ttl_minutes', 60));
     $currency = (string) $config->get('currency', 'GTQ');
+    if ($currency !== 'GTQ') {
+        throw new \LM\CyberSource\GatewayException('Este checkout requiere moneda GTQ.');
+    }
 
     $sessionData = array(
         'status' => 'PENDING',
         'amount' => $orderPayload['total_venta'],
         'currency' => $currency,
         'order_payload' => $orderPayload,
+        'catalog_verified' => true,
+        'checkout_owner' => hash('sha256', session_id()),
+        'environment' => $config->get('environment', 'test'),
+        'isolated_test' => \LM\CyberSource\SideEffectPolicy::isolated($config),
         'expires_at' => gmdate('c', time() + ($sessionTtl * 60)),
-        'provider' => $config->hasSecureAcceptance() ? 'cybersource_secure_acceptance' : 'neonet_cybersource_hosted',
+        'provider' => 'cybersource_secure_acceptance',
     );
 
     if ($deviceFingerprintId !== '') {
         $sessionData['device_fingerprint_id'] = $deviceFingerprintId;
     }
 
-    $session = $store->create($sessionData);
+    // Same browser + same canonical purchase = one durable payment session.
+    $purchaseKey = \LM\CyberSource\CheckoutCoordinator::purchaseKey(session_id(), $orderPayload);
+    $coordinator = new \LM\CyberSource\CheckoutCoordinator($config, $store);
+    $session = $coordinator->create($sessionData, $purchaseKey, $confirmation);
 
-    if ($config->hasSecureAcceptance()) {
-        $siteBaseUrl = rtrim((string) $config->get('site.base_url'), '/');
-        $redirectUrl = $siteBaseUrl . '/api/cybersource/secure_acceptance_redirect.php?ref=' . rawurlencode($session['reference']);
-    } else {
-        $checkout = new \LM\CyberSource\HostedCheckoutService($config);
-        $redirectUrl = $checkout->buildRedirectUrl($session);
-    }
+    $siteBaseUrl = rtrim((string) $config->get('site.base_url'), '/');
+    $redirectUrl = $siteBaseUrl . '/api/cybersource/secure_acceptance_redirect.php?ref=' . rawurlencode($session['reference']);
 
     $logger->info('Checkout hospedado creado', array(
         'reference' => $session['reference'],
@@ -94,6 +101,8 @@ try {
         'reference' => $session['reference'],
         'redirect_url' => $redirectUrl,
     ));
+} catch (\LM\CyberSource\NewPurchaseRequired $e) {
+    lm_json_response($e->response(), 409);
 } catch (\LM\CyberSource\GatewayException $e) {
     $logger->warning('Checkout rechazado', array('message' => $e->getMessage()));
     lm_json_response(array('success' => false, 'message' => $e->getMessage()), 400);

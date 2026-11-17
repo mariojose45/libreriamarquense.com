@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/assets/php/https.php';
 
 // ============================================================
 // VALIDACIÓN DEL PRODUCTO Y SEO DINÁMICO
@@ -138,28 +139,7 @@ if (function_exists('curl_init')) {
             12
         );
 
-        curl_setopt(
-            $seo_ch,
-            CURLOPT_FOLLOWLOCATION,
-            true
-        );
-
-        /*
-         * Se conserva la misma configuración SSL
-         * utilizada actualmente por el proyecto
-         * para no alterar la conexión externa.
-         */
-        curl_setopt(
-            $seo_ch,
-            CURLOPT_SSL_VERIFYPEER,
-            false
-        );
-
-        curl_setopt(
-            $seo_ch,
-            CURLOPT_SSL_VERIFYHOST,
-            false
-        );
+        curl_setopt_array($seo_ch, lm_store_https_options($seo_product_api));
 
         $seo_response =
             curl_exec(

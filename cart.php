@@ -36,8 +36,17 @@ $checkout_csrf_token =
 $delivery_config =
     require __DIR__ . '/config/delivery.php';
 
-$cybersource_config =
-    require __DIR__ . '/config/cybersource.php';
+require_once __DIR__ . '/integrations/cybersource/Autoload.php';
+$payment_config = \LM\CyberSource\Config::forProcess(__DIR__);
+$cybersource_config = array(
+    'environment' => $payment_config->get('environment', 'test'),
+    'device_fingerprint' => $payment_config->get('device_fingerprint', array()),
+    'cybersource' => array('merchant_id' => $payment_config->get('cybersource.merchant_id', '')),
+);
+if (\LM\CyberSource\SideEffectPolicy::isolated($payment_config)) {
+    $delivery_config = $payment_config->get('delivery');
+    $canonical_url = rtrim($payment_config->get('site.base_url'), '/') . '/cart.php';
+}
 
 $pickup_config =
     $delivery_config['pickup'];

@@ -26,6 +26,16 @@ class Config
         return new self($data);
     }
 
+    public static function forProcess($root)
+    {
+        if (getenv('LM_PAYMENT_ISOLATED_TEST') === '1') {
+            $config = self::fromFile($root . '/integrations/cybersource/tests/isolated_config.php');
+            SideEffectPolicy::assertIsolation($config);
+            return $config;
+        }
+        return self::fromFile($root . '/config/cybersource.php');
+    }
+
     public function get($path, $default = null)
     {
         $value = $this->data;
@@ -56,9 +66,9 @@ class Config
 
     public function hasRestCredentials()
     {
-        return $this->get('cybersource.merchant_id') !== ''
-            && $this->get('cybersource.key_id') !== ''
-            && $this->get('cybersource.shared_secret') !== '';
+        return trim((string) $this->get('cybersource.merchant_id', '')) !== ''
+            && trim((string) $this->get('cybersource.key_id', '')) !== ''
+            && trim((string) $this->get('cybersource.shared_secret', '')) !== '';
     }
 
     public function hasSecureAcceptance()

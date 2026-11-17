@@ -13,12 +13,15 @@ return array(
     // Use "test" mientras CyberSource/Neonet este en pruebas.
     'environment' => 'test',
 
-    // Cambie a USD solo si su comercio/procesador lo solicita.
+    // Este checkout valida exclusivamente GTQ.
     'currency' => 'GTQ',
 
     // "authorization" = autorizar primero y capturar despues.
-    // "sale" = autorizacion + captura inmediata/liquidacion automatica.
+    // "sale" solicita autorizacion y captura; no confirma el abono bancario.
     'operation' => 'sale',
+
+    // Keep false during TEST. Production requires a separate approved rollout.
+    'execution' => array('production_authorized' => false),
 
     'cybersource' => array(
         // Merchant ID entregado por CyberSource/Neonet.
@@ -55,11 +58,14 @@ return array(
         'test_endpoint' => 'https://testsecureacceptance.cybersource.com/pay',
         'production_endpoint' => 'https://secureacceptance.cybersource.com/pay',
 
-        // Para liquidacion automatica, envie sale.
+        // Para solicitar autorizacion y captura juntas, envie sale.
         // Si se deja vacio, usa el valor de "operation".
         'transaction_type' => 'sale',
         'locale' => 'es',
         'session_ttl_minutes' => 60,
+        // Optional verification-only historical keys of the SAME environment.
+        // Never remove an old production key while genuine callbacks are pending.
+        'verification_keys' => array(),
     ),
 
     'device_fingerprint' => array(
@@ -96,6 +102,12 @@ return array(
         // Token interno para endpoints administrativos: capture/refund/void/reversal.
         'admin_token' => 'GENERE_UN_TOKEN_LARGO_Y_PRIVADO',
         'max_amount' => 50000,
+    ),
+
+    // Fuente de precios del servidor; verificar TLS, nunca deshabilitar SSL.
+    'catalog_api' => array(
+        'url' => 'https://ssl.sol.sistemasolgt.com/libremarquenseDos/api/api_tienda_articulos_listarid.php',
+        'timeout_seconds' => 12,
     ),
 
     'order_email' => array(

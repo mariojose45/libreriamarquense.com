@@ -2,6 +2,10 @@
 
 Esta integracion esta preparada para PHP puro y mantiene el flujo actual de pedidos.
 
+Estado de Fase 1: correcciones locales de seguridad, exclusivamente validadas con
+pruebas sinteticas. No constituyen una aprobacion de PRODUCCION. Ver
+[controles, pruebas y pendientes de Fase 1](cybersource-neonet-fase1-seguridad.md).
+
 ## Archivos principales
 
 - `config/cybersource.php`: configuracion base, sin secretos.
@@ -49,11 +53,8 @@ Token interno administrativo
 https://apitest.cybersource.com
 ```
 
-4. Cambiar a `production` cuando CyberSource/Neonet confirme salida a produccion:
-
-```text
-https://api.cybersource.com
-```
+4. No cambiar a `production` en esta fase. La migracion, las credenciales y la
+validacion de una operacion productiva requieren un procedimiento separado.
 
 ## Flujo actual
 
@@ -61,7 +62,10 @@ https://api.cybersource.com
 - Tarjeta prepara una referencia interna y redirige a CyberSource/Neonet Secure Acceptance.
 - La tarjeta y el CVV no se capturan ni guardan en este sitio.
 - Device Fingerprint publica los tags de `h.online-metrix.net` en el checkout y envia `device_fingerprint_id` firmado a Secure Acceptance para Decision Manager.
-- Cuando CyberSource/Neonet devuelve una respuesta firmada aprobada, el backend envia el pedido a la API externa.
+- Se verifican precios contra el catalogo HTTPS del servidor antes de crear el intento.
+- Cuando CyberSource devuelve una respuesta autenticada y correlacionada, se guarda la confirmacion antes de registrar el pedido.
+- El retorno del cliente intenta finalizar el pedido. Merchant POST solo persiste la confirmacion y responde; el procesador CLI recupera los pendientes aunque el cliente cierre el navegador.
+- El correo existente se envia solamente despues de `success: true` e `idcotizacion` positivo de la API externa.
 - No se usan logos locales de tarjetas porque la seleccion/ingreso de tarjeta ocurre dentro del portal seguro.
 
 ## Seguridad
@@ -147,6 +151,6 @@ Puntos que dependen de informacion del proveedor:
 - Parametros exactos que Neonet exige al iniciar pago hospedado.
 - Parametros exactos que Neonet devuelve al retorno o webhook.
 - Metodo de firma/validacion del retorno de Neonet.
-- Confirmacion de moneda autorizada: `GTQ` o `USD`.
+- Esta implementacion de Fase 1 valida exclusivamente `GTQ`.
 - Confirmacion operativa con Neonet: `sale` para autorizacion y captura/liquidacion automatica.
 - Confirmacion si Neonet requiere Visa Secure / 3D Secure y bajo que modalidad.

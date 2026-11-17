@@ -23,11 +23,12 @@ $config = array(
     'environment' => getenv('CYBERSOURCE_ENVIRONMENT') ?: 'test',
     'currency' => getenv('CYBERSOURCE_CURRENCY') ?: 'GTQ',
     'operation' => getenv('CYBERSOURCE_OPERATION') ?: 'sale',
+    'execution' => array('production_authorized' => false),
 
     'site' => array(
         'base_url' => getenv('SITE_BASE_URL') ?: 'https://libreriamarquense.com',
         'return_path' => '/api/cybersource/payment_return.php',
-        'cancel_path' => '/cart.php?payment=cancelled',
+        'cancel_path' => '/api/cybersource/payment_return.php',
     ),
 
     'cybersource' => array(
@@ -102,6 +103,11 @@ $config = array(
     'external_order_api' => array(
         'url' => 'https://ssl.sol.sistemasolgt.com/libremarquenseDos/api/api_cotizacion_insertar.php',
         'timeout_seconds' => 25,
+    ),
+
+    'catalog_api' => array(
+        'url' => 'https://ssl.sol.sistemasolgt.com/libremarquenseDos/api/api_tienda_articulos_listarid.php',
+        'timeout_seconds' => 12,
     ),
 
     'order_email' => array(

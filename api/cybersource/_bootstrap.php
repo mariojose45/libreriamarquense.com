@@ -14,7 +14,7 @@ use LM\CyberSource\SecureLogger;
 use LM\CyberSource\CyberSourceClient;
 use LM\CyberSource\CyberSourcePaymentService;
 
-$config = Config::fromFile(dirname(__DIR__, 2) . '/config/cybersource.php');
+$config = Config::forProcess(dirname(__DIR__, 2));
 $logger = new SecureLogger($config->get('paths.log_file'));
 $store = new PaymentSessionStore($config->get('paths.session_dir'));
 
@@ -104,126 +104,13 @@ function lm_session_is_expired(array $session)
     return isset($session['expires_at']) && strtotime((string) $session['expires_at']) < time();
 }
 
-function lm_provider_amount_matches_session(array $params, array $session)
-{
-    $expected = isset($session['amount']) ? lm_normalize_money($session['amount']) : 0.0;
-
-    foreach (array('req_amount', 'auth_amount', 'amount', 'total', 'transaction_amount', 'order_amount') as $field) {
-        if (!isset($params[$field]) || trim((string) $params[$field]) === '') {
-            continue;
-        }
-
-        $received = lm_normalize_money(preg_replace('/[^0-9.\-]/', '', (string) $params[$field]));
-        return abs($received - $expected) <= 0.01;
-    }
-
-    return true;
-}
-
 function lm_payment_service(Config $config, SecureLogger $logger)
 {
     return new CyberSourcePaymentService(new CyberSourceClient($config, $logger), $config);
 }
 
-function lm_payment_authorization_number_from_session(array $session)
-{
-    $providerPayloads = array();
-
-    foreach (array('provider_return', 'provider_webhook') as $containerKey) {
-        if (!isset($session[$containerKey]) || !is_array($session[$containerKey])) {
-            continue;
-        }
-
-        $container = $session[$containerKey];
-        $payload = array();
-
-        if (isset($container['params']) && is_array($container['params'])) {
-            $payload = $container['params'];
-        } elseif (isset($container['payload']) && is_array($container['payload'])) {
-            $payload = $container['payload'];
-        }
-
-        if ($payload) {
-            $providerPayloads[] = $payload;
-        }
-    }
-
-    foreach ($providerPayloads as $payload) {
-        foreach (array('auth_code', 'authorization_code', 'approvalCode') as $field) {
-            if (isset($payload[$field]) && trim((string) $payload[$field]) !== '') {
-                return trim((string) $payload[$field]);
-            }
-        }
-    }
-
-    if (isset($session['provider_authorization_number']) && trim((string) $session['provider_authorization_number']) !== '') {
-        return trim((string) $session['provider_authorization_number']);
-    }
-
-    foreach ($providerPayloads as $payload) {
-        foreach (array('auth_trans_ref_no', 'transaction_id', 'request_token', 'id') as $field) {
-            if (isset($payload[$field]) && trim((string) $payload[$field]) !== '') {
-                return trim((string) $payload[$field]);
-            }
-        }
-    }
-
-    if (isset($session['provider_transaction_id']) && trim((string) $session['provider_transaction_id']) !== '') {
-        return trim((string) $session['provider_transaction_id']);
-    }
-
-    return '';
-}
-
-function lm_normalize_money($value)
-{
-    return (float) number_format(round((float) $value, 2), 2, '.', '');
-}
-
-function lm_shipping_amount_from_order_payload(array $orderPayload)
-{
-    if (array_key_exists('envio', $orderPayload) && trim((string) $orderPayload['envio']) !== '') {
-        return lm_normalize_money($orderPayload['envio']);
-    }
-
-    $total = isset($orderPayload['total_venta']) ? (float) $orderPayload['total_venta'] : 0;
-    $subtotal = isset($orderPayload['total_ventades']) ? (float) $orderPayload['total_ventades'] : 0;
-
-    return lm_normalize_money(max(0, $total - $subtotal));
-}
-
-function lm_external_order_payload(array $session)
-{
-    $orderPayload = isset($session['order_payload']) && is_array($session['order_payload'])
-        ? $session['order_payload']
-        : array();
-
-    $orderPayload['envio'] = lm_shipping_amount_from_order_payload($orderPayload);
-
-    if (!array_key_exists('no_auto_tarjeta', $orderPayload) || trim((string) $orderPayload['no_auto_tarjeta']) === '') {
-        $orderPayload['no_auto_tarjeta'] = lm_payment_authorization_number_from_session($session);
-    }
-
-    return $orderPayload;
-}
-
 function lm_finalize_paid_session(array $session, Config $config, PaymentSessionStore $store, SecureLogger $logger)
 {
-    if (isset($session['external_order_response']) && is_array($session['external_order_response'])) {
-        return $session;
-    }
-
-    $orderPayload = lm_external_order_payload($session);
-    $forwarder = new OrderForwarder($config, $logger);
-    $response = $forwarder->send($orderPayload, true);
-    $mailer = new \LM\CyberSource\OrderReferenceMailer($config, $logger);
-    $emailStatus = $mailer->send($orderPayload, $response, isset($session['reference']) ? $session['reference'] : '');
-
-    $session['status'] = 'ORDER_SENT';
-    $session['order_payload'] = $orderPayload;
-    $session['external_order_response'] = $response;
-    $session['order_email'] = $emailStatus;
-    $store->save($session['reference'], $session);
-
-    return $session;
+    $processor = new \LM\CyberSource\OrderFulfillment($config, $store, $logger);
+    return $processor->process($session['reference']);
 }

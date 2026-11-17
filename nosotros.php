@@ -42,12 +42,10 @@ if (!function_exists('getApiData')) {
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_POST => true,
             CURLOPT_POSTFIELDS => [],
-            CURLOPT_SSL_VERIFYPEER => false,
-            CURLOPT_SSL_VERIFYHOST => false,
-            CURLOPT_FOLLOWLOCATION => true,
             CURLOPT_TIMEOUT => 10,
             CURLOPT_CONNECTTIMEOUT => 5,
         ]);
+        curl_setopt_array($ch, lm_store_https_options($url));
 
         $response = curl_exec($ch);
         $error = curl_error($ch);

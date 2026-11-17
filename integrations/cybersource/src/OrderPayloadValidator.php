@@ -5,15 +5,19 @@ namespace LM\CyberSource;
 class OrderPayloadValidator
 {
     private $config;
+    private $catalog;
 
-    public function __construct(Config $config)
+    public function __construct(Config $config, ?CatalogPriceValidator $catalog = null)
     {
         $this->config = $config;
+        $this->catalog = $catalog;
     }
 
     public function validateForHostedCheckout(array $payload)
     {
-        return $this->validateForOrder($payload, array('Tarjeta'));
+        $order = $this->validateForOrder($payload, array('Tarjeta'));
+        $catalog = $this->catalog ?: new CatalogPriceValidator($this->config);
+        return $catalog->validate($order);
     }
 
     public function validateForOrder(array $payload, array $allowedPaymentMethods = array('Pago Contra Entrega', 'Tarjeta', 'Transferencia'))
@@ -88,9 +92,7 @@ class OrderPayloadValidator
         $payload['total_ventades'] = $subtotal;
         $payload['envio'] = $shipping;
         $payload['datosArticulos']['articulos'] = $articleResult['articles'];
-        $payload['no_auto_tarjeta'] = array_key_exists('no_auto_tarjeta', $payload)
-            ? trim((string) $payload['no_auto_tarjeta'])
-            : '';
+        $payload['no_auto_tarjeta'] = '';
         unset($payload['modalidad_entrega'], $payload['lugar_entrega']);
 
         return $payload;

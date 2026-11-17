@@ -30,7 +30,7 @@ class SecureLogger
     {
         $dir = dirname($this->file);
         if (!is_dir($dir)) {
-            @mkdir($dir, 0755, true);
+            @mkdir($dir, 0750, true);
         }
 
         if (!is_dir($dir) || !is_writable($dir)) {
@@ -40,10 +40,14 @@ class SecureLogger
         $line = json_encode(array(
             'time' => gmdate('c'),
             'level' => $level,
-            'message' => $message,
-            'context' => SensitiveData::redact($context),
+            'message' => SensitiveData::forLog($message),
+            'context' => SensitiveData::forLog($context),
         ), JSON_UNESCAPED_SLASHES);
 
-        @file_put_contents($this->file, $line . PHP_EOL, FILE_APPEND | LOCK_EX);
+        if ($line !== false && @file_put_contents($this->file, $line . PHP_EOL, FILE_APPEND | LOCK_EX) !== false) {
+            @chmod($this->file, 0640);
+        } else {
+            error_log('CyberSource: no se pudo escribir el log seguro.');
+        }
     }
 }
