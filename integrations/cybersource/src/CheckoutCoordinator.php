@@ -33,6 +33,7 @@ class CheckoutCoordinator
 
     public function create(array $data, $purchaseKey, $confirmation = '')
     {
+        SideEffectPolicy::assertCheckout($this->config);
         return $this->store->withLock('checkout-' . $purchaseKey, function () use ($data, $purchaseKey, $confirmation) {
             $existing = $this->store->readIndex('checkout-' . $purchaseKey);
             if ($existing) {

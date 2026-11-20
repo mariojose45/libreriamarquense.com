@@ -42,6 +42,15 @@ try {
         ), 503);
     }
 
+    try {
+        \LM\CyberSource\SideEffectPolicy::assertCheckout($config);
+    } catch (\LM\CyberSource\GatewayException $e) {
+        lm_json_response(array(
+            'success' => false,
+            'message' => 'El pago con tarjeta no esta disponible en este momento.',
+        ), 503);
+    }
+
     $input = lm_read_json_body();
     $deviceFingerprintId = lm_checkout_device_fingerprint_id_from_input($input);
 

@@ -14,9 +14,14 @@ use LM\CyberSource\SecureLogger;
 use LM\CyberSource\CyberSourceClient;
 use LM\CyberSource\CyberSourcePaymentService;
 
-$config = Config::forProcess(dirname(__DIR__, 2));
-$logger = new SecureLogger($config->get('paths.log_file'));
-$store = new PaymentSessionStore($config->get('paths.session_dir'));
+try {
+    $config = Config::forProcess(dirname(__DIR__, 2));
+    $logger = new SecureLogger($config->get('paths.log_file'));
+    $store = new PaymentSessionStore($config->get('paths.session_dir'));
+} catch (Throwable $e) {
+    error_log('CyberSource: inicializacion bloqueada o almacenamiento no disponible.');
+    lm_json_response(array('success' => false, 'message' => 'El servicio de pedidos no esta disponible en este momento.'), 503);
+}
 
 function lm_json_response(array $payload, $statusCode = 200)
 {

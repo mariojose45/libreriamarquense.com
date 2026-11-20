@@ -29,6 +29,14 @@ class Config
     public static function forProcess($root)
     {
         if (getenv('LM_PAYMENT_ISOLATED_TEST') === '1') {
+            $host = isset($_SERVER['HTTP_HOST']) && is_string($_SERVER['HTTP_HOST'])
+                ? strtolower((string) parse_url('http://' . $_SERVER['HTTP_HOST'], PHP_URL_HOST)) : '';
+            $args = isset($GLOBALS['argv']) && is_array($GLOBALS['argv']) ? $GLOBALS['argv'] : array();
+            if (in_array($host, array('libreriamarquense.com', 'www.libreriamarquense.com'), true)
+                || getenv('LM_PAYMENT_PRODUCTION_CONFIRMED') === '1'
+                || in_array('--allow-production', $args, true)) {
+                throw new GatewayException('El aislamiento TEST no puede usarse en el dominio o procesador productivo.');
+            }
             $config = self::fromFile($root . '/integrations/cybersource/tests/isolated_config.php');
             SideEffectPolicy::assertIsolation($config);
             return $config;
