@@ -36,10 +36,14 @@ $held = $receiver->receive(fixtureSign($incomplete, $config), 'merchant_post');
 check($held['status'] === 'REVIEW' && !empty($held['reconciliation']), 'missing signed authorization retained');
 $complete = $receiver->receive(fixtureResponse($test, $config), 'merchant_post');
 check($complete['payment_verified'] && \LM\CyberSource\Reconciliation::held($complete), 'later complete receipt does not silently clear prior financial hold');
-$manual = new \LM\CyberSource\ManualReconciliation($store);
+$manual = new \LM\CyberSource\ManualReconciliation($store, $config);
+$manualReview = function ($reference) use ($store) {
+    return array('operator' => 'UNIT-OPERATOR', 'expected_revision' => $store->find($reference)['_revision'],
+        'customer_matches' => true, 'amount_matches' => true, 'items_match' => true, 'status_matches' => true);
+};
 $issue = array_keys($complete['reconciliation'])[0];
 rejects(function () use ($manual, $complete, $issue) { $manual->apply($complete['reference'], 'resolve', $issue, 'bad'); }, 'operator needs evidence');
-$resolved = $manual->apply($complete['reference'], 'resolve', $issue, 'NEONET-TICKET-UNIT-01');
+$resolved = $manual->apply($complete['reference'], 'resolve', $issue, 'NEONET-TICKET-UNIT-01', $manualReview($complete['reference']));
 check(!\LM\CyberSource\Reconciliation::held($resolved) && isset($resolved['operator_actions'][0]), 'operator resolution records evidence and retains payment');
 $legacy = fixtureSession($config, $store);
 unset($legacy['secure_acceptance_request']['profile_id'], $legacy['secure_acceptance_request']['credential_fingerprint']);
@@ -163,9 +167,30 @@ $test = fixtureSession($config, $store);
 $receiver->receive(fixtureResponse($test, $config), 'merchant_post');
 $lost = new OrderFulfillment($config, $store, $logger, function () { throw new GatewayException('lost after commit'); });
 $lost->process($test['reference']);
-$linked = $manual->apply($test['reference'], 'link-order', '9002', 'SISTEMASOL-TICKET-UNIT-02');
+$operatorView = $manual->describe($test['reference'], true);
+check($operatorView['approved_without_confirmed_order'] && $operatorView['dispatch'] === 'UNKNOWN'
+    && !$operatorView['automatic_erp_lookup'] && !$operatorView['automatic_resend'], 'operator view distinguishes payment from ambiguous dispatch');
+check(isset($operatorView['customer']['nit'], $operatorView['items']['idarticulo'])
+    && !isset($operatorView['customer']['correo_cliente'], $operatorView['order_payload']), 'operator view exposes only the minimal customer and detail allowlist');
+$staleReview = $manualReview($test['reference']);
+$staleReview['expected_revision']++;
+rejects(function () use ($manual, $test, $staleReview) {
+    $manual->apply($test['reference'], 'link-order', '9002', 'SISTEMASOL-TICKET-UNIT-02', $staleReview);
+}, 'stale operator snapshot cannot link a quotation');
+$incompleteReview = $manualReview($test['reference']);
+$incompleteReview['items_match'] = false;
+rejects(function () use ($manual, $test, $incompleteReview) {
+    $manual->apply($test['reference'], 'link-order', '9002', 'SISTEMASOL-TICKET-UNIT-02', $incompleteReview);
+}, 'operator must explicitly verify all articles before linking');
+$linked = $manual->apply($test['reference'], 'link-order', '9002', 'SISTEMASOL-TICKET-UNIT-02', $manualReview($test['reference']));
 check($linked['status'] === 'ORDER_SENT' && $linked['order_dispatch']['state'] === 'CONFIRMED_MANUAL', 'manual verified linkage creates no remote request');
-rejects(function () use ($manual, $test) { $manual->apply($test['reference'], 'link-order', '9003', 'SISTEMASOL-TICKET-UNIT-03'); }, 'manual linkage cannot replace an existing quotation');
+check($linked['order_dispatch']['operator_review']['operator'] === 'UNIT-OPERATOR'
+    && !$linked['order_dispatch']['needs_reconciliation'], 'manual linkage retains explicit review and clears only dispatch ambiguity');
+check($linked['order_dispatch']['manual_link']['state'] === 'CONFIRMED'
+    && $linked['order_dispatch']['manual_link']['idcotizacion'] === '9002', 'chosen manual quotation remains durably journaled');
+rejects(function () use ($manual, $manualReview, $test) {
+    $manual->apply($test['reference'], 'link-order', '9003', 'SISTEMASOL-TICKET-UNIT-03', $manualReview($test['reference']));
+}, 'manual linkage cannot replace an existing quotation');
 $guard = new \LM\CyberSource\Config(array('environment' => 'test'));
 $unpaid = fixtureOrder();
 $unpaid['forma_pago'] = 'Transferencia';
@@ -261,7 +286,7 @@ $recoverable = new OrderFulfillment($config, $store, $logger, function () use ($
 $heldAfterCommit = $recoverable->process($test['reference']);
 check($heldAfterCommit['order_dispatch']['state'] === 'CONFIRMED_HELD' && $mailOnce === 0, 'financial anomaly arriving during external commit holds confirmation');
 $pendingIssue = array_keys($heldAfterCommit['reconciliation'])[0];
-$manual->apply($test['reference'], 'resolve', $pendingIssue, 'NEONET-VERIFIED-FULL-RECEIPT-04');
+$manual->apply($test['reference'], 'resolve', $pendingIssue, 'NEONET-VERIFIED-FULL-RECEIPT-04', $manualReview($test['reference']));
 $released = $recoverable->process($test['reference']);
 check($released['status'] === 'ORDER_SENT' && $apiOnce === 1 && $mailOnce === 1, 'reviewed confirmed order recovers without a second API request');
 $quoteMailCalls = 0;

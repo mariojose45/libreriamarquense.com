@@ -298,8 +298,11 @@ async function main() {
     check(pendingList.code === 0 && pendingList.stdout.includes(lostOrder.reference)
         && !pendingList.stdout.includes('fixture-access-not-a-credential'), 'read-only operator listing identifies unknown dispatch without keys');
     const beforeLink = orderCalls;
+    const operatorView = await cli('reconcile.php', '--show', '--reference=' + lostOrder.reference);
+    const reviewRevision = JSON.parse(operatorView.stdout).revision;
     const link = await cli('reconcile.php', '--reference=' + lostOrder.reference, '--link-order=' + lostOrder.quotation,
-        '--evidence=SISTEMASOL-SIMULATOR-TICKET-01', '--confirm');
+        '--evidence=SISTEMASOL-SIMULATOR-TICKET-01', '--operator=HTTP-OPERATOR', '--revision=' + reviewRevision,
+        '--match-customer', '--match-amount', '--match-items', '--match-status', '--confirm');
     check(link.code === 0 && (await state(lostOrder.reference)).order_dispatch.state === 'CONFIRMED_MANUAL'
         && orderCalls === beforeLink, 'operator CLI links independently verified quotation without posting again');
     const cash = await client();

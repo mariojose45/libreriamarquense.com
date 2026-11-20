@@ -98,6 +98,7 @@ class OrderFulfillment
                 } catch (\Throwable $e) {
                     $session = $this->change($reference, function ($current) {
                         $current['order_dispatch']['state'] = 'UNKNOWN';
+                        $current['order_dispatch']['unknown_at'] = gmdate('c');
                         $current['order_dispatch']['needs_reconciliation'] = true;
                         return $current;
                     });
