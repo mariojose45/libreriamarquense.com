@@ -136,7 +136,7 @@ $categorias = filtrarCategoriasVisibles($categorias);
 <head>
 
     <?php if (\LM\CyberSource\SideEffectPolicy::isolated(lm_store_transport_config())): ?>
-        <script>window.LM_ISOLATED_STORE = {providerTest: <?php echo lm_store_transport_config()->get('isolation.provider_test', false) ? 'true' : 'false'; ?>};</script>
+        <script>window.LM_ISOLATED_STORE = {environment: 'test', providerTest: <?php echo lm_store_transport_config()->get('isolation.provider_test', false) ? 'true' : 'false'; ?>};</script>
         <script src="/assets/js/store-test-transport.js"></script>
     <?php endif; ?>
 

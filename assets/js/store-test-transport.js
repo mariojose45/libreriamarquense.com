@@ -1,7 +1,9 @@
 'use strict';
 
 (function () {
-    if (!window.LM_ISOLATED_STORE) return;
+    if (!window.LM_ISOLATED_STORE || window.LM_ISOLATED_STORE.environment !== 'test') return;
+    const hostname = new URL(window.location.href).hostname.toLowerCase();
+    if (hostname === 'libreriamarquense.com' || hostname === 'www.libreriamarquense.com') return;
     const remote = 'https://ssl.sol.sistemasolgt.com/libremarquenseDos/api/';
     function isolatedUrl(input) {
         const url = new URL(input, window.location.href);

@@ -33,7 +33,7 @@ const tick = () => new Promise(resolve => setTimeout(resolve, 10));
     const destinations = [];
     function FakeXhr() {}
     FakeXhr.prototype.open = function (_, url) { destinations.push(url); };
-    const testWindow = { LM_ISOLATED_STORE: { providerTest: false },
+    const testWindow = { LM_ISOLATED_STORE: { environment: 'test', providerTest: false },
         location: { href: 'https://localhost:12345/cart.php', origin: 'https://localhost:12345' },
         fetch: async (url, options) => { destinations.push(url); return options; } };
     vm.runInNewContext(isolatedSource, { window: testWindow, XMLHttpRequest: FakeXhr, URL, Error, Promise });
@@ -54,6 +54,23 @@ const tick = () => new Promise(resolve => setTimeout(resolve, 10));
     let blockedXhr = false;
     try { new FakeXhr().open('POST', 'https://ssl.sol.sistemasolgt.com/libremarquenseDos/api/api_cotizacion_insertar.php'); } catch (_) { blockedXhr = true; }
     check(blockedXhr && destinations.length === 0, 'legacy XHR cannot create real orders');
+    for (const [href, settings] of [
+        ['https://libreriamarquense.com/cart.php', { environment: 'test', providerTest: false }],
+        ['https://www.libreriamarquense.com/cart.php', { environment: 'test', providerTest: true }],
+        ['https://libreriamarquense.com/cart.php', { environment: 'production', providerTest: false }],
+        ['https://localhost:12345/cart.php', { environment: 'production', providerTest: false }],
+        ['https://localhost:12345/cart.php', { providerTest: false }],
+        ['https://localhost:12345/cart.php', undefined]
+    ]) {
+        const unchangedFetch = async () => {};
+        const unchangedOpen = function () {};
+        function UnchangedXhr() {}
+        UnchangedXhr.prototype.open = unchangedOpen;
+        const productionWindow = { LM_ISOLATED_STORE: settings, location: { href }, fetch: unchangedFetch };
+        vm.runInNewContext(isolatedSource, { window: productionWindow, XMLHttpRequest: UnchangedXhr, URL, Error, Promise });
+        check(productionWindow.fetch === unchangedFetch && UnchangedXhr.prototype.open === unchangedOpen,
+            'test transport cannot activate without explicit TEST outside production hosts: ' + href);
+    }
     const successful = environment([{ status: 200, body: { success: true, redirect_url: 'https://localhost/mock/pay' } }]);
     successful.sandbox.iniciarPagoTarjeta({}, {});
     successful.sandbox.iniciarPagoTarjeta({}, {});

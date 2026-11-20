@@ -73,13 +73,13 @@ RewriteRule ^(?:config|logs|storage|docs)(?:/|$) - [F,L,NC]
 # PROTEGER ASSETS/PHP
 # ============================================================
 
-# productos_paginados.php debe permanecer accesible porque
-# la tienda lo utiliza mediante peticiones HTTP.
+# productos_paginados.php y form-process.php son los unicos
+# controladores de assets/php accesibles mediante peticiones HTTP.
 #
 # Los demás archivos de assets/php quedan bloqueados
 # para acceso directo desde el navegador.
 
-RewriteRule ^assets/php/(?!productos_paginados\.php$) - [F,L,NC]
+RewriteRule ^assets/php/(?!(?:productos_paginados|form-process)\.php$) - [F,L,NC]
 
 
 # ============================================================

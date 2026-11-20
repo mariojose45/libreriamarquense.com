@@ -24,6 +24,14 @@ if (!lm_validate_csrf_token(isset($_POST['csrf_token']) ? $_POST['csrf_token'] :
     exit;
 }
 
+foreach (array('name', 'email', 'phone_number', 'msg_subject', 'message', 'website') as $field) {
+    if (isset($_POST[$field]) && !is_string($_POST[$field])) {
+        http_response_code(422);
+        echo 'La solicitud contiene campos no validos.';
+        exit;
+    }
+}
+
 if (!empty($_POST['website'])) {
     echo 'success';
     exit;

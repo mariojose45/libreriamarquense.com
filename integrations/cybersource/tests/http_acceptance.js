@@ -194,6 +194,26 @@ async function main() {
             msg_subject: 'Prueba aislada', message: 'Mensaje sintetico de prueba', website: '' } });
     check(contact.status === 200 && contact.text === 'success' && fs.readdirSync(root).some(x => x.startsWith('contact-mail-')),
         'contact form captures mail without native delivery or public backup logs');
+    check((await request('/assets/php/form-process.php')).status === 405, 'contact form rejects non-POST requests');
+    const contactPayload = { name: 'Cliente Prueba', email: 'test@example.invalid', phone_number: '55555555',
+        msg_subject: 'Prueba aislada', message: 'Mensaje sintetico de prueba', website: '' };
+    const contactCaptures = () => fs.readdirSync(root).filter(x => x.startsWith('contact-mail-')).length;
+    const capturesBeforeInvalidContact = contactCaptures();
+    for (const token of ['', 'invalid']) {
+        const rejected = await request('/assets/php/form-process.php', { method: 'POST', form: true, cookie: contactCookie,
+            data: { ...contactPayload, csrf_token: token } });
+        check(rejected.status === 403, 'contact form rejects missing or invalid CSRF');
+    }
+    for (const field of ['name', 'email', 'phone_number', 'msg_subject', 'message', 'website']) {
+        const page = await request('/contact.php');
+        const cookie = page.headers['set-cookie'][0].split(';')[0];
+        const token = page.text.match(/name="csrf_token" value="([^"]+)"/)[1];
+        const payload = { ...contactPayload, csrf_token: token, [field + '[]']: 'invalid-array-value' };
+        delete payload[field];
+        const rejected = await request('/assets/php/form-process.php', { method: 'POST', form: true, cookie, data: payload });
+        check(rejected.status === 422, 'contact form rejects array-shaped input: ' + field);
+    }
+    check(contactCaptures() === capturesBeforeInvalidContact, 'invalid contact requests cannot capture or send mail');
     const first = await begin();
     const duplicateCreates = await Promise.all([checkout(first.who), checkout(first.who)]);
     check(duplicateCreates.every(x => x.json?.reference === first.reference), 'double click reuses reference');
