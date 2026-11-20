@@ -123,7 +123,7 @@ try {
     $inputPosition = strpos($checkoutSource, '$input = lm_read_json_body()');
     activationCheck($policyPosition !== false && $inputPosition !== false && $policyPosition < $inputPosition,
         'API checks authorization before reading the order or querying catalog');
-    $workerSource = file_get_contents(dirname(__DIR__) . '/process_pending.php');
+    $workerSource = file_get_contents(dirname(__DIR__) . '/src/PendingProcessor.php');
     $globalPosition = strpos($workerSource, "withLock('pending-worker-global'");
     $receiverPosition = strpos($workerSource, 'new SecureAcceptanceNotification');
     activationCheck($globalPosition !== false && $receiverPosition !== false && $globalPosition < $receiverPosition,
