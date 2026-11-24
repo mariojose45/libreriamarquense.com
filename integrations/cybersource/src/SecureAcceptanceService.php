@@ -37,6 +37,7 @@ class SecureAcceptanceService
 
         $customer = $this->customerData($order);
 
+        // Hosted Checkout collects billing addresses; ERP delivery data is not billing data.
         $fields = array(
             'access_key' => (string) $this->config->get('secure_acceptance.access_key'),
             'profile_id' => (string) $this->config->get('secure_acceptance.profile_id'),
@@ -46,7 +47,7 @@ class SecureAcceptanceService
             'unsigned_field_names' => '',
             'signed_date_time' => isset($session['secure_acceptance_request']['signed_date_time'])
                 ? $session['secure_acceptance_request']['signed_date_time'] : gmdate('Y-m-d\TH:i:s\Z'),
-            'locale' => (string) $this->config->get('secure_acceptance.locale', 'es'),
+            'locale' => (string) $this->config->get('secure_acceptance.locale', 'es-es'),
             'transaction_type' => strtolower($transactionType),
             'reference_number' => $session['reference'],
             'amount' => Money::decimal(Money::cents($session['amount'])),
@@ -55,11 +56,6 @@ class SecureAcceptanceService
             'bill_to_surname' => $customer['last_name'],
             'bill_to_email' => $customer['email'],
             'bill_to_phone' => $customer['phone'],
-            'bill_to_address_line1' => $customer['address'],
-            'bill_to_address_city' => $customer['city'],
-            'bill_to_address_state' => $customer['state'],
-            'bill_to_address_country' => $customer['country'],
-            'bill_to_address_postal_code' => $customer['postal_code'],
             'override_custom_receipt_page' => $returnUrl,
             'override_custom_cancel_page' => $cancelUrl,
         );
@@ -192,11 +188,6 @@ class SecureAcceptanceService
             'last_name' => $this->limit($lastName, 60),
             'email' => $this->validEmail((string) $this->value($order, 'correo_cliente', '')) ?: 'clientes@libreriamarquense.com',
             'phone' => $this->digits((string) $this->value($order, 'telefono_cliente', '')),
-            'address' => $this->limit((string) $this->value($order, 'direccion_cliente', 'Ciudad'), 60),
-            'city' => 'Guatemala',
-            'state' => 'GT',
-            'country' => 'GT',
-            'postal_code' => '01001',
         );
     }
 

@@ -61,7 +61,7 @@ return array(
         // Para solicitar autorizacion y captura juntas, envie sale.
         // Si se deja vacio, usa el valor de "operation".
         'transaction_type' => 'sale',
-        'locale' => 'es',
+        'locale' => 'es-es',
         'session_ttl_minutes' => 60,
         // Optional verification-only historical keys of the SAME environment.
         // Never remove an old production key while genuine callbacks are pending.

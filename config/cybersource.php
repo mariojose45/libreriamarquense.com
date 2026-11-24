@@ -54,7 +54,7 @@ $config = array(
         'test_endpoint' => getenv('CYBERSOURCE_SA_TEST_ENDPOINT') ?: 'https://testsecureacceptance.cybersource.com/pay',
         'production_endpoint' => getenv('CYBERSOURCE_SA_PRODUCTION_ENDPOINT') ?: 'https://secureacceptance.cybersource.com/pay',
         'transaction_type' => getenv('CYBERSOURCE_SA_TRANSACTION_TYPE') ?: '',
-        'locale' => getenv('CYBERSOURCE_SA_LOCALE') ?: 'es',
+        'locale' => getenv('CYBERSOURCE_SA_LOCALE') ?: 'es-es',
         'session_ttl_minutes' => 60,
     ),
 
@@ -128,6 +128,11 @@ $config = array(
 
 if (is_array($private)) {
     $config = array_replace_recursive($config, $private);
+}
+
+// Older private files and environment overrides used the undocumented "es" code.
+if (in_array(strtolower(trim((string) $config['secure_acceptance']['locale'])), array('', 'es'), true)) {
+    $config['secure_acceptance']['locale'] = 'es-es';
 }
 
 return $config;
