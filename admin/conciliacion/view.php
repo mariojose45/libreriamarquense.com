@@ -48,6 +48,7 @@ if (!isset($auth, $escape, $nonce)) {
             <button>Consultar referencia</button>
         </form>
         <h2>Pagos aprobados sin pedido confirmado</h2>
+        <p>Resumen leido del almacenamiento actual, sin cache. Consulte cada referencia para revisar eventos e incidencias completos.</p>
         <table><thead><tr><th>Referencia</th><th>Total</th><th>Estado de envio</th><th>Consulta</th></tr></thead><tbody>
         <?php foreach ($page['items'] as $item): ?>
             <tr><td><?php echo $escape($item['reference']); ?></td><td><?php echo $escape($item['currency'] . ' ' . $item['amount']); ?></td>

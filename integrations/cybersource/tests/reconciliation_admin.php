@@ -35,6 +35,12 @@ class AdminReadOnlyFixtureStore extends PaymentSessionStore
 {
     public function __construct() {}
     public function references() { yield 'LMQ-20261124000000-AAAAAAAA'; }
+    public function find($reference)
+    {
+        return array('reference' => $reference, 'status' => 'PAID', 'payment_verified' => true,
+            'amount' => 30, 'currency' => 'GTQ', 'created_at' => '2026-11-24T00:00:00Z',
+            'order_dispatch' => array('state' => 'UNKNOWN'));
+    }
 }
 
 class AdminNoOpReview extends ManualReconciliation

@@ -6,12 +6,14 @@ final class ReconciliationAdminAuth
 {
     private $store;
     private $passwordConfirmed = false;
+    private $metrics;
     // Timing-only hash for unknown users, never an account or a default password.
     private const DUMMY_HASH = '$2y$12$N7hfhDzwJM6Kc8r6djHrB.AW2Xy/Ik8Ip4Dw8RoC5S.Eli61lINZ6';
 
     public function __construct(ReconciliationAdminStore $store)
     {
         $this->store = $store;
+        $this->metrics = $store->metrics();
     }
 
     public static function requireHttps(array $server, $host)
@@ -54,6 +56,15 @@ final class ReconciliationAdminAuth
     public function csrf()
     {
         return $_SESSION['csrf'];
+    }
+
+    public function close()
+    {
+        $this->metrics->measure('session_close_ms', function () {
+            if (session_status() === PHP_SESSION_ACTIVE && !session_write_close()) {
+                throw new \RuntimeException('No se pudo cerrar la escritura de la sesion administrativa.');
+            }
+        });
     }
 
     public function requireCsrf($token)
@@ -100,18 +111,23 @@ final class ReconciliationAdminAuth
     {
         $validUsername = ReconciliationAdminStore::validUsername($username);
         $safeUser = $validUsername ? $username : 'unknown';
-        if (!$this->store->reserveAttempt($safeUser, $ip)) {
+        $reserved = $this->metrics->measure('rate_reservation_ms', function () use ($safeUser, $ip) {
+            return $this->store->reserveAttempt($safeUser, $ip);
+        });
+        if (!$reserved) {
             $this->store->audit('authentication_blocked', $safeUser);
             return false;
         }
         $account = $validUsername ? $this->store->user($safeUser) : null;
         $hash = $account ? $account['password_hash'] : self::DUMMY_HASH;
         $valid = is_string($password) && strlen($password) <= 72 && strpos($password, "\0") === false;
-        $matches = password_verify($valid ? $password : '', $hash);
+        $matches = $this->metrics->measure('password_verify_ms', function () use ($valid, $password, $hash) {
+            return password_verify($valid ? $password : '', $hash);
+        });
         $ok = $account !== null && $valid && $matches;
         $this->store->audit($action, $safeUser, array('outcome' => $ok ? 'success' : 'denied'));
         if ($ok) {
-            $this->store->clearUserAttempts($safeUser);
+            $this->metrics->measure('rate_clear_ms', function () use ($safeUser) { $this->store->clearUserAttempts($safeUser); });
         }
         return $ok ? $account : false;
     }

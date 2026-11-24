@@ -50,13 +50,16 @@ final class ReconciliationAdminService
                 continue;
             }
             $scanned++;
+            $this->audit->metrics()->count('records_scanned');
             try {
-                $summary = $this->review->describe($reference);
-                if ($summary['approved_without_confirmed_order']) {
-                    $items[] = array_intersect_key($summary, array_flip(array('reference', 'status', 'amount', 'currency', 'dispatch', 'created_at')));
+                $summary = $this->pendingSummary($reference);
+                if ($summary !== null) {
+                    $items[] = $summary;
+                    $this->audit->metrics()->count('pending_found');
                 }
             } catch (\Throwable $e) {
                 $unreadable[] = $reference;
+                $this->audit->metrics()->count('records_unreadable');
             }
             if (count($items) >= 25 || $scanned >= 500) {
                 $next = $reference;
@@ -64,6 +67,23 @@ final class ReconciliationAdminService
             }
         }
         return array('items' => $items, 'next' => $next, 'unreadable' => $unreadable);
+    }
+
+    private function pendingSummary($reference)
+    {
+        $session = $this->store->find($reference);
+        if (!$session || !isset($session['status'])) { throw new GatewayException('Registro no disponible.'); }
+        $amount = isset($session['amount']) ? Money::decimal(Money::cents($session['amount'])) : null;
+        $response = isset($session['external_order_response']) ? $session['external_order_response'] : array();
+        $confirmed = is_array($response) && OrderForwarder::isConfirmed($response);
+        // Same selection as ManualReconciliation::describe; no event/index scans are
+        // needed for these six display fields. Detail and all writes still use ManualReconciliation.
+        if (!isset($session['payment_verified']) || $session['payment_verified'] !== true
+            || ($confirmed && $session['status'] === 'ORDER_SENT')) { return null; }
+        return array('reference' => $reference, 'status' => $session['status'], 'amount' => $amount,
+            'currency' => isset($session['currency']) ? $session['currency'] : null,
+            'dispatch' => isset($session['order_dispatch']['state']) ? $session['order_dispatch']['state'] : 'NOT_STARTED',
+            'created_at' => isset($session['created_at']) ? $session['created_at'] : null);
     }
 
     public function detail($reference)

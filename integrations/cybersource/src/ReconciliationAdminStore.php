@@ -5,9 +5,11 @@ namespace LM\CyberSource;
 final class ReconciliationAdminStore
 {
     private $root;
+    private $metrics;
 
-    public function __construct($directory, array $publicRoots)
+    public function __construct($directory, array $publicRoots, ?ReconciliationAdminMetrics $metrics = null)
     {
+        $this->metrics = $metrics ?: new ReconciliationAdminMetrics();
         $root = realpath($directory);
         if (!$root || is_link($directory) || !is_dir($root)) {
             throw new \RuntimeException('Falta el directorio administrativo privado.');
@@ -65,6 +67,11 @@ final class ReconciliationAdminStore
         return $this->directory('sessions', false);
     }
 
+    public function metrics()
+    {
+        return $this->metrics;
+    }
+
     public static function validUsername($username)
     {
         return is_string($username) && preg_match('/^[a-z0-9][a-z0-9._-]{2,63}$/D', $username);
@@ -87,6 +94,12 @@ final class ReconciliationAdminStore
     }
 
     public function user($username)
+    {
+        $this->metrics->count('account_lookups');
+        return $this->metrics->measure('account_lookup_ms', function () use ($username) { return $this->loadUser($username); });
+    }
+
+    private function loadUser($username)
     {
         if (!self::validUsername($username)) {
             return null;
@@ -230,6 +243,13 @@ final class ReconciliationAdminStore
 
     public function audit($action, $username, array $context = array())
     {
+        return $this->metrics->measure('audit_ms', function () use ($action, $username, $context) {
+            return $this->appendAudit($action, $username, $context);
+        });
+    }
+
+    private function appendAudit($action, $username, array $context)
+    {
         if (!preg_match('/^[a-z_]{3,40}$/D', $action) || !self::validUsername($username)) {
             throw new \RuntimeException('Registro administrativo no valido.');
         }
@@ -260,6 +280,33 @@ final class ReconciliationAdminStore
         } finally {
             flock($handle, LOCK_UN);
             fclose($handle);
+        }
+    }
+
+    public function writePerformance(array $record)
+    {
+        if (!ReconciliationAdminMetrics::safeRecord($record)) { return false; }
+        $file = $this->root . '/audit/performance-' . gmdate('Y-m-d') . '.jsonl';
+        $handle = null;
+        try {
+            if (is_link($file)) { return false; }
+            $handle = @fopen($file, 'ab');
+            if (!$handle) { return false; }
+            @chmod($file, 0600);
+            $this->checkPermissions($file);
+            if (!flock($handle, LOCK_EX | LOCK_NB)) { return false; }
+            $line = json_encode($record, JSON_THROW_ON_ERROR) . "\n";
+            $stat = fstat($handle);
+            if (!$stat || $stat['size'] + strlen($line) > 5 * 1024 * 1024) { return false; }
+            for ($offset = 0; $offset < strlen($line); $offset += $written) {
+                $written = fwrite($handle, substr($line, $offset));
+                if ($written === false || $written === 0) { return false; }
+            }
+            // Optional timings are best-effort, unlike the unchanged durable security audit.
+            return fflush($handle);
+        } catch (\Throwable $e) { return false; }
+        finally {
+            if (is_resource($handle)) { flock($handle, LOCK_UN); fclose($handle); }
         }
     }
 }

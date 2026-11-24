@@ -19,6 +19,7 @@ use LM\CyberSource\PaymentSessionStore;
 use LM\CyberSource\ReconciliationAdminAuth;
 use LM\CyberSource\ReconciliationAdminService;
 use LM\CyberSource\ReconciliationAdminStore;
+use LM\CyberSource\ReconciliationAdminMetrics;
 
 try {
     $root = dirname(__DIR__, 2);
@@ -51,25 +52,41 @@ try {
     $nonce = bin2hex(random_bytes(16));
     header("Content-Security-Policy: default-src 'none'; style-src 'nonce-" . $nonce
         . "'; form-action 'self'; frame-ancestors 'none'; base-uri 'none'");
-    $private = new ReconciliationAdminStore($settings['private_directory'], array($root, $_SERVER['DOCUMENT_ROOT']));
+    $metrics = new ReconciliationAdminMetrics(isset($settings['performance_logging']) ? $settings['performance_logging'] : false);
+    $private = null;
+    $metricsAuthorized = false;
+    $requestKind = $_SERVER['REQUEST_METHOD'] === 'POST' ? 'post' : 'dashboard';
+    register_shutdown_function(function () use ($metrics, &$private, &$metricsAuthorized, &$requestKind) {
+        if (!$metricsAuthorized || !($private instanceof ReconciliationAdminStore)) { return; }
+        try {
+            $record = $metrics->snapshot($requestKind);
+            if ($record !== null) { $private->writePerformance($record); }
+        } catch (Throwable $e) { /* Optional timings never interrupt authentication or reconciliation. */ }
+    });
+    $private = $metrics->measure('private_init_ms', function () use ($settings, $root, $metrics) {
+        return new ReconciliationAdminStore($settings['private_directory'], array($root, $_SERVER['DOCUMENT_ROOT']), $metrics);
+    });
     $auth = new ReconciliationAdminAuth($private);
-    $auth->start();
+    $metrics->measure('session_open_ms', function () use ($auth) { $auth->start(); });
     $input = function ($name, $limit = 160) {
         if (!isset($_POST[$name]) || !is_string($_POST[$name]) || strlen($_POST[$name]) > $limit) {
             throw new RuntimeException('Campo no valido.');
         }
         return $_POST[$name];
     };
-    $loadService = function () use ($root, $settings, $private, $auth) {
-        $config = Config::forProcess($root);
-        if (!is_dir((string) $config->get('paths.session_dir'))) {
-            throw new RuntimeException('Almacenamiento de pagos no disponible.');
-        }
-        $store = new PaymentSessionStore($config->get('paths.session_dir'));
-        return new ReconciliationAdminService($config, $settings, $store,
-            new ManualReconciliation($store, $config), $private, $auth);
+    $loadService = function () use ($root, $settings, $private, $auth, $metrics) {
+        return $metrics->measure('service_init_ms', function () use ($root, $settings, $private, $auth) {
+            $config = Config::forProcess($root);
+            if (!is_dir((string) $config->get('paths.session_dir'))) {
+                throw new RuntimeException('Almacenamiento de pagos no disponible.');
+            }
+            $store = new PaymentSessionStore($config->get('paths.session_dir'));
+            return new ReconciliationAdminService($config, $settings, $store,
+                new ManualReconciliation($store, $config), $private, $auth);
+        });
     };
-    $actor = $auth->current();
+    $actor = $metrics->measure('auth_current_ms', function () use ($auth) { return $auth->current(); });
+    $metricsAuthorized = $actor !== null;
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         try {
             $auth->requireCsrf($input('csrf', 64));
@@ -81,11 +98,16 @@ try {
         try {
             $ip = isset($_SERVER['REMOTE_ADDR']) ? (string) $_SERVER['REMOTE_ADDR'] : 'unknown';
             if ($action === 'login' && !$actor) {
-                $auth->login(strtolower(trim($input('username', 64))), $input('password', 72), $ip);
+                $metrics->measure('login_ms', function () use ($auth, $input, $ip) {
+                    $auth->login(strtolower(trim($input('username', 64))), $input('password', 72), $ip);
+                });
+                $metricsAuthorized = true;
+                $requestKind = 'login';
             } else {
                 $auth->requireUser();
                 if ($action === 'logout') {
                     $auth->logout();
+                    $requestKind = 'logout';
                 } elseif ($action === 'show') {
                     $reference = trim($input('reference', 40));
                     if (!preg_match('/^LMQ-[0-9]{14}-[A-F0-9]{8}$/D', $reference)) {
@@ -109,18 +131,22 @@ try {
                         $matches[$field] = isset($_POST[$field]) && $_POST[$field] === '1';
                     }
                     $auth->confirmPassword($input('password', 72), $ip);
-                    $_SESSION['reference'] = $service->link($input('csrf', 64), $input('review_token', 64),
-                        trim($input('quotation', 20)), trim($input('evidence', 161)), $matches);
+                    $_SESSION['reference'] = $metrics->measure('link_ms', function () use ($service, $input, $matches) {
+                        return $service->link($input('csrf', 64), $input('review_token', 64),
+                            trim($input('quotation', 20)), trim($input('evidence', 161)), $matches);
+                    });
                     $_SESSION['flash'] = 'Vinculacion local confirmada. No se crearon pedidos, cobros ni correos desde este panel.';
                 } else {
                     throw new RuntimeException('Operacion no permitida.');
                 }
             }
         } catch (Throwable $e) {
+            $requestKind = 'error';
             $_SESSION['flash'] = $action === 'link'
                 ? 'Vinculacion no confirmada. Consulte nuevamente la referencia; no cree ni reenvie pedidos. Revise autorizaciones, revision, evidencia y correspondencias.'
                 : 'Solicitud no confirmada. Verifique credenciales, sesion y permisos. Tras varios intentos, espere 15 minutos.';
         }
+        $auth->close();
         header('Location: ' . $settings['url_path'], true, 303);
         exit;
     }
@@ -133,11 +159,14 @@ try {
     if ($actor) {
         $service = $loadService();
         $canLink = $service->canLink();
-        $page = $service->pending(isset($_SESSION['cursor']) ? $_SESSION['cursor'] : '');
+        $page = $metrics->measure('pending_ms', function () use ($service) {
+            return $service->pending(isset($_SESSION['cursor']) ? $_SESSION['cursor'] : '');
+        });
         $_SESSION['next_cursor'] = $page['next'];
         if (isset($_SESSION['reference'])) {
+            $requestKind = 'detail';
             try {
-                $detail = $service->detail($_SESSION['reference']);
+                $detail = $metrics->measure('detail_ms', function () use ($service) { return $service->detail($_SESSION['reference']); });
                 if ($canLink && $detail['payment_verified'] && $detail['status'] === 'PAID'
                     && !$detail['financial_review'] && !$detail['charge_group_blocked'] && !$detail['pending_notifications']
                     && $detail['quotation_id'] === null && in_array($detail['dispatch'], array('SENDING', 'UNKNOWN'), true)) {
@@ -150,8 +179,13 @@ try {
         }
     }
     $escape = function ($value) { return htmlspecialchars((string) $value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); };
-    require __DIR__ . '/view.php';
+    // All session changes, including review tokens, are complete before rendering.
+    $auth->close();
+    $metrics->measure('render_ms', function () use ($auth, $escape, $nonce, $flash, $actor, $settings, $canLink, $page, $detail, $reviewToken) {
+        require __DIR__ . '/view.php';
+    });
 } catch (Throwable $e) {
+    $requestKind = 'error';
     error_log('Reconciliation admin: acceso o inicializacion no disponible.');
     http_response_code(503);
     echo 'Panel no disponible. Revise HTTPS, habilitacion, almacenamiento privado y permisos con el responsable del hosting.';
