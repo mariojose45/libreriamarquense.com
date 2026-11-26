@@ -178,6 +178,117 @@ final class ReconciliationAdminService
         return $time === false ? null : gmdate('c', $time);
     }
 
+    public function cronPreview($maxRecords = 5000)
+    {
+        $username = $this->auth->requireUser();
+        if (!is_int($maxRecords) || $maxRecords < 1 || $maxRecords > 5000) {
+            throw new \RuntimeException('Limite de consulta no valido.');
+        }
+        $this->audit->audit('review_cron_queue', $username);
+        $report = array('checked_at' => gmdate('c'), 'complete' => true, 'records' => 0, 'events' => 0,
+            'order_candidates' => 0, 'mail_candidates' => 0, 'pending_events' => 0, 'errors' => 0,
+            'production_authorized' => $this->config->get('execution.production_authorized', false) === true,
+            'authorization_is_boolean' => is_bool($this->config->get('execution.production_authorized', false)),
+            'buckets' => array(), 'statuses' => array(), 'rows' => array(), 'rows_truncated' => false);
+        $deadline = hrtime(true) + 8000000000;
+        $budget = function () use (&$report, $deadline, $maxRecords) {
+            if ($report['records'] + $report['events'] >= $maxRecords || hrtime(true) >= $deadline) {
+                $report['complete'] = false;
+                return false;
+            }
+            return true;
+        };
+        $addRow = function ($reference, $status, $reason, array $session = array()) use (&$report) {
+            if (count($report['rows']) >= 200) { $report['rows_truncated'] = true; return; }
+            $amount = null;
+            try { if (isset($session['amount'])) { $amount = Money::decimal(Money::cents($session['amount'])); } }
+            catch (\Throwable $e) { /* Invalid display data never suppresses a dispatch candidate. */ }
+            $date = isset($session['created_at']) ? self::eventDate($session['created_at']) : null;
+            $report['rows'][] = array('reference' => $reference, 'status' => $status, 'reason' => $reason,
+                'created_at' => $date, 'amount' => $amount,
+                'currency' => isset($session['currency']) && is_string($session['currency'])
+                    && preg_match('/^[A-Z]{3}$/D', $session['currency']) ? $session['currency'] : null);
+        };
+        foreach ($this->store->eventIds() as $id) {
+            if (!$budget()) { break; }
+            $report['events']++;
+            $reference = preg_match('/^(LMQ-[0-9]{14}-[A-F0-9]{8})-[a-f0-9]{64}$/D', $id, $match) ? $match[1] : null;
+            try {
+                $record = $this->store->findEvent($id);
+                if (!is_array($record) || !isset($record['state'])) { throw new PaymentStorageException('Evento no disponible.'); }
+                if ($record['state'] !== 'APPLIED') {
+                    $report['pending_events']++;
+                    $addRow($reference, 'PENDING_EVENT', 'notification_can_change_eligibility');
+                }
+            } catch (\Throwable $e) {
+                $report['complete'] = false;
+                $report['errors']++;
+                $addRow($reference, 'UNREADABLE', 'event_unreadable');
+            }
+        }
+        foreach ($this->store->references() as $reference) {
+            if (!$budget()) { break; }
+            $report['records']++;
+            try {
+                $session = $this->store->find($reference);
+                if (!is_array($session) || !isset($session['status'])) { throw new PaymentStorageException('Registro no disponible.'); }
+                $status = in_array($session['status'], array('PAID', 'ORDER_SENT', 'PENDING', 'SUBMITTED', 'REVIEW', 'DECLINED', 'CANCELLED', 'EXPIRED'), true)
+                    ? $session['status'] : 'OTHER';
+                $report['statuses'][$status] = isset($report['statuses'][$status]) ? $report['statuses'][$status] + 1 : 1;
+                $result = $this->cronEligibility($session);
+                $bucket = $result['bucket'];
+                $report['buckets'][$bucket] = isset($report['buckets'][$bucket]) ? $report['buckets'][$bucket] + 1 : 1;
+                if ($result['order']) {
+                    $report['order_candidates']++;
+                    $addRow($reference, $status, 'order_send_candidate', $session);
+                }
+                if ($result['mail']) {
+                    $report['mail_candidates']++;
+                    $addRow($reference, $status, 'mail_send_candidate', $session);
+                }
+                // The worker uses empty(), not strict boolean comparisons. Do not hide these records.
+                if (($result['order'] || $result['mail']) && ($session['payment_verified'] !== true || $session['catalog_verified'] !== true)) {
+                    $addRow($reference, $status, 'non_boolean_verification_flags', $session);
+                }
+            } catch (\Throwable $e) {
+                $report['complete'] = false;
+                $report['errors']++;
+                $addRow($reference, 'UNREADABLE', 'record_unreadable');
+            }
+        }
+        if (hrtime(true) >= $deadline) { $report['complete'] = false; }
+        $report['no_automatic_sends_observed'] = $report['complete'] && $report['errors'] === 0
+            && $report['order_candidates'] === 0 && $report['mail_candidates'] === 0 && $report['pending_events'] === 0;
+        return $report;
+    }
+
+    private function cronEligibility(array $session)
+    {
+        $blocked = function ($bucket) { return array('bucket' => $bucket, 'order' => false, 'mail' => false); };
+        if (empty($session['payment_verified']) || !in_array($session['status'], array('PAID', 'ORDER_SENT'), true)) {
+            return $blocked('not_selected');
+        }
+        if (!isset($session['environment'], $session['isolated_test']) || $session['environment'] !== $this->config->get('environment', 'test')
+            || $session['isolated_test'] !== SideEffectPolicy::isolated($this->config)) { return $blocked('environment_blocked'); }
+        if (empty($session['catalog_verified'])) { return $blocked('catalog_blocked'); }
+        if (Reconciliation::held($session) || ChargeGroups::blocked($this->store, $session)) { return $blocked('financial_hold'); }
+        if ($this->store->hasPendingEvents($session['reference'])) { return $blocked('pending_notification'); }
+        if (isset($session['external_order_response'])) {
+            $response = $session['external_order_response'];
+            $confirmed = is_array($response) && OrderForwarder::isConfirmed($response);
+            $mayFinalize = $session['status'] === 'PAID' && isset($session['order_dispatch']['state'])
+                && $session['order_dispatch']['state'] === 'CONFIRMED_HELD';
+            // A retained confirmation may release locally and attempt mail, but never send the order again.
+            return array('bucket' => 'response_present', 'order' => false,
+                'mail' => $confirmed && ($session['status'] === 'ORDER_SENT' || $mayFinalize) && !isset($session['order_email']));
+        }
+        if (!empty($session['order_dispatch'])) { return $blocked('dispatch_present'); }
+        if (empty($session['provider_authorization_number']) || !is_scalar($session['provider_authorization_number'])
+            || trim((string) $session['provider_authorization_number']) === '') { return $blocked('authorization_missing'); }
+        // Potential claim after authorization. No policy override, processor, transport or write is invoked.
+        return array('bucket' => 'order_candidate', 'order' => true, 'mail' => false);
+    }
+
     public function link($csrf, $token, $quotation, $evidence, array $confirmations)
     {
         $username = $this->auth->requireUser();

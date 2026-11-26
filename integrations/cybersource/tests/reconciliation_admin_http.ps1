@@ -58,9 +58,24 @@ try {
         event=@{status='APPROVED';issues=@();authenticated_fields=@{decision='ACCEPT';reason_code='100';signed_date_time='2026-08-20T16:13:39Z';auth_code='PRIVATE-EVENT-SENTINEL';secret_key='PRIVATE-EVENT-SENTINEL'}}} |
         ConvertTo-Json -Depth 8 | Set-Content -LiteralPath $eventFile -Encoding ascii
     $eventHash = (Get-FileHash -LiteralPath $eventFile -Algorithm SHA256).Hash
+    $dangerReference = 'LMQ-20260820160000-DDDDDDDD'
+    $dangerFile = Join-Path $site ('storage\'+$dangerReference+'.json')
+    @{reference=$dangerReference;_revision=1;status='ORDER_SENT';payment_verified=$true;catalog_verified=$true;environment='production';isolated_test=$false;
+        amount=29.75;currency='GTQ';created_at='2026-08-20T16:00:00Z';provider_authorization_number='PRIVATE-CRON-AUTH-SENTINEL'} |
+        ConvertTo-Json -Depth 8 | Set-Content -LiteralPath $dangerFile -Encoding ascii
+    $mailReference = 'LMQ-20260820160001-DDDDDDDD'
+    $mailFile = Join-Path $site ('storage\'+$mailReference+'.json')
+    @{reference=$mailReference;_revision=1;status='ORDER_SENT';payment_verified=$true;catalog_verified=$true;environment='production';isolated_test=$false;
+        amount=29.75;currency='GTQ';external_order_response=@{success=$true;idcotizacion=988}} |
+        ConvertTo-Json -Depth 8 | Set-Content -LiteralPath $mailFile -Encoding ascii
+    $queuedReference = 'LMQ-20260820160002-DDDDDDDD'
+    $queuedFile = Join-Path $site ('storage\'+$queuedReference+'.json')
+    @{reference=$queuedReference;status='PENDING';amount=29.75;currency='GTQ'} | ConvertTo-Json | Set-Content -LiteralPath $queuedFile -Encoding ascii
+    $queuedEventFile = Join-Path $site ('storage\event-'+$queuedReference+'-'+('c'*64)+'.json')
+    @{reference=$queuedReference;state='RECEIVED';event=@{status='APPROVED'}} | ConvertTo-Json -Depth 5 | Set-Content -LiteralPath $queuedEventFile -Encoding ascii
 
     $fixtureHashes = @{}
-    foreach ($file in @($payment,$heldPayment,$legacyPayment,$eventFile)) { $fixtureHashes[$file] = (Get-FileHash -LiteralPath $file -Algorithm SHA256).Hash }
+    foreach ($file in @($payment,$heldPayment,$legacyPayment,$eventFile,$dangerFile,$mailFile,$queuedFile,$queuedEventFile)) { $fixtureHashes[$file] = (Get-FileHash -LiteralPath $file -Algorithm SHA256).Hash }
     for ($n=0; $n -lt 28; $n++) {
         $extraReference = 'LMQ-20261125000000-' + ('{0:X8}' -f $n)
         $extraFile = Join-Path $site ('storage\'+$extraReference+'.json')
@@ -112,6 +127,8 @@ try {
     $csrf = [regex]::Match($anonymous.body,'name="csrf" value="([a-f0-9]+)"').Groups[1].Value
     $anonymousShow = Send-Panel 'POST' @{action='show';csrf=$csrf;reference=$legacyReference}
     Check ($anonymousShow.status -eq 303 -and -not (Send-Panel 'GET' @{}).body.Contains($legacyReference)) 'anonymous reference query cannot disclose a record'
+    $anonymousCron = Send-Panel 'POST' @{action='cron_check';csrf=$csrf}
+    Check ($anonymousCron.status -eq 303 -and -not (Send-Panel 'GET' @{}).body.Contains('data-screen="cron_check"')) 'anonymous queue check cannot read payment storage'
     $denied = Send-Panel 'POST' @{action='login';csrf='wrong';username='fixture.operator';password=$password}
     Check ($denied.status -eq 403) 'login CSRF'
     $login = Send-Panel 'POST' @{action='login';csrf=$csrf;username='fixture.operator';password=$password}
@@ -152,6 +169,20 @@ try {
     $null = Send-Panel 'GET' @{}
     $pendingBack = Open-Panel 'back'
     Check ([string]::Join('|',@(Get-ReferenceRows $pendingBack.body)) -eq [string]::Join('|',$nextPendingRows)) 'pending detail back preserves page two exactly'
+    Check ((Send-Panel 'POST' @{action='cron_check';csrf='wrong'}).status -eq 403) 'Cron preview requires CSRF'
+    $cronCheck = Open-Panel 'cron_check'
+    Check-Screen $cronCheck 'cron_check'
+    Check ($cronCheck.body.Contains('id="cron-order-count">1') -and $cronCheck.body.Contains('id="cron-mail-count">1') -and $cronCheck.body.Contains('id="cron-event-count">1')) 'read-only snapshot detects old ORDER_SENT candidate, mail and unapplied receipt'
+    Check ($cronCheck.body.Contains($dangerReference) -and $cronCheck.body.Contains($queuedReference) -and -not $cronCheck.body.Contains('PRIVATE-CRON-AUTH-SENTINEL')) 'queue review identifies references without exposing authorization values'
+    Check (-not $cronCheck.body.Contains('name="review_token"') -and $cronCheck.body.Contains('bloqueada (false)')) 'query cannot enable production or manual links'
+    $null = Send-Panel 'POST' @{action='show';csrf=$csrf;reference=$dangerReference}
+    $cronDetail = Send-Panel 'GET' @{}
+    Check ($cronDetail.body.Contains('id="detalle-operacion"') -and -not $cronDetail.body.Contains('name="review_token"')) 'queue reference detail remains read-only'
+    $cronBack = Open-Panel 'back'
+    Check-Screen $cronBack 'cron_check'
+    $pendingAfterCheck = Open-Panel 'back'
+    Check-Screen $pendingAfterCheck 'pending'
+    Check ([string]::Join('|',@(Get-ReferenceRows $pendingAfterCheck.body)) -eq [string]::Join('|',$nextPendingRows)) 'return from queue review preserves pending page two'
     $homePage = Open-Panel 'home'
     Check-Screen $homePage 'home'
     $query = Open-Panel 'search'
@@ -214,6 +245,9 @@ try {
     $null = Send-Panel 'POST' @{action='show';csrf=$csrf;reference=$missingReference}
     $failedDetail = Send-Panel 'GET' @{}
     Check ($failedDetail.status -eq 200 -and $failedDetail.body.Contains('No fue posible consultar esta referencia') -and -not $failedDetail.body.Contains('invalid-synthetic-record')) 'unreadable record never exposes raw data'
+    $incompleteCron = Open-Panel 'cron_check'
+    Check ($incompleteCron.body.Contains('Lectura incompleta') -and -not $incompleteCron.body.Contains('invalid-synthetic-record')) 'incomplete scan cannot appear as a safe empty queue'
+    $null = Open-Panel 'incidents'
     $null = Send-Panel 'POST' @{action='show';csrf=$csrf;reference='../private'}
     Check ((Send-Panel 'GET' @{}).body.Contains('Referencia no valida')) 'malformed reference receives a safe message'
     $blocked = Send-Panel 'POST' @{action='link';csrf=$csrf;quotation='123';evidence='ticket-fixture'}

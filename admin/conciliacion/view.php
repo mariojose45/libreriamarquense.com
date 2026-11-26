@@ -4,7 +4,7 @@ if (!isset($auth, $escape, $nonce, $section)) {
     exit;
 }
 $showDetail = $detail !== null || $detailError !== '';
-$labels = array('home' => 'Inicio', 'search' => 'Consultar referencia', 'pending' => 'Pagos pendientes', 'incidents' => 'Incidencias');
+$labels = array('home' => 'Inicio', 'search' => 'Consultar referencia', 'pending' => 'Pagos pendientes', 'incidents' => 'Incidencias', 'cron_check' => 'Comprobación previa al Cron');
 $statusLabels = array(
     'PENDING' => 'Pendiente', 'SUBMITTED' => 'En espera de respuesta', 'PAID' => 'Pago aprobado',
     'ORDER_SENT' => 'Pedido registrado', 'REVIEW' => 'En revisión', 'DECLINED' => 'Rechazado',
@@ -252,6 +252,31 @@ $originLabel = isset($labels[$section]) ? $labels[$section] : 'Inicio';
                 <?php endif; ?>
                 <?php if ($section === 'search'): ?><form method="post" action="<?php echo $escape($settings['url_path']); ?>"><input type="hidden" name="csrf" value="<?php echo $escape($auth->csrf()); ?>"><button class="button button-primary" name="action" value="search">Volver a consultar</button></form><?php endif; ?>
             </section>
+        <?php elseif ($section === 'cron_check'): ?>
+            <section aria-labelledby="cron-title" data-screen="cron_check">
+                <div class="page-heading"><div><p class="eyebrow">Comprobación de solo lectura</p><h1 id="cron-title">Cola antes de activar el Cron</h1><p class="intro">Clasificación de lo que podría intentar procesarse tras autorizar producción. No ejecuta el procesador ni cambia la configuración.</p></div><form method="post" action="<?php echo $escape($settings['url_path']); ?>"><input type="hidden" name="csrf" value="<?php echo $escape($auth->csrf()); ?>"><button class="button" name="action" value="back">Atrás</button></form></div>
+                <?php if (!$cronPreview['complete']): ?><p class="notice notice-error" role="alert">Lectura incompleta: hubo errores o se alcanzó el límite de 5.000 entradas / 8 segundos. No interpretes ceros como ausencia de candidatos. No actives el Cron basándote en esta consulta.</p>
+                <?php elseif ($cronPreview['no_automatic_sends_observed']): ?><p class="notice">Sin candidatos de envío, correo ni eventos pendientes detectados en esta lectura completa. Esto no autoriza la activación ni garantiza lo que exista en SistemasOL.</p>
+                <?php else: ?><p class="notice notice-error" role="alert">Hay operaciones o eventos que requieren revisión antes de activar el Cron. No crees ni reenvíes cotizaciones para investigar estos registros.</p><?php endif; ?>
+                <div class="panel"><dl class="summary-grid">
+                    <div class="summary-item"><dt>Candidatos a enviar cotización</dt><dd class="amount" id="cron-order-count"><?php echo (int) $cronPreview['order_candidates']; ?></dd></div>
+                    <div class="summary-item"><dt>Eventos sin aplicar</dt><dd class="amount" id="cron-event-count"><?php echo (int) $cronPreview['pending_events']; ?></dd></div>
+                    <div class="summary-item"><dt>Posibles intentos de correo</dt><dd class="amount" id="cron-mail-count"><?php echo (int) $cronPreview['mail_candidates']; ?></dd></div>
+                    <div class="summary-item"><dt>Errores de lectura</dt><dd class="amount"><?php echo (int) $cronPreview['errors']; ?></dd></div>
+                </dl><div class="panel-body"><p class="hint">Leídos: <?php echo (int) $cronPreview['records']; ?> registros y <?php echo (int) $cronPreview['events']; ?> eventos. Fecha: <?php echo $escape($dateLabel($cronPreview['checked_at'])); ?>. Autorización productiva: <?php echo !$cronPreview['authorization_is_boolean'] ? 'tipo no booleano, bloqueada' : ($cronPreview['production_authorized'] ? 'habilitada (true)' : 'bloqueada (false)'); ?>.</p></div></div>
+                <?php $cronReasons = array('order_send_candidate' => 'Podría intentar enviar una cotización', 'mail_send_candidate' => 'Podría intentar correo, incluso tras liberar una confirmación retenida', 'notification_can_change_eligibility' => 'El evento pendiente puede cambiar la elegibilidad', 'non_boolean_verification_flags' => 'Banderas no booleanas: el procesador las evalúa por valor no vacío', 'event_unreadable' => 'Evento ilegible', 'record_unreadable' => 'Registro o dependencias ilegibles'); ?>
+                <?php if ($cronPreview['rows']): ?><div class="panel table-wrap"><table class="data-table"><thead><tr><th>Referencia</th><th>Fecha (UTC)</th><th>Importe</th><th>Estado</th><th>Motivo</th><th class="actions">Consulta</th></tr></thead><tbody>
+                    <?php foreach ($cronPreview['rows'] as $row): ?><tr><td class="reference-cell" data-label="Referencia"><span class="reference mono"><?php echo $escape($display($row['reference'])); ?></span></td><td data-label="Fecha"><?php echo $escape($dateLabel($row['created_at'])); ?></td><td data-label="Importe"><?php echo $escape($row['amount'] === null ? 'No disponible' : $display($row['currency']) . ' ' . $row['amount']); ?></td><td data-label="Estado"><?php echo $escape($row['status']); ?></td><td data-label="Motivo"><?php echo $escape($cronReasons[$row['reason']]); ?></td><td class="actions" data-label="Consulta"><?php if ($row['reference'] !== null): ?><form method="post" action="<?php echo $escape($settings['url_path']); ?>"><input type="hidden" name="csrf" value="<?php echo $escape($auth->csrf()); ?>"><input type="hidden" name="action" value="show"><input type="hidden" name="reference" value="<?php echo $escape($row['reference']); ?>"><button class="button">Revisar</button></form><?php endif; ?></td></tr><?php endforeach; ?>
+                </tbody></table></div><?php endif; ?>
+                <?php if ($cronPreview['rows_truncated']): ?><p class="notice">Se muestran hasta 200 incidencias; los contadores incluyen todas las entradas leídas. No se autoriza activar con candidatos sin revisar.</p><?php endif; ?>
+                <details class="panel"><summary>Desglose de los registros revisados</summary><div class="panel-body">
+                    <?php $bucketLabels = array('not_selected' => 'Estado/pago no seleccionado por el procesador', 'environment_blocked' => 'Ambiente o aislamiento incompatible / ausente', 'catalog_blocked' => 'Catálogo sin confirmar', 'financial_hold' => 'Conciliación o grupo bloqueado', 'pending_notification' => 'Notificaciones pendientes en la referencia', 'response_present' => 'Con respuesta externa: no se reenvía la cotización', 'dispatch_present' => 'Con diario de envío: no se reenvía la cotización', 'authorization_missing' => 'Sin autorización del proveedor utilizable', 'order_candidate' => 'Candidato a un primer intento local de envío'); ?>
+                    <dl class="technical-grid"><?php foreach ($cronPreview['buckets'] as $bucket => $count): ?><div><dt><?php echo $escape($bucketLabels[$bucket]); ?></dt><dd><?php echo (int) $count; ?></dd></div><?php endforeach; ?></dl>
+                    <p class="technical-note">Estados almacenados: <?php foreach ($cronPreview['statuses'] as $status => $count) { echo $escape($status . ': ' . $count . ' '); } ?></p>
+                </div></details>
+                <p class="hint">Lectura secuencial, sin caché y no atómica. Repetila justo antes de decidir: una confirmación posterior puede cambiar la cola. No hay corte automático por antigüedad. Los candidatos no garantizan que la API o el correo acepten el intento.</p>
+                <form method="post" action="<?php echo $escape($settings['url_path']); ?>"><input type="hidden" name="csrf" value="<?php echo $escape($auth->csrf()); ?>"><button class="button" name="action" value="cron_check">Repetir comprobación de solo lectura</button></form>
+            </section>
         <?php elseif ($section === 'home'): ?>
             <section aria-labelledby="home-title" data-screen="home">
                 <div class="page-heading"><div><p class="eyebrow">Administración de operaciones</p><h1 id="home-title">Panel de conciliación</h1><p class="intro">Elegí una opción para consultar la información que necesitás.</p></div><span class="badge readonly">Solo consulta</span></div>
@@ -288,6 +313,7 @@ $originLabel = isset($labels[$section]) ? $labels[$section] : 'Inicio';
                 </div>
                 <?php if ($page['unreadable']): ?><p class="notice">Hay registros ilegibles que requieren investigación privada: <?php echo $escape(implode(', ', $page['unreadable'])); ?>. No se presume su estado financiero.</p><?php endif; ?>
                 <div class="pagination"><span>Información actual del almacenamiento local, sin caché.</span><?php if ($page['next'] !== ''): ?><form method="post" action="<?php echo $escape($settings['url_path']); ?>"><input type="hidden" name="csrf" value="<?php echo $escape($auth->csrf()); ?>"><button class="button" name="action" value="next">Siguiente segmento</button></form><?php endif; ?></div>
+                <?php if ($section === 'pending'): ?><form method="post" action="<?php echo $escape($settings['url_path']); ?>"><input type="hidden" name="csrf" value="<?php echo $escape($auth->csrf()); ?>"><button class="button" name="action" value="cron_check">Comprobar cola antes de activar el Cron</button></form><?php endif; ?>
             </section>
         <?php endif; ?>
     <?php endif; ?>

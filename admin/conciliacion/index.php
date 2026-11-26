@@ -88,7 +88,7 @@ try {
     $actor = $metrics->measure('auth_current_ms', function () use ($auth) { return $auth->current(); });
     $metricsAuthorized = $actor !== null;
     if (!isset($_SESSION['panel_section'])
-        || !in_array($_SESSION['panel_section'], array('home', 'search', 'pending', 'incidents'), true)) {
+        || !in_array($_SESSION['panel_section'], array('home', 'search', 'pending', 'incidents', 'cron_check'), true)) {
         $_SESSION['panel_section'] = 'home';
         unset($_SESSION['reference'], $_SESSION['review'], $_SESSION['cursor'], $_SESSION['next_cursor']);
     }
@@ -126,9 +126,16 @@ try {
                     unset($_SESSION['cursor'], $_SESSION['next_cursor'], $_SESSION['reference'], $_SESSION['review']);
                 } elseif ($action === 'back') {
                     if (!isset($_SESSION['reference'])) {
-                        $_SESSION['panel_section'] = 'home';
-                        unset($_SESSION['cursor'], $_SESSION['next_cursor']);
+                        if ($_SESSION['panel_section'] === 'cron_check') {
+                            $_SESSION['panel_section'] = 'pending';
+                        } else {
+                            $_SESSION['panel_section'] = 'home';
+                            unset($_SESSION['cursor'], $_SESSION['next_cursor']);
+                        }
                     }
+                    unset($_SESSION['reference'], $_SESSION['review']);
+                } elseif ($action === 'cron_check') {
+                    $_SESSION['panel_section'] = 'cron_check';
                     unset($_SESSION['reference'], $_SESSION['review']);
                 } elseif ($action === 'next') {
                     if (!in_array($_SESSION['panel_section'], array('pending', 'incidents'), true)) {
@@ -174,18 +181,21 @@ try {
     $detail = null;
     $detailError = '';
     $selectedReference = '';
+    $cronPreview = null;
     $reviewToken = '';
     $canLink = false;
     $section = $_SESSION['panel_section'];
     $listMode = $section === 'incidents' ? 'incidents' : 'pending';
     if ($actor) {
         $service = $loadService();
-        $canLink = $service->canLink() && $listMode !== 'incidents';
+        $canLink = $service->canLink() && !in_array($section, array('incidents', 'cron_check'), true);
         if (!isset($_SESSION['reference']) && in_array($section, array('pending', 'incidents'), true)) {
             $page = $metrics->measure('pending_ms', function () use ($service, $listMode) {
                 return $service->pending(isset($_SESSION['cursor']) ? $_SESSION['cursor'] : '', $listMode);
             });
             $_SESSION['next_cursor'] = $page['next'];
+        } elseif (!isset($_SESSION['reference']) && $section === 'cron_check') {
+            $cronPreview = $service->cronPreview();
         } elseif (!isset($_SESSION['reference'])) {
             $private->audit($section === 'search' ? 'view_search' : 'view_home', $actor);
         }
@@ -211,7 +221,7 @@ try {
     $escape = function ($value) { return htmlspecialchars((string) $value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); };
     // All session changes, including review tokens, are complete before rendering.
     $auth->close();
-    $metrics->measure('render_ms', function () use ($auth, $escape, $nonce, $flash, $actor, $settings, $canLink, $page, $detail, $detailError, $selectedReference, $reviewToken, $listMode, $section) {
+    $metrics->measure('render_ms', function () use ($auth, $escape, $nonce, $flash, $actor, $settings, $canLink, $page, $detail, $detailError, $selectedReference, $reviewToken, $listMode, $section, $cronPreview) {
         require __DIR__ . '/view.php';
     });
 } catch (Throwable $e) {
