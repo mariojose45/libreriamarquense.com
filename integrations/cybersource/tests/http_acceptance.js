@@ -309,6 +309,10 @@ async function main() {
     const cashOrder = { ...fixtureOrder(), forma_pago: 'Pago Contra Entrega', csrf_token: cash.csrf };
     const nonCard = await request('/api/orders/create.php', { method: 'POST', data: cashOrder, cookie: cash.cookie });
     check(nonCard.status === 200 && nonCard.json.success, 'existing non-card purchase works against isolated simulator');
+    const transfer = await client();
+    const transferOrder = { ...fixtureOrder(), forma_pago: 'Transferencia', csrf_token: transfer.csrf };
+    const bankOrder = await request('/api/orders/create.php', { method: 'POST', data: transferOrder, cookie: transfer.cookie });
+    check(bankOrder.status === 200 && bankOrder.json.success, 'bank transfer works against isolated simulator with captured mail');
     const tlsClient = await client();
     const previousCalls = orderCalls;
     const previousSessions = fs.readdirSync(path.join(root, 'sessions')).filter(x => x.startsWith('LMQ-')).length;

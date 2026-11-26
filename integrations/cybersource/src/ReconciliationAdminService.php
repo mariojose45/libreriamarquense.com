@@ -34,13 +34,16 @@ final class ReconciliationAdminService
             && function_exists('putenv');
     }
 
-    public function pending($cursor = '')
+    public function pending($cursor = '', $mode = 'pending')
     {
         $username = $this->auth->requireUser();
+        if (!in_array($mode, array('pending', 'incidents'), true)) {
+            throw new \RuntimeException('Consulta no valida.');
+        }
         if ($cursor !== '' && !preg_match('/^LMQ-[0-9]{14}-[A-F0-9]{8}$/D', $cursor)) {
             throw new \RuntimeException('Cursor no valido.');
         }
-        $this->audit->audit('list_pending', $username);
+        $this->audit->audit($mode === 'incidents' ? 'list_incidents' : 'list_pending', $username);
         $items = array();
         $unreadable = array();
         $scanned = 0;
@@ -52,7 +55,7 @@ final class ReconciliationAdminService
             $scanned++;
             $this->audit->metrics()->count('records_scanned');
             try {
-                $summary = $this->pendingSummary($reference);
+                $summary = $this->pendingSummary($reference, $mode);
                 if ($summary !== null) {
                     $items[] = $summary;
                     $this->audit->metrics()->count('pending_found');
@@ -69,7 +72,7 @@ final class ReconciliationAdminService
         return array('items' => $items, 'next' => $next, 'unreadable' => $unreadable);
     }
 
-    private function pendingSummary($reference)
+    private function pendingSummary($reference, $mode)
     {
         $session = $this->store->find($reference);
         if (!$session || !isset($session['status'])) { throw new GatewayException('Registro no disponible.'); }
@@ -78,12 +81,36 @@ final class ReconciliationAdminService
         $confirmed = is_array($response) && OrderForwarder::isConfirmed($response);
         // Same selection as ManualReconciliation::describe; no event/index scans are
         // needed for these six display fields. Detail and all writes still use ManualReconciliation.
-        if (!isset($session['payment_verified']) || $session['payment_verified'] !== true
-            || ($confirmed && $session['status'] === 'ORDER_SENT')) { return null; }
-        return array('reference' => $reference, 'status' => $session['status'], 'amount' => $amount,
+        if ($mode === 'pending' && (!isset($session['payment_verified']) || $session['payment_verified'] !== true
+            || ($confirmed && $session['status'] === 'ORDER_SENT'))) { return null; }
+        $summary = array('reference' => $reference, 'status' => $session['status'], 'amount' => $amount,
             'currency' => isset($session['currency']) ? $session['currency'] : null,
             'dispatch' => isset($session['order_dispatch']['state']) ? $session['order_dispatch']['state'] : 'NOT_STARTED',
             'created_at' => isset($session['created_at']) ? $session['created_at'] : null);
+        if ($mode === 'incidents') {
+            $reasons = array();
+            if (Reconciliation::held($session) || $session['status'] === 'REVIEW') { $reasons[] = 'PAYMENT_REVIEW'; }
+            if (in_array($summary['dispatch'], array('SENDING', 'UNKNOWN', 'CONFIRMED_HELD'), true)) {
+                $reasons[] = 'ERP_' . $summary['dispatch'];
+            }
+            if (in_array($session['status'], array('PAID', 'ORDER_SENT'), true)) {
+                if (!isset($session['payment_verified']) || $session['payment_verified'] !== true
+                    || !isset($session['catalog_verified']) || $session['catalog_verified'] !== true) {
+                    $reasons[] = 'INCOMPLETE_VERIFICATION';
+                }
+                if (!$confirmed || $session['status'] !== 'ORDER_SENT') { $reasons[] = 'ORDER_UNCONFIRMED'; }
+            }
+            $email = isset($session['order_email']['state']) ? $session['order_email']['state'] : 'NOT_STARTED';
+            if (in_array($email, array('SENDING', 'UNKNOWN', 'FAILED'), true)) { $reasons[] = 'EMAIL_' . $email; }
+            if (in_array($session['status'], array('PENDING', 'SUBMITTED'), true) && !empty($session['expires_at'])
+                && strtotime($session['expires_at']) !== false && strtotime($session['expires_at']) <= time()) {
+                $reasons[] = 'ATTEMPT_EXPIRED';
+            }
+            if (!$reasons) { return null; }
+            $summary['reasons'] = $reasons;
+            $summary['environment'] = isset($session['environment']) ? $session['environment'] : 'UNVERIFIED';
+        }
+        return $summary;
     }
 
     public function detail($reference)
@@ -92,9 +119,20 @@ final class ReconciliationAdminService
         $this->audit->audit('view_reference', $username, array('reference' => $reference));
         $detail = $this->review->describe($reference, true);
         // Never render raw payment sessions, card data, authorization codes or credentials.
-        return array_intersect_key($detail, array_flip(array('reference', 'revision', 'environment', 'status',
+        $safe = array_intersect_key($detail, array_flip(array('reference', 'revision', 'environment', 'status',
             'amount', 'currency', 'created_at', 'dispatch', 'quotation_id', 'payment_verified',
-            'financial_review', 'charge_group_blocked', 'pending_notifications', 'customer', 'items')));
+            'financial_review', 'charge_group_blocked', 'pending_notifications', 'email_state', 'customer', 'items')));
+        $safe['review_reasons'] = array();
+        foreach (isset($detail['issues']) ? $detail['issues'] : array() as $issue) {
+            if (!isset($issue['state']) || $issue['state'] !== 'OPEN') { continue; }
+            foreach (isset($issue['reasons']) ? $issue['reasons'] : array() as $reason) {
+                if (is_string($reason) && preg_match('/^[a-z][a-z0-9_]{0,79}$/D', $reason)) {
+                    $safe['review_reasons'][] = $reason;
+                }
+            }
+        }
+        $safe['review_reasons'] = array_values(array_unique($safe['review_reasons']));
+        return $safe;
     }
 
     public function link($csrf, $token, $quotation, $evidence, array $confirmations)

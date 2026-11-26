@@ -143,6 +143,7 @@ try {
     $flash = '<script>not-executable</script>';
     $detail['customer']['nombre_cliente'] = '<script>not-executable</script>';
     $canLink = false;
+    $listMode = 'pending';
     $reviewToken = 'must-not-render-when-blocked';
     $escape = function ($value) { return htmlspecialchars((string) $value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); };
     ob_start();
@@ -150,6 +151,14 @@ try {
     $html = ob_get_clean();
     $check(strpos($html, '<script>') === false && strpos($html, '&lt;script&gt;') !== false, 'HTML output escaping');
     $check(strpos($html, 'name="review_token"') === false && strpos($html, 'MUST_NOT_RENDER') === false, 'blocked UI and sensitive data protection');
+    $listMode = 'incidents';
+    $page = $off->pending('', $listMode);
+    ob_start();
+    require $app . '/admin/conciliacion/view.php';
+    $html = ob_get_clean();
+    $check(strpos($html, 'ERP_UNKNOWN') !== false && strpos($html, 'Esta vista no permite vinculaciones') !== false,
+        'incident view explains ambiguous order state and remains read-only');
+    $check(strpos($html, 'name="review_token"') === false, 'incident query cannot expose a mutation form');
     $token = $auth->issueReview($ref, 7);
     $reject(function () use ($allowed, $auth, $token, $matches) { $allowed->link('wrong', $token, '123', 'ticket-test-123', $matches); }, 'link needs CSRF');
     $reject(function () use ($allowed, $auth, $token, $matches) { $allowed->link($auth->csrf(), $token, '123', 'ticket-test-123', $matches); }, 'link requires password confirmation in same request');

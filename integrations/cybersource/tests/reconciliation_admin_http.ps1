@@ -36,6 +36,12 @@ try {
         created_at='2026-11-24T00:00:00Z';order_dispatch=@{state='UNKNOWN'};order_payload=@{nit='C/F';nombre_cliente='Cliente Prueba';datosArticulos=@{articulos=@{idarticulo=@(1);cantidad=@(1);precio_venta=@(30)}}}} |
         ConvertTo-Json -Depth 8 | Set-Content -LiteralPath $payment -Encoding ascii
     $paymentHash = (Get-FileHash -LiteralPath $payment -Algorithm SHA256).Hash
+    $heldReference = 'LMQ-20261124000000-BBBBBBBB'
+    $heldPayment = Join-Path $site ('storage\'+$heldReference+'.json')
+    @{reference=$heldReference;_revision=1;status='REVIEW';payment_verified=$false;environment='production';amount=30;currency='GTQ';
+        reconciliation=@{fixture=@{state='OPEN';reasons=@('missing_or_unsigned_auth_code');transaction_id='PRIVATE-SENTINEL'}}} |
+        ConvertTo-Json -Depth 8 | Set-Content -LiteralPath $heldPayment -Encoding ascii
+    $heldHash = (Get-FileHash -LiteralPath $heldPayment -Algorithm SHA256).Hash
     $listener = New-Object Net.Sockets.TcpListener([Net.IPAddress]::Loopback,0)
     $listener.Start()
     $port = $listener.LocalEndpoint.Port
@@ -84,7 +90,21 @@ try {
     $dashboard = Send-Panel 'GET' @{}
     Check ($dashboard.status -eq 200 -and $dashboard.body.Contains($reference)) 'authenticated summary and rendering'
     Check (-not $dashboard.body.Contains('name="review_token"')) 'links remain blocked'
+    Check (-not $dashboard.body.Contains($heldReference)) 'original approved-only list unchanged'
     $csrf = [regex]::Match($dashboard.body,'name="csrf" value="([a-f0-9]+)"').Groups[1].Value
+    $deniedIncidents = Send-Panel 'POST' @{action='incidents';csrf='wrong'}
+    Check ($deniedIncidents.status -eq 403) 'incident selection requires CSRF'
+    $selected = Send-Panel 'POST' @{action='incidents';csrf=$csrf}
+    Check ($selected.status -eq 303) 'private incident selection redirects safely'
+    $incidents = Send-Panel 'GET' @{}
+    Check ($incidents.status -eq 200 -and $incidents.body.Contains($heldReference) -and $incidents.body.Contains('ERP_UNKNOWN')) 'held and uncertain cases visible'
+    Check (-not $incidents.body.Contains('name="review_token"')) 'incident view has no mutation form'
+    $heldSearch = Send-Panel 'POST' @{action='show';csrf=$csrf;reference=$heldReference}
+    $heldDetail = Send-Panel 'GET' @{}
+    Check ($heldSearch.status -eq 303 -and $heldDetail.body.Contains('missing_or_unsigned_auth_code') -and -not $heldDetail.body.Contains('PRIVATE-SENTINEL')) 'safe incident detail without raw receipt'
+    Check ((Get-FileHash -LiteralPath $heldPayment -Algorithm SHA256).Hash -eq $heldHash) 'incident queries never alter financial state'
+    $back = Send-Panel 'POST' @{action='list';csrf=$csrf}
+    Check ($back.status -eq 303 -and -not (Send-Panel 'GET' @{}).body.Contains($heldReference)) 'return to original pending list'
     $search = Send-Panel 'POST' @{action='show';csrf=$csrf;reference=$reference}
     Check ($search.status -eq 303) 'search persists before redirect'
     $detail = Send-Panel 'GET' @{}

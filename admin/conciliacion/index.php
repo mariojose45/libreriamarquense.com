@@ -115,7 +115,8 @@ try {
                     }
                     $_SESSION['reference'] = $reference;
                     unset($_SESSION['review']);
-                } elseif ($action === 'list') {
+                } elseif (in_array($action, array('list', 'incidents'), true)) {
+                    $_SESSION['list_mode'] = $action === 'incidents' ? 'incidents' : 'pending';
                     unset($_SESSION['cursor'], $_SESSION['reference'], $_SESSION['review']);
                 } elseif ($action === 'next') {
                     $_SESSION['cursor'] = isset($_SESSION['next_cursor']) ? $_SESSION['next_cursor'] : '';
@@ -156,11 +157,12 @@ try {
     $detail = null;
     $reviewToken = '';
     $canLink = false;
+    $listMode = isset($_SESSION['list_mode']) && $_SESSION['list_mode'] === 'incidents' ? 'incidents' : 'pending';
     if ($actor) {
         $service = $loadService();
-        $canLink = $service->canLink();
-        $page = $metrics->measure('pending_ms', function () use ($service) {
-            return $service->pending(isset($_SESSION['cursor']) ? $_SESSION['cursor'] : '');
+        $canLink = $service->canLink() && $listMode !== 'incidents';
+        $page = $metrics->measure('pending_ms', function () use ($service, $listMode) {
+            return $service->pending(isset($_SESSION['cursor']) ? $_SESSION['cursor'] : '', $listMode);
         });
         $_SESSION['next_cursor'] = $page['next'];
         if (isset($_SESSION['reference'])) {
@@ -181,7 +183,7 @@ try {
     $escape = function ($value) { return htmlspecialchars((string) $value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); };
     // All session changes, including review tokens, are complete before rendering.
     $auth->close();
-    $metrics->measure('render_ms', function () use ($auth, $escape, $nonce, $flash, $actor, $settings, $canLink, $page, $detail, $reviewToken) {
+    $metrics->measure('render_ms', function () use ($auth, $escape, $nonce, $flash, $actor, $settings, $canLink, $page, $detail, $reviewToken, $listMode) {
         require __DIR__ . '/view.php';
     });
 } catch (Throwable $e) {

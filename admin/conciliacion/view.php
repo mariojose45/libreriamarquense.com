@@ -38,6 +38,7 @@ if (!isset($auth, $escape, $nonce)) {
             <input type="hidden" name="csrf" value="<?php echo $escape($auth->csrf()); ?>">
             <button name="action" value="logout">Cerrar sesion</button>
             <button name="action" value="list">Volver al inicio de pendientes</button>
+            <button name="action" value="incidents">Incidencias (solo consulta)</button>
         </form>
         <?php if (!$canLink): ?><p class="notice">Solo consulta: las vinculaciones estan bloqueadas. Se requieren autorizacion productiva, permiso propio del panel y configuracion compatible del hosting.</p><?php endif; ?>
         <p>El panel no consulta automaticamente SistemasOL y nunca crea ni reenvia pedidos.</p>
@@ -47,12 +48,15 @@ if (!isset($auth, $escape, $nonce)) {
             <label>Referencia LMQ <input name="reference" maxlength="40" pattern="LMQ-[0-9]{14}-[A-F0-9]{8}" required></label>
             <button>Consultar referencia</button>
         </form>
-        <h2>Pagos aprobados sin pedido confirmado</h2>
+        <h2><?php echo $listMode === 'incidents' ? 'Incidencias de pago, pedido o correo' : 'Pagos aprobados sin pedido confirmado'; ?></h2>
         <p>Resumen leido del almacenamiento actual, sin cache. Consulte cada referencia para revisar eventos e incidencias completos.</p>
-        <table><thead><tr><th>Referencia</th><th>Total</th><th>Estado de envio</th><th>Consulta</th></tr></thead><tbody>
+        <?php if ($listMode === 'incidents'): ?><p class="notice">Una incidencia o un intento vencido no demuestra un cobro aprobado ni autoriza otro pago o reenvio. Los motivos PAYMENT_REVIEW requieren revision financiera; ERP_* indica envio incierto; EMAIL_* indica incidencia de correo. Esta vista no permite vinculaciones.</p><?php endif; ?>
+        <table><thead><tr><th>Referencia</th><th>Total</th><th>Estado de envio</th><?php if ($listMode === 'incidents'): ?><th>Incidencia</th><?php endif; ?><th>Consulta</th></tr></thead><tbody>
         <?php foreach ($page['items'] as $item): ?>
             <tr><td><?php echo $escape($item['reference']); ?></td><td><?php echo $escape($item['currency'] . ' ' . $item['amount']); ?></td>
-                <td><?php echo $escape($item['dispatch']); ?></td><td>
+                <td><?php echo $escape($item['dispatch']); ?></td>
+                <?php if ($listMode === 'incidents'): ?><td><?php echo $escape($item['status'] . ' | ' . $item['environment'] . ' | ' . implode(', ', $item['reasons'])); ?></td><?php endif; ?>
+                <td>
                     <form method="post" action="<?php echo $escape($settings['url_path']); ?>">
                         <input type="hidden" name="csrf" value="<?php echo $escape($auth->csrf()); ?>">
                         <input type="hidden" name="action" value="show">
@@ -79,6 +83,9 @@ if (!isset($auth, $escape, $nonce)) {
             <p>Revision financiera: <?php echo $detail['financial_review'] ? 'SI' : 'NO'; ?>;
                 grupo bloqueado: <?php echo $detail['charge_group_blocked'] ? 'SI' : 'NO'; ?>;
                 notificaciones pendientes: <?php echo $detail['pending_notifications'] ? 'SI' : 'NO'; ?>.</p>
+            <p>Pago verificado: <?php echo $detail['payment_verified'] ? 'SI' : 'NO'; ?>;
+                correo: <?php echo $escape(isset($detail['email_state']) ? $detail['email_state'] : 'NOT_STARTED'); ?>.</p>
+            <?php if (!empty($detail['review_reasons'])): ?><p class="notice">Motivos de revision: <?php echo $escape(implode(', ', $detail['review_reasons'])); ?>. No se modifico el estado financiero.</p><?php endif; ?>
             <h3>Datos minimos para verificar en SistemasOL</h3>
             <pre><?php echo $escape(json_encode(array('cliente' => $detail['customer'], 'articulos' => $detail['items']), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)); ?></pre>
             <?php if ($canLink && $reviewToken !== ''): ?>
