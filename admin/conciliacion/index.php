@@ -87,6 +87,11 @@ try {
     };
     $actor = $metrics->measure('auth_current_ms', function () use ($auth) { return $auth->current(); });
     $metricsAuthorized = $actor !== null;
+    if (!isset($_SESSION['panel_section'])
+        || !in_array($_SESSION['panel_section'], array('home', 'search', 'pending', 'incidents'), true)) {
+        $_SESSION['panel_section'] = 'home';
+        unset($_SESSION['reference'], $_SESSION['review'], $_SESSION['cursor'], $_SESSION['next_cursor']);
+    }
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         try {
             $auth->requireCsrf($input('csrf', 64));
@@ -110,15 +115,25 @@ try {
                     $requestKind = 'logout';
                 } elseif ($action === 'show') {
                     unset($_SESSION['reference'], $_SESSION['review']);
+                    if ($_SESSION['panel_section'] === 'home') { $_SESSION['panel_section'] = 'search'; }
                     $reference = trim($input('reference', 40));
                     if (!preg_match('/^LMQ-[0-9]{14}-[A-F0-9]{8}$/D', $reference)) {
                         throw new RuntimeException('Referencia no valida.');
                     }
                     $_SESSION['reference'] = $reference;
-                } elseif (in_array($action, array('list', 'incidents'), true)) {
-                    $_SESSION['list_mode'] = $action === 'incidents' ? 'incidents' : 'pending';
-                    unset($_SESSION['cursor'], $_SESSION['reference'], $_SESSION['review']);
+                } elseif (in_array($action, array('home', 'search', 'list', 'incidents'), true)) {
+                    $_SESSION['panel_section'] = $action === 'list' ? 'pending' : $action;
+                    unset($_SESSION['cursor'], $_SESSION['next_cursor'], $_SESSION['reference'], $_SESSION['review']);
+                } elseif ($action === 'back') {
+                    if (!isset($_SESSION['reference'])) {
+                        $_SESSION['panel_section'] = 'home';
+                        unset($_SESSION['cursor'], $_SESSION['next_cursor']);
+                    }
+                    unset($_SESSION['reference'], $_SESSION['review']);
                 } elseif ($action === 'next') {
+                    if (!in_array($_SESSION['panel_section'], array('pending', 'incidents'), true)) {
+                        throw new RuntimeException('Navegacion no permitida.');
+                    }
                     $_SESSION['cursor'] = isset($_SESSION['next_cursor']) ? $_SESSION['next_cursor'] : '';
                     unset($_SESSION['reference'], $_SESSION['review']);
                 } elseif ($action === 'link') {
@@ -161,15 +176,18 @@ try {
     $selectedReference = '';
     $reviewToken = '';
     $canLink = false;
-    $listMode = isset($_SESSION['list_mode']) && $_SESSION['list_mode'] === 'incidents' ? 'incidents' : 'pending';
+    $section = $_SESSION['panel_section'];
+    $listMode = $section === 'incidents' ? 'incidents' : 'pending';
     if ($actor) {
         $service = $loadService();
         $canLink = $service->canLink() && $listMode !== 'incidents';
-        if (!isset($_SESSION['reference'])) {
+        if (!isset($_SESSION['reference']) && in_array($section, array('pending', 'incidents'), true)) {
             $page = $metrics->measure('pending_ms', function () use ($service, $listMode) {
                 return $service->pending(isset($_SESSION['cursor']) ? $_SESSION['cursor'] : '', $listMode);
             });
             $_SESSION['next_cursor'] = $page['next'];
+        } elseif (!isset($_SESSION['reference'])) {
+            $private->audit($section === 'search' ? 'view_search' : 'view_home', $actor);
         }
         if (isset($_SESSION['reference'])) {
             $selectedReference = $_SESSION['reference'];
@@ -193,7 +211,7 @@ try {
     $escape = function ($value) { return htmlspecialchars((string) $value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); };
     // All session changes, including review tokens, are complete before rendering.
     $auth->close();
-    $metrics->measure('render_ms', function () use ($auth, $escape, $nonce, $flash, $actor, $settings, $canLink, $page, $detail, $detailError, $selectedReference, $reviewToken, $listMode) {
+    $metrics->measure('render_ms', function () use ($auth, $escape, $nonce, $flash, $actor, $settings, $canLink, $page, $detail, $detailError, $selectedReference, $reviewToken, $listMode, $section) {
         require __DIR__ . '/view.php';
     });
 } catch (Throwable $e) {

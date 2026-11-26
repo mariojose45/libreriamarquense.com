@@ -145,6 +145,7 @@ try {
     $detail['customer']['nombre_cliente'] = '<script>not-executable</script>';
     $canLink = false;
     $listMode = 'pending';
+    $section = 'pending';
     $detailError = '';
     $selectedReference = $ref;
     $reviewToken = 'must-not-render-when-blocked';
@@ -155,14 +156,37 @@ try {
     $check(strpos($html, '<script>') === false && strpos($html, '&lt;script&gt;') !== false, 'HTML output escaping');
     $check(strpos($html, 'name="review_token"') === false && strpos($html, 'MUST_NOT_RENDER') === false, 'blocked UI and sensitive data protection');
     $listMode = 'incidents';
+    $section = 'incidents';
     $page = $off->pending('', $listMode);
     $detail = null;
     ob_start();
     require $app . '/admin/conciliacion/view.php';
     $html = ob_get_clean();
-    $check(strpos($html, 'ERP_UNKNOWN') !== false && strpos($html, 'Esta vista no permite vinculaciones') !== false,
-        'incident view explains ambiguous order state and remains read-only');
+    $check(strpos($html, 'Envío sin confirmar') !== false && strpos($html, 'data-screen="incidents"') !== false,
+        'incident view explains ambiguous order state without displaying another section');
     $check(strpos($html, 'name="review_token"') === false, 'incident query cannot expose a mutation form');
+    $check(strpos($html, 'id="reference"') === false, 'incident list does not repeat the search form');
+    $section = 'home';
+    ob_start();
+    require $app . '/admin/conciliacion/view.php';
+    $html = ob_get_clean();
+    $check(substr_count($html, 'class="menu-card"') === 3 && strpos($html, 'data-screen="home"') !== false,
+        'home presents exactly three choices');
+    $check(strpos($html, $ref) === false && strpos($html, '<table') === false && strpos($html, 'id="reference"') === false,
+        'home never mixes lists or the reference form');
+    $section = 'search';
+    ob_start();
+    require $app . '/admin/conciliacion/view.php';
+    $html = ob_get_clean();
+    $check(strpos($html, 'id="reference"') !== false && strpos($html, '<table') === false
+        && strpos($html, 'class="menu-card"') === false, 'search is an independent form-only screen');
+    $section = 'pending';
+    $page = array('items' => array(), 'next' => '', 'unreadable' => array());
+    ob_start();
+    require $app . '/admin/conciliacion/view.php';
+    $html = ob_get_clean();
+    $check(strpos($html, 'Sin pagos pendientes') !== false && strpos($html, 'id="reference"') === false,
+        'empty pending screen remains clear and isolated');
     $token = $auth->issueReview($ref, 7);
     $reject(function () use ($allowed, $auth, $token, $matches) { $allowed->link('wrong', $token, '123', 'ticket-test-123', $matches); }, 'link needs CSRF');
     $reject(function () use ($allowed, $auth, $token, $matches) { $allowed->link($auth->csrf(), $token, '123', 'ticket-test-123', $matches); }, 'link requires password confirmation in same request');
