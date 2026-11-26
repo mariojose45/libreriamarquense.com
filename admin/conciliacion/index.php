@@ -109,12 +109,12 @@ try {
                     $auth->logout();
                     $requestKind = 'logout';
                 } elseif ($action === 'show') {
+                    unset($_SESSION['reference'], $_SESSION['review']);
                     $reference = trim($input('reference', 40));
                     if (!preg_match('/^LMQ-[0-9]{14}-[A-F0-9]{8}$/D', $reference)) {
                         throw new RuntimeException('Referencia no valida.');
                     }
                     $_SESSION['reference'] = $reference;
-                    unset($_SESSION['review']);
                 } elseif (in_array($action, array('list', 'incidents'), true)) {
                     $_SESSION['list_mode'] = $action === 'incidents' ? 'incidents' : 'pending';
                     unset($_SESSION['cursor'], $_SESSION['reference'], $_SESSION['review']);
@@ -145,27 +145,34 @@ try {
             $requestKind = 'error';
             $_SESSION['flash'] = $action === 'link'
                 ? 'Vinculacion no confirmada. Consulte nuevamente la referencia; no cree ni reenvie pedidos. Revise autorizaciones, revision, evidencia y correspondencias.'
-                : 'Solicitud no confirmada. Verifique credenciales, sesion y permisos. Tras varios intentos, espere 15 minutos.';
+                : ($action === 'show' ? 'Referencia no valida. Indique una referencia LMQ completa desde el listado o el formulario.'
+                : 'Solicitud no confirmada. Verifique credenciales, sesion y permisos. Tras varios intentos, espere 15 minutos.');
         }
         $auth->close();
-        header('Location: ' . $settings['url_path'], true, 303);
+        header('Location: ' . $settings['url_path']
+            . ($action === 'show' && isset($_SESSION['reference']) ? '#detalle-operacion' : ''), true, 303);
         exit;
     }
     $flash = isset($_SESSION['flash']) ? $_SESSION['flash'] : '';
     unset($_SESSION['flash']);
     $page = array('items' => array(), 'next' => '', 'unreadable' => array());
     $detail = null;
+    $detailError = '';
+    $selectedReference = '';
     $reviewToken = '';
     $canLink = false;
     $listMode = isset($_SESSION['list_mode']) && $_SESSION['list_mode'] === 'incidents' ? 'incidents' : 'pending';
     if ($actor) {
         $service = $loadService();
         $canLink = $service->canLink() && $listMode !== 'incidents';
-        $page = $metrics->measure('pending_ms', function () use ($service, $listMode) {
-            return $service->pending(isset($_SESSION['cursor']) ? $_SESSION['cursor'] : '', $listMode);
-        });
-        $_SESSION['next_cursor'] = $page['next'];
+        if (!isset($_SESSION['reference'])) {
+            $page = $metrics->measure('pending_ms', function () use ($service, $listMode) {
+                return $service->pending(isset($_SESSION['cursor']) ? $_SESSION['cursor'] : '', $listMode);
+            });
+            $_SESSION['next_cursor'] = $page['next'];
+        }
         if (isset($_SESSION['reference'])) {
+            $selectedReference = $_SESSION['reference'];
             $requestKind = 'detail';
             try {
                 $detail = $metrics->measure('detail_ms', function () use ($service) { return $service->detail($_SESSION['reference']); });
@@ -175,15 +182,18 @@ try {
                     $reviewToken = $auth->issueReview($detail['reference'], $detail['revision']);
                 }
             } catch (Throwable $e) {
-                $flash = 'Referencia no disponible o registro que requiere investigacion. No se modifico el pago.';
-                unset($_SESSION['reference'], $_SESSION['review']);
+                $detail = null;
+                $reviewToken = '';
+                $detailError = 'No fue posible consultar esta referencia. Puede no existir o tener datos no disponibles o ilegibles. Solicite una revision privada del almacenamiento. No se modifico el pago.';
+                unset($_SESSION['review']);
+                $private->audit('view_reference_failed', $actor, array('reference' => $selectedReference));
             }
         }
     }
     $escape = function ($value) { return htmlspecialchars((string) $value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); };
     // All session changes, including review tokens, are complete before rendering.
     $auth->close();
-    $metrics->measure('render_ms', function () use ($auth, $escape, $nonce, $flash, $actor, $settings, $canLink, $page, $detail, $reviewToken, $listMode) {
+    $metrics->measure('render_ms', function () use ($auth, $escape, $nonce, $flash, $actor, $settings, $canLink, $page, $detail, $detailError, $selectedReference, $reviewToken, $listMode) {
         require __DIR__ . '/view.php';
     });
 } catch (Throwable $e) {

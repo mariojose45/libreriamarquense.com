@@ -48,6 +48,7 @@ if (!isset($auth, $escape, $nonce)) {
             <label>Referencia LMQ <input name="reference" maxlength="40" pattern="LMQ-[0-9]{14}-[A-F0-9]{8}" required></label>
             <button>Consultar referencia</button>
         </form>
+        <?php if (!$detail && $detailError === ''): ?>
         <h2><?php echo $listMode === 'incidents' ? 'Incidencias de pago, pedido o correo' : 'Pagos aprobados sin pedido confirmado'; ?></h2>
         <p>Resumen leido del almacenamiento actual, sin cache. Consulte cada referencia para revisar eventos e incidencias completos.</p>
         <?php if ($listMode === 'incidents'): ?><p class="notice">Una incidencia o un intento vencido no demuestra un cobro aprobado ni autoriza otro pago o reenvio. Los motivos PAYMENT_REVIEW requieren revision financiera; ERP_* indica envio incierto; EMAIL_* indica incidencia de correo. Esta vista no permite vinculaciones.</p><?php endif; ?>
@@ -74,20 +75,42 @@ if (!isset($auth, $escape, $nonce)) {
                 <button name="action" value="next">Siguiente segmento</button>
             </form>
         <?php endif; ?>
+        <?php endif; ?>
+        <?php if ($detailError !== ''): ?>
+            <section id="detalle-operacion" aria-labelledby="detail-error-title">
+                <h2 id="detail-error-title">Consulta de <?php echo $escape($selectedReference); ?></h2>
+                <p class="notice" role="alert"><?php echo $escape($detailError); ?></p>
+            </section>
+        <?php endif; ?>
         <?php if ($detail): ?>
-            <h2><?php echo $escape($detail['reference']); ?></h2>
+            <section id="detalle-operacion" aria-labelledby="detail-title">
+            <h2 id="detail-title">Detalle de la operacion: <?php echo $escape($detail['reference']); ?></h2>
             <p><?php echo $escape($detail['currency'] . ' ' . $detail['amount'] . ' | ' . $detail['status'] . ' | ' . $detail['dispatch']); ?>
-                | Revision <?php echo $escape($detail['revision']); ?></p>
-            <p>Fecha de creacion (UTC): <?php echo $escape($detail['created_at']); ?>. Ambiente: <?php echo $escape($detail['environment']); ?>.</p>
+                | Revision <?php echo $escape($detail['revision'] === null ? 'NO DISPONIBLE' : $detail['revision']); ?></p>
+            <p>Fecha de creacion (UTC): <?php echo $escape($detail['created_at'] ?: 'NO DISPONIBLE'); ?>. Ambiente: <?php echo $escape($detail['environment'] ?: 'NO VERIFICADO'); ?>.</p>
+            <?php if ($detail['historical']): ?><p class="notice">Registro historico: no dispone de toda la metadata de verificacion actual. La consulta no valida el pago ni autoriza crear, reenviar o vincular una cotizacion.</p><?php endif; ?>
             <?php if ($detail['quotation_id'] !== null): ?><p>Cotizacion vinculada: <?php echo $escape($detail['quotation_id']); ?></p><?php endif; ?>
             <p>Revision financiera: <?php echo $detail['financial_review'] ? 'SI' : 'NO'; ?>;
                 grupo bloqueado: <?php echo $detail['charge_group_blocked'] ? 'SI' : 'NO'; ?>;
                 notificaciones pendientes: <?php echo $detail['pending_notifications'] ? 'SI' : 'NO'; ?>.</p>
-            <p>Pago verificado: <?php echo $detail['payment_verified'] ? 'SI' : 'NO'; ?>;
+            <p>Pago verificado: <?php echo $detail['payment_verified'] ? 'SI' : 'NO VERIFICADO'; ?>;
                 correo: <?php echo $escape(isset($detail['email_state']) ? $detail['email_state'] : 'NOT_STARTED'); ?>.</p>
             <?php if (!empty($detail['review_reasons'])): ?><p class="notice">Motivos de revision: <?php echo $escape(implode(', ', $detail['review_reasons'])); ?>. No se modifico el estado financiero.</p><?php endif; ?>
             <h3>Datos minimos para verificar en SistemasOL</h3>
             <pre><?php echo $escape(json_encode(array('cliente' => $detail['customer'], 'articulos' => $detail['items']), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)); ?></pre>
+            <h3>Eventos de notificacion</h3>
+            <?php if ($detail['events']): ?>
+                <table><thead><tr><th>Recepcion (UTC)</th><th>Aplicacion (UTC)</th><th>Estado local</th><th>Resultado local</th><th>Decision / codigo</th><th>Motivos</th></tr></thead><tbody>
+                <?php foreach ($detail['events'] as $event): ?>
+                    <tr><td><?php echo $escape($event['received_at'] ?: 'NO DISPONIBLE'); ?></td>
+                        <td><?php echo $escape($event['applied_at'] ?: 'NO DISPONIBLE'); ?></td>
+                        <td><?php echo $escape($event['state']); ?></td><td><?php echo $escape($event['result']); ?></td>
+                        <td><?php echo $escape($event['decision'] . ' / ' . $event['reason_code']); ?></td>
+                        <td><?php echo $escape(implode(', ', $event['reasons'])); ?></td></tr>
+                <?php endforeach; ?>
+                </tbody></table>
+                <?php if ($detail['events_truncated']): ?><p class="notice">Se muestran los 50 eventos mas recientes. El historial completo permanece conservado para revision privada.</p><?php endif; ?>
+            <?php else: ?><p>No hay eventos durables disponibles para esta referencia. Un registro historico sin eventos no demuestra ausencia ni confirmacion de un cobro.</p><?php endif; ?>
             <?php if ($canLink && $reviewToken !== ''): ?>
                 <form method="post" class="danger" action="<?php echo $escape($settings['url_path']); ?>">
                     <h3>Vincular una cotizacion existente</h3>
@@ -106,6 +129,7 @@ if (!isset($auth, $escape, $nonce)) {
                     <button>Vincular cotizacion verificada</button>
                 </form>
             <?php else: ?><p>La vinculacion no esta disponible para esta referencia o configuracion. No se ofrece reenvio automatico.</p><?php endif; ?>
+            </section>
         <?php endif; ?>
     <?php endif; ?>
 </main></body></html>

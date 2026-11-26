@@ -132,7 +132,50 @@ final class ReconciliationAdminService
             }
         }
         $safe['review_reasons'] = array_values(array_unique($safe['review_reasons']));
+        $safe['historical'] = !isset($safe['revision'], $safe['environment'])
+            || !is_int($safe['revision']) || $safe['revision'] < 1
+            || !in_array($safe['environment'], array('production', 'prod', 'test'), true);
+        $safe['events'] = array();
+        foreach ($this->store->eventIds($reference) as $id) {
+            $record = $this->store->findEvent($id);
+            if (!is_array($record) || !isset($record['reference'], $record['event'])
+                || $record['reference'] !== $reference || !is_array($record['event'])) {
+                throw new PaymentStorageException('Evento no disponible para consulta.');
+            }
+            $event = $record['event'];
+            $fields = isset($event['authenticated_fields']) && is_array($event['authenticated_fields'])
+                ? $event['authenticated_fields'] : array();
+            $reasons = array();
+            foreach (isset($event['issues']) && is_array($event['issues']) ? $event['issues'] : array() as $reason) {
+                if (is_string($reason) && preg_match('/^[a-z][a-z0-9_]{0,79}$/D', $reason)) { $reasons[] = $reason; }
+            }
+            // Display only status metadata, never raw signed fields or provider credentials.
+            $safe['events'][] = array(
+                'received_at' => self::eventDate(isset($record['received_at']) ? $record['received_at'] : null),
+                'applied_at' => self::eventDate(isset($record['applied_at']) ? $record['applied_at'] : null),
+                'state' => isset($record['state']) && in_array($record['state'], array('RECEIVED', 'APPLIED'), true) ? $record['state'] : 'UNVERIFIED',
+                'result' => isset($event['status']) && in_array($event['status'], array('APPROVED', 'DECLINED', 'CANCELLED', 'REVIEW', 'PENDING', 'HELD'), true)
+                    ? $event['status'] : 'UNVERIFIED',
+                'decision' => isset($fields['decision']) && in_array($fields['decision'], array('ACCEPT', 'DECLINE', 'CANCEL', 'REVIEW', 'ERROR'), true)
+                    ? $fields['decision'] : 'UNVERIFIED',
+                'reason_code' => isset($fields['reason_code']) && is_string($fields['reason_code']) && preg_match('/^[0-9]{3}$/D', $fields['reason_code'])
+                    ? $fields['reason_code'] : 'UNVERIFIED',
+                'reasons' => array_values(array_unique($reasons)),
+            );
+        }
+        usort($safe['events'], function ($a, $b) { return strcmp((string) $b['received_at'], (string) $a['received_at']); });
+        $safe['events_truncated'] = count($safe['events']) > 50;
+        $safe['events'] = array_slice($safe['events'], 0, 50);
         return $safe;
+    }
+
+    private static function eventDate($value)
+    {
+        if (!is_string($value) || !preg_match('/^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:Z|[+-][0-9]{2}:[0-9]{2})$/D', $value)) {
+            return null;
+        }
+        $time = strtotime($value);
+        return $time === false ? null : gmdate('c', $time);
     }
 
     public function link($csrf, $token, $quotation, $evidence, array $confirmations)

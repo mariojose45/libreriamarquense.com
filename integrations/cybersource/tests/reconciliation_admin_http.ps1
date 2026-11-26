@@ -42,6 +42,18 @@ try {
         reconciliation=@{fixture=@{state='OPEN';reasons=@('missing_or_unsigned_auth_code');transaction_id='PRIVATE-SENTINEL'}}} |
         ConvertTo-Json -Depth 8 | Set-Content -LiteralPath $heldPayment -Encoding ascii
     $heldHash = (Get-FileHash -LiteralPath $heldPayment -Algorithm SHA256).Hash
+    $legacyReference = 'LMQ-20260820161331-8A8F4A7D'
+    $legacyPayment = Join-Path $site ('storage\'+$legacyReference+'.json')
+    @{reference=$legacyReference;status='ORDER_SENT';amount=29.75;currency='GTQ';created_at='2026-08-20T16:13:31Z';
+        external_order_response=@{success=$true;idcotizacion=987};
+        order_payload=@{nit='C/F';nombre_cliente='Cliente Historico Sintetico';datosArticulos=@{articulos=@{idarticulo=@(1);cantidad=@(1);precio_venta=@(29.75)}}}} |
+        ConvertTo-Json -Depth 8 | Set-Content -LiteralPath $legacyPayment -Encoding ascii
+    $legacyHash = (Get-FileHash -LiteralPath $legacyPayment -Algorithm SHA256).Hash
+    $eventFile = Join-Path $site ('storage\event-'+$legacyReference+'-'+('a'*64)+'.json')
+    @{id=($legacyReference+'-'+('a'*64));reference=$legacyReference;state='APPLIED';received_at='2026-08-20T16:13:40Z';applied_at='2026-08-20T16:13:41Z';
+        event=@{status='APPROVED';issues=@();authenticated_fields=@{decision='ACCEPT';reason_code='100';signed_date_time='2026-08-20T16:13:39Z';auth_code='PRIVATE-EVENT-SENTINEL';secret_key='PRIVATE-EVENT-SENTINEL'}}} |
+        ConvertTo-Json -Depth 8 | Set-Content -LiteralPath $eventFile -Encoding ascii
+    $eventHash = (Get-FileHash -LiteralPath $eventFile -Algorithm SHA256).Hash
     $listener = New-Object Net.Sockets.TcpListener([Net.IPAddress]::Loopback,0)
     $listener.Start()
     $port = $listener.LocalEndpoint.Port
@@ -71,7 +83,7 @@ try {
                 $match = [regex]::Match($setCookie,'__Host-LMReconciliation=[^;]*')
                 if ($match.Success) { $script:cookie = $match.Value }
             }
-            return @{status=[int]$response.StatusCode;body=$body;setCookie=$setCookie;cache=[string]$response.Headers.CacheControl}
+            return @{status=[int]$response.StatusCode;body=$body;setCookie=$setCookie;cache=[string]$response.Headers.CacheControl;location=[string]$response.Headers.Location}
         } finally { if ($response) { $response.Dispose() }; $request.Dispose() }
     }
     $anonymous = $null
@@ -83,6 +95,8 @@ try {
     Check ($anonymous.cache.Contains('no-store')) 'no response caching'
     Check (@(Get-ChildItem -LiteralPath (Join-Path $private 'audit') -Filter 'performance-*.jsonl').Count -eq 0) 'no anonymous performance records'
     $csrf = [regex]::Match($anonymous.body,'name="csrf" value="([a-f0-9]+)"').Groups[1].Value
+    $anonymousShow = Send-Panel 'POST' @{action='show';csrf=$csrf;reference=$legacyReference}
+    Check ($anonymousShow.status -eq 303 -and -not (Send-Panel 'GET' @{}).body.Contains($legacyReference)) 'anonymous reference query cannot disclose a record'
     $denied = Send-Panel 'POST' @{action='login';csrf='wrong';username='fixture.operator';password=$password}
     Check ($denied.status -eq 403) 'login CSRF'
     $login = Send-Panel 'POST' @{action='login';csrf=$csrf;username='fixture.operator';password=$password}
@@ -99,6 +113,37 @@ try {
     $incidents = Send-Panel 'GET' @{}
     Check ($incidents.status -eq 200 -and $incidents.body.Contains($heldReference) -and $incidents.body.Contains('ERP_UNKNOWN')) 'held and uncertain cases visible'
     Check (-not $incidents.body.Contains('name="review_token"')) 'incident view has no mutation form'
+    $forms = @([regex]::Matches($incidents.body,'(?s)<form\b[^>]*>.*?</form>') | ForEach-Object { $_.Value })
+    $reviewForm = @($forms | Where-Object { $_.Contains('name="reference" value="'+$legacyReference+'"') })
+    Check ($reviewForm.Count -eq 1 -and $reviewForm[0].Contains('method="post" action="/admin/conciliacion/"') -and $reviewForm[0].Contains('<button>Revisar</button>')) 'review button posts the selected historical reference'
+    $reviewCsrf = [regex]::Match($reviewForm[0],'name="csrf" value="([a-f0-9]+)"').Groups[1].Value
+    $reviewAction = [regex]::Match($reviewForm[0],'name="action" value="([a-z]+)"').Groups[1].Value
+    Check ((Send-Panel 'POST' @{action=$reviewAction;csrf='wrong';reference=$legacyReference}).status -eq 403) 'review button cannot bypass CSRF'
+    $reviewed = Send-Panel 'POST' @{action=$reviewAction;csrf=$reviewCsrf;reference=$legacyReference}
+    $legacyDetail = Send-Panel 'GET' @{}
+    Check ($legacyDetail.status -eq 200 -and $legacyDetail.body.Contains('Cliente Historico Sintetico') -and $legacyDetail.body.Contains('987')) 'historical record without current environment or revision can be read'
+    Check ($reviewed.status -eq 303 -and $reviewed.location -eq '/admin/conciliacion/#detalle-operacion') 'review redirects directly to the detail section'
+    Check ($legacyDetail.body.Contains('id="detalle-operacion"') -and -not $legacyDetail.body.Contains('<th>Incidencia</th>')) 'selected detail is not buried underneath the incident table'
+    Check ($legacyDetail.body.Contains('Registro historico') -and $legacyDetail.body.Contains('NO VERIFICADO')) 'missing legacy metadata never implies financial verification'
+    Check ($legacyDetail.body.Contains('Eventos de notificacion') -and $legacyDetail.body.Contains('2026-08-20T16:13:40') -and $legacyDetail.body.Contains('APPLIED') -and -not $legacyDetail.body.Contains('PRIVATE-EVENT-SENTINEL')) 'events are displayed through a private allowlist'
+    $searchForm = @($forms | Where-Object { $_.Contains('<button>Consultar referencia</button>') })
+    Check ($searchForm.Count -eq 1 -and $searchForm[0].Contains('method="post" action="/admin/conciliacion/"')) 'reference search uses the same secure POST destination'
+    $searchCsrf = [regex]::Match($searchForm[0],'name="csrf" value="([a-f0-9]+)"').Groups[1].Value
+    $searched = Send-Panel 'POST' @{action='show';csrf=$searchCsrf;reference=$legacyReference}
+    $searchedDetail = Send-Panel 'GET' @{}
+    Check ($searched.location -eq '/admin/conciliacion/#detalle-operacion' -and $searchedDetail.body.Contains('Cliente Historico Sintetico') -and $searchedDetail.body.Contains('Eventos de notificacion')) 'manual reference search opens the same complete allowed detail'
+    Check (-not $searchedDetail.body.Contains('name="review_token"') -and (Get-FileHash -LiteralPath $legacyPayment -Algorithm SHA256).Hash -eq $legacyHash -and (Get-FileHash -LiteralPath $eventFile -Algorithm SHA256).Hash -eq $eventHash) 'legacy detail never enables links or rewrites historical records and events'
+    $missingReference = 'LMQ-20260820161331-FFFFFFFF'
+    $null = Send-Panel 'POST' @{action='show';csrf=$csrf;reference=$missingReference}
+    $missingDetail = Send-Panel 'GET' @{}
+    Check ($missingDetail.status -eq 200 -and $missingDetail.body.Contains('No fue posible consultar esta referencia') -and -not $missingDetail.body.Contains('Cliente Historico Sintetico')) 'missing reference shows a safe visible error without stale detail'
+    $corruptFile = Join-Path $site ('storage\'+$missingReference+'.json')
+    [IO.File]::WriteAllText($corruptFile,'invalid-synthetic-record')
+    $null = Send-Panel 'POST' @{action='show';csrf=$csrf;reference=$missingReference}
+    $failedDetail = Send-Panel 'GET' @{}
+    Check ($failedDetail.status -eq 200 -and $failedDetail.body.Contains('No fue posible consultar esta referencia') -and -not $failedDetail.body.Contains('invalid-synthetic-record')) 'unreadable record shows only the safe error'
+    $null = Send-Panel 'POST' @{action='show';csrf=$csrf;reference='../private'}
+    Check ((Send-Panel 'GET' @{}).body.Contains('Referencia no valida')) 'malformed reference receives a specific safe message'
     $heldSearch = Send-Panel 'POST' @{action='show';csrf=$csrf;reference=$heldReference}
     $heldDetail = Send-Panel 'GET' @{}
     Check ($heldSearch.status -eq 303 -and $heldDetail.body.Contains('missing_or_unsigned_auth_code') -and -not $heldDetail.body.Contains('PRIVATE-SENTINEL')) 'safe incident detail without raw receipt'
@@ -109,6 +154,7 @@ try {
     Check ($search.status -eq 303) 'search persists before redirect'
     $detail = Send-Panel 'GET' @{}
     Check ($detail.status -eq 200 -and $detail.body.Contains('Cliente Prueba')) 'full detail after session close'
+    Check ($detail.body.Contains('No hay eventos durables disponibles')) 'missing historical event history is explicitly reported without inference'
     $blocked = Send-Panel 'POST' @{action='link';csrf=$csrf;quotation='123';evidence='ticket-fixture'}
     Check ($blocked.status -eq 303 -and (Get-FileHash -LiteralPath $payment -Algorithm SHA256).Hash -eq $paymentHash) 'forged link cannot change fixture payment'
     $logout = Send-Panel 'POST' @{action='logout';csrf=$csrf}

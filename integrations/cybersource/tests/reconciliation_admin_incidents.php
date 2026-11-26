@@ -111,6 +111,38 @@ try {
     $check(count($first['items']) === 25 && $first['next'] !== '' && count($second['items']) > 0, 'incident pagination remains bounded');
     $check(array_intersect(array_column($first['items'], 'reference'), array_column($second['items'], 'reference')) === array(),
         'pagination does not repeat records');
+    $legacyRef = 'LMQ-20260820161331-8A8F4A7D';
+    $legacyFile = $root . '/payments/' . $legacyRef . '.json';
+    file_put_contents($legacyFile, json_encode(array('status' => 'ORDER_SENT', 'amount' => 29.75, 'currency' => 'GTQ',
+        'order_payload' => array('nombre_cliente' => 'Cliente Historico Sintetico'),
+        'external_order_response' => array('success' => true, 'idcotizacion' => 987))));
+    $legacyHash = hash_file('sha256', $legacyFile);
+    $eventHashes = array();
+    for ($i = 0; $i < 52; $i++) {
+        $id = $legacyRef . '-' . hash('sha256', 'event-fixture-' . $i);
+        $eventFile = $root . '/payments/event-' . $id . '.json';
+        file_put_contents($eventFile, json_encode(array('reference' => $legacyRef, 'id' => $id, 'state' => 'APPLIED',
+            'received_at' => '2026-08-20T16:13:' . sprintf('%02d', $i) . 'Z',
+            'event' => array('status' => 'APPROVED', 'issues' => array(),
+                'authenticated_fields' => array('decision' => 'ACCEPT', 'reason_code' => '100',
+                    'auth_code' => 'PRIVATE-EVENT-SENTINEL', 'secret_key' => 'PRIVATE-EVENT-SENTINEL')))));
+        $eventHashes[$eventFile] = hash_file('sha256', $eventFile);
+    }
+    file_put_contents($root . '/payments/event-' . $references[1] . '-' . str_repeat('b', 64) . '.json', 'invalid-unrelated-event');
+    $legacy = $service->detail($legacyRef);
+    $check($legacy['historical'] && $legacy['revision'] === null && $legacy['environment'] === null
+        && !$legacy['payment_verified'], 'historical metadata is displayed without inventing verification');
+    $check(count($legacy['events']) === 50 && $legacy['events_truncated'], 'event display is bounded and truncation explicit');
+    $check($legacy['events'][0]['received_at'] === '2026-08-20T16:13:51+00:00', 'most recent event appears first in UTC');
+    $check($legacy['events'][0]['decision'] === 'ACCEPT' && $legacy['events'][0]['state'] === 'APPLIED', 'allowed event metadata retained');
+    $check(strpos(json_encode($legacy), 'PRIVATE-EVENT-SENTINEL') === false, 'event credentials and authorization codes never returned');
+    $check(count(iterator_to_array($store->eventIds($legacyRef))) === 52, 'reference-scoped event enumeration excludes other records');
+    $check(count(iterator_to_array($store->eventIds())) === 53, 'existing all-events worker enumeration remains compatible');
+    $denied = false;
+    try { iterator_to_array($store->eventIds('../private')); } catch (Throwable $e) { $denied = true; }
+    $check($denied, 'event enumeration rejects reference traversal');
+    $check(hash_file('sha256', $legacyFile) === $legacyHash, 'legacy record not upgraded or rewritten by detail');
+    foreach ($eventHashes as $file => $hash) { $check(hash_file('sha256', $file) === $hash, 'viewing events does not change durable evidence'); }
     $auth->close();
 } finally {
     if (session_status() === PHP_SESSION_ACTIVE) { $_SESSION = array(); session_destroy(); }

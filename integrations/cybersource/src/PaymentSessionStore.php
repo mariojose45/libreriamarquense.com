@@ -147,9 +147,11 @@ class PaymentSessionStore
         $this->atomicWrite($this->eventFile($record['id']), $record);
     }
 
-    public function eventIds()
+    public function eventIds($reference = null)
     {
-        foreach (glob($this->dir . '/event-LMQ-*.json') ?: array() as $file) {
+        if ($reference !== null) { $this->fileForReference($reference); }
+        $pattern = $reference === null ? 'LMQ-*' : $reference . '-*';
+        foreach (glob($this->dir . '/event-' . $pattern . '.json') ?: array() as $file) {
             yield substr(basename($file, '.json'), 6);
         }
     }

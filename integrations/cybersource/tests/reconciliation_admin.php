@@ -34,6 +34,7 @@ $reject = function (callable $operation, $label) use ($check) {
 class AdminReadOnlyFixtureStore extends PaymentSessionStore
 {
     public function __construct() {}
+    public function eventIds($reference = null) { return array(); }
     public function references() { yield 'LMQ-20261124000000-AAAAAAAA'; }
     public function find($reference)
     {
@@ -144,6 +145,8 @@ try {
     $detail['customer']['nombre_cliente'] = '<script>not-executable</script>';
     $canLink = false;
     $listMode = 'pending';
+    $detailError = '';
+    $selectedReference = $ref;
     $reviewToken = 'must-not-render-when-blocked';
     $escape = function ($value) { return htmlspecialchars((string) $value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); };
     ob_start();
@@ -153,6 +156,7 @@ try {
     $check(strpos($html, 'name="review_token"') === false && strpos($html, 'MUST_NOT_RENDER') === false, 'blocked UI and sensitive data protection');
     $listMode = 'incidents';
     $page = $off->pending('', $listMode);
+    $detail = null;
     ob_start();
     require $app . '/admin/conciliacion/view.php';
     $html = ob_get_clean();
